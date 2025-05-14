@@ -52,8 +52,8 @@ function Kpopdle({ idolData, answer }) {
     }
 
     return (
-        <div>
-            <input type="text" onKeyDown={handleKeyDown} placeholder="Type your guess" disabled={victory}/>
+        <div className='kpopdle-container'>
+            <input type="text" className="input-field" onKeyDown={handleKeyDown} placeholder="Type your guess" disabled={victory}/>
             <GuessList guesses={guesses} answer={answer}/>
         </div>
     );

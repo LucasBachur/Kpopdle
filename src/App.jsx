@@ -1,4 +1,5 @@
 import './App.css'
+import Header from './components/Header'
 import Kpopdle from './components/Kpopdle'
 
 const idols = [
@@ -22,6 +23,7 @@ const answer = { id: 4, name: 'Sana', group: 'Twice', nationality: 'Japanese', a
 function App() {
   return (
     <>
+      <Header />
       <Kpopdle idolData={idols} answer={answer} />
     </>
   )
