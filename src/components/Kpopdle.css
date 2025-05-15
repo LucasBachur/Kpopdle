@@ -1,5 +1,4 @@
 .kpopdle-container {
-  padding-top: 70px;
   margin: 0 auto;
   width: 100%;
   max-width: 1000px; /* or whatever width works for your layout */
@@ -36,6 +35,7 @@
 
 .guess-container {
   display: flex;
+  padding-top: 10px;
 }
 
 .guess{
@@ -49,9 +49,9 @@
 }
 
 .guess.correct {
-    background-color: #6aa84f; /* Less bright green */
+    background-color: #6aa84f;
 }
 
 .guess.incorrect {
-    background-color: #cc4125; /* Less bright red */
+    background-color: #cc4125;
 }

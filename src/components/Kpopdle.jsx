@@ -1,5 +1,5 @@
 import './Kpopdle.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function GuessField({value, answerValue}){
     return(
@@ -31,32 +31,29 @@ function GuessList({ guesses, answer }) {
     );
 }
 
-function Kpopdle({ idolData, answer }) {
+function normalizeString (str){
+    return str
+        .toLowerCase()
+        .replace(/[-.\s]/g, '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+};
+
+
+function Kpopdle({ idolData, answers, mode}) {
 
     const [guesses, setGuesses] = useState([]);
     const [victory, setVictory] = useState(false);
+    const idolDataFiltered = (mode != 'All') ? idolData.filter(idol => idol.groupType === mode) : idolData;
+    const answer = answers[mode];
 
-    /**
-     * Normalizes a string by performing the following transformations:
-     * 1. Converts the string to lowercase.
-     * 2. Removes all hyphens, dots, and whitespace characters.
-     * 3. Normalizes the string to Unicode Normalization Form D (NFD), 
-     *    which separates characters and their diacritical marks.
-     * 4. Removes all diacritical marks (e.g., accents) from the string.
-     *
-     * @param {string} str - The input string to normalize.
-     * @returns {string} - The normalized string.
-     */
-    const normalizeString = (str) => {
-        return str
-            .toLowerCase()
-            .replace(/[-.\s]/g, '')
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '');
-    };
+    useEffect(() => {
+        setGuesses([]);
+        setVictory(false);
+    },[mode]);
 
     const findIdol = (name) => {
-        const idol = idolData.find(idol => normalizeString(idol.name) === normalizeString(name));
+        const idol = idolDataFiltered.find(idol => normalizeString(idol.name) === normalizeString(name));
         return idol ? idol : null;
     }
 
