@@ -8,15 +8,13 @@ function GuessField({value, answerValue}){
 }
 
 function Guess({ guess, answer }) {
-    const { name, group, birthYear, nationality, company, groupType } = guess;
+    const fields = ["name", "group", "birthYear", "nationality", "company", "groupType"];
+
     return (
         <div className='guess-container'>
-            <GuessField value={name} answerValue={answer.name} />
-            <GuessField value={group} answerValue={answer.group} />
-            <GuessField value={birthYear} answerValue={answer.birthYear} />
-            <GuessField value={nationality} answerValue={answer.nationality} />
-            <GuessField value={company} answerValue={answer.company} />
-            <GuessField value={groupType} answerValue={answer.groupType} />
+            {fields.map((field) => (
+            <GuessField key={field} value={guess[field]} answerValue={answer[field]}/>
+            ))}
         </div>
     );
 }
@@ -34,7 +32,7 @@ function GuessList({ guesses, answer }) {
 function normalizeString (str){
     return str
         .toLowerCase()
-        .replace(/[-.\s]/g, '')
+        .replace(/[-:.\s]/g, '')
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '');
 };
