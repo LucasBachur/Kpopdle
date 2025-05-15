@@ -6,9 +6,9 @@ function Header() {
         <div className="header-container">
             <div className="logoa">Kpopdle</div>
             <div className="header-buttons">
-                <button>Mode 1</button>
-                <button>Mode 2</button>
-                <button>Mode 3</button>
+                <button>All</button>
+                <button>GG</button>
+                <button>BG</button>
             </div>
         </div>
     </header>

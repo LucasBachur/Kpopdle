@@ -8,13 +8,15 @@ function GuessField({value, answerValue}){
 }
 
 function Guess({ guess, answer }) {
-    const { name, group, age, nationality } = guess;
+    const { name, group, birthYear, nationality, company, groupType } = guess;
     return (
         <div className='guess-container'>
             <GuessField value={name} answerValue={answer.name} />
             <GuessField value={group} answerValue={answer.group} />
-            <GuessField value={age} answerValue={answer.age} />
+            <GuessField value={birthYear} answerValue={answer.birthYear} />
             <GuessField value={nationality} answerValue={answer.nationality} />
+            <GuessField value={company} answerValue={answer.company} />
+            <GuessField value={groupType} answerValue={answer.groupType} />
         </div>
     );
 }
@@ -34,8 +36,27 @@ function Kpopdle({ idolData, answer }) {
     const [guesses, setGuesses] = useState([]);
     const [victory, setVictory] = useState(false);
 
+    /**
+     * Normalizes a string by performing the following transformations:
+     * 1. Converts the string to lowercase.
+     * 2. Removes all hyphens, dots, and whitespace characters.
+     * 3. Normalizes the string to Unicode Normalization Form D (NFD), 
+     *    which separates characters and their diacritical marks.
+     * 4. Removes all diacritical marks (e.g., accents) from the string.
+     *
+     * @param {string} str - The input string to normalize.
+     * @returns {string} - The normalized string.
+     */
+    const normalizeString = (str) => {
+        return str
+            .toLowerCase()
+            .replace(/[-.\s]/g, '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+    };
+
     const findIdol = (name) => {
-        const idol = idolData.find(idol => idol.name.toLowerCase() === name.toLowerCase());
+        const idol = idolData.find(idol => normalizeString(idol.name) === normalizeString(name));
         return idol ? idol : null;
     }
 
