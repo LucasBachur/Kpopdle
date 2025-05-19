@@ -25,13 +25,15 @@ a:hover {
 }
 
 body {
-  background-image:url(background.png);
+  background-image:url(background2.png);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;     /* stays fixed even when scrolling */
   min-height: 100vh;
   margin: 0;
   padding: 0;
+  z-index: -1;
 }
 /*body::before {
   content: "";
