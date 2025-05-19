@@ -88,9 +88,21 @@
 .guess-container {
   display: flex;
   padding-top: 10px;
+  animation: fadePop 1s ease;
 }
 
-.guess{
+@keyframes fadePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.guess-item{
     border: 1px solid black;
     padding: 10px;
     width: 100px;
@@ -100,10 +112,10 @@
     justify-content: center;
 }
 
-.guess.correct {
+.guess-item.correct {
     background-color: #6aa84f;
 }
 
-.guess.incorrect {
+.guess-item.incorrect {
     background-color: #cc4125;
 }

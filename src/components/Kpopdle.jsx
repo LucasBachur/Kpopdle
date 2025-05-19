@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 
 function GuessField({value, answerValue}){
     return(
-        <div className={`guess ${value === answerValue ? 'correct' : 'incorrect'}`}>{value}</div>
+        <div className={`guess-item ${value === answerValue ? 'correct' : 'incorrect'}`}>{value}</div>
     );
 }
 
@@ -48,6 +48,7 @@ function Kpopdle({ idolData, answers, mode}) {
     const idolDataForMode = (mode != 'All') ? idolData.filter(idol => idol.groupType === mode) : idolData;
     const answer = answers[mode];
     const suggestionRefs = useRef(null);
+    const bottomRef = useRef(null);
     const filteredSuggestions = idolDataForMode.filter(idol =>
         normalizeString(idol.name).includes(normalizeString(inputValue))
     );
@@ -70,6 +71,12 @@ function Kpopdle({ idolData, answers, mode}) {
             });
         }
     }, [activeIndex, showSuggestions]);
+
+    useEffect(() => {
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [guesses]);
 
     const findIdol = (name) => {
         const idol = idolDataForMode.find(idol => normalizeString(idol.name) === normalizeString(name));
@@ -129,13 +136,14 @@ function Kpopdle({ idolData, answers, mode}) {
                             ref={el => suggestionRefs.current[index] = el}
                             className={"suggestion-item" + ((index === activeIndex) ? ' active' : '')}
                             onMouseDown={() => {submitGuess(idol.name);}}>
-                        {idol.name}
+                        {idol.name+ " ("+idol.group+")"}
                         </li>
                     ))}
                     </ul>
                 )}
             </div>
             <GuessList guesses={guesses} answer={answer}/>
+            <div ref={bottomRef} />
         </div>
     );
 }
