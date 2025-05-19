@@ -1,9 +1,19 @@
 import './Kpopdle.css';
 import { useEffect, useState, useRef } from 'react';
 
-function GuessField({value, answerValue}){
+function GuessField({field, value, answerValue}){
+    let classes = '';
+    if(value === answerValue){
+        classes = ' correct';
+    }
+    else{
+        classes = ' incorrect';
+        if(field === 'birthYear' && value){
+            classes += value < answerValue ? ' year-up' : ' year-down';
+        }
+    }
     return(
-        <div className={`guess-item ${value === answerValue ? 'correct' : 'incorrect'}`}>{value}</div>
+        <div className={'guess-item'+classes}>{value}</div>
     );
 }
 
@@ -13,7 +23,7 @@ function Guess({ guess, answer }) {
     return (
         <div className='guess-container'>
             {fields.map((field) => (
-            <GuessField key={field} value={guess[field]} answerValue={answer[field]}/>
+            <GuessField key={field} field={field} value={guess[field]} answerValue={answer[field]}/>
             ))}
         </div>
     );

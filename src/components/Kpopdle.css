@@ -110,6 +110,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
 .guess-item.correct {
@@ -118,4 +119,28 @@
 
 .guess-item.incorrect {
     background-color: #cc4125;
+}
+
+.guess-item.year-up::after,
+.guess-item.year-down::after {
+  position: absolute;
+  opacity: 0.2;
+  font-size: 120px;
+  pointer-events: none;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.2;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.guess-item.year-up::after {
+  content: '▲';
+  top:45%;
+}
+
+.guess-item.year-down::after {
+  content: '▼';
+  top:55%;
 }
