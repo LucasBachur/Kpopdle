@@ -55,12 +55,12 @@ function Kpopdle({ idolData, answers, mode}) {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
     const [inputValue, setInputValue] = useState('');
-    const idolDataForMode = (mode != 'All') ? idolData.filter(idol => idol.groupType === mode) : idolData;
     const answer = answers[mode];
     const suggestionRefs = useRef(null);
     const bottomRef = useRef(null);
-    const filteredSuggestions = idolDataForMode.filter(idol =>
-        normalizeString(idol.name).includes(normalizeString(inputValue))
+    let idolDataForMode = (mode != 'All') ? idolData.filter(idol => idol.groupType === mode) : idolData;
+    let filteredSuggestions = idolDataForMode.filter(idol =>
+        normalizeString(idol.name).includes(normalizeString(inputValue)) && !guesses.some(guess => guess.name == idol.name)
     );
     suggestionRefs.current = [];
 
@@ -95,10 +95,8 @@ function Kpopdle({ idolData, answers, mode}) {
 
     const submitGuess = (name) => {
         const guessedIdol = findIdol(name);
-        if (guessedIdol) {
-            if (guessedIdol.id === answer.id) {
-                setVictory(true);
-            }
+        if (guessedIdol && !guesses.some(guess => guess.name === guessedIdol.name)) {
+            setVictory(guessedIdol.id === answer.id);
             setGuesses([...guesses, guessedIdol]);
             setInputValue('');
             setShowSuggestions(false);
