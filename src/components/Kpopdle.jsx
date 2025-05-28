@@ -141,24 +141,46 @@ function GuessInput({idolDataForMode, guesses, victory, setGuesses, setVictory, 
         </div>
     );
 }
+const defaultGuesses = [];
 
 function Kpopdle({ idolData, answer, mode}) {
-    const [guesses, setGuesses] = useState([]);
+
+    const [guesses, setGuesses] = useState(defaultGuesses);
     const [victory, setVictory] = useState(false);
     const bottomRef = useRef(null);
 
     let idolDataForMode = (mode != 'All') ? idolData.filter(idol => idol.groupType === mode) : idolData;
 
+    const getStorageKey = (mode) => {
+        const today = new Date().toISOString().split('T')[0]; // e.g., "2025-05-28"
+        return `kpopdle_guesses_${mode}_${today}`;
+    };
+
     useEffect(() => {
-        setGuesses([]);
-        setVictory(false);
-    },[mode]);
+        const key = getStorageKey(mode);
+        const saved = localStorage.getItem(key);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            setGuesses(parsed);
+            setVictory(parsed.some(guess => guess.id === answer.id));
+        } else {
+            setGuesses([]);
+            setVictory(false);
+        }
+    }, [mode, answer]);
 
     useEffect(() => {
         if (bottomRef.current) {
             bottomRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [guesses]);
+
+    useEffect(() => {
+        const key = getStorageKey(mode);
+        if(guesses !== defaultGuesses){
+            localStorage.setItem(key, JSON.stringify(guesses));
+        }
+    }, [guesses, mode]);
 
     return (
         <div className='kpopdle-container'>
