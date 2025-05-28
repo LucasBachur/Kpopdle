@@ -47,7 +47,7 @@ function normalizeString (str){
         .replace(/[\u0300-\u036f]/g, '');
 };
 
-function GuessInput({idolDataForMode, guesses, victory, setGuesses, setVictory, answerId}) {
+function GuessInput({idolDataForMode, guesses, victory, setGuesses, setVictory, answer}) {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
     const [inputValue, setInputValue] = useState('');
@@ -85,7 +85,7 @@ function GuessInput({idolDataForMode, guesses, victory, setGuesses, setVictory, 
             }
         }
         if (guessedIdol && !guesses.some(guess => guess.id === guessedIdol.id)) {
-            setVictory(guessedIdol.id === answerId);
+            setVictory(guessedIdol.id === answer.id);
             setGuesses([...guesses, guessedIdol]);
             setInputValue('');
             setShowSuggestions(false);
@@ -168,9 +168,12 @@ function Kpopdle({ idolData, answer, mode}) {
                 victory={victory}
                 setGuesses={setGuesses}
                 setVictory={setVictory}
-                answerId={answer.id}
+                answer={answer}
             />
-            <GuessList guesses={guesses} answer={answer}/>
+            <GuessList 
+                guesses={guesses} 
+                answer={answer}
+            />
             <div ref={bottomRef} />
         </div>
     );
