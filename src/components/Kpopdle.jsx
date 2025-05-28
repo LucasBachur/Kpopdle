@@ -48,14 +48,12 @@ function normalizeString (str){
 };
 
 
-function Kpopdle({ idolData, answers, mode}) {
-
+function Kpopdle({ idolData, answer, mode}) {
     const [guesses, setGuesses] = useState([]);
     const [victory, setVictory] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
     const [inputValue, setInputValue] = useState('');
-    const answer = answers[mode];
     const suggestionRefs = useRef(null);
     const bottomRef = useRef(null);
     let idolDataForMode = (mode != 'All') ? idolData.filter(idol => idol.groupType === mode) : idolData;
