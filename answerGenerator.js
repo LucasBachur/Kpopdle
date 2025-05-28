@@ -14,8 +14,26 @@ const MAX_UNUSED_DAYS_FACTOR = 1.7; // Multiplier for the number of idols in the
                                     // to determine the maximun number of days it can be unused
 const GROUP_REPEAT_BLOCK_DAYS = 3;
 
+function todayArg(withTime = false) {
+  const options = {
+    timeZone: 'America/Argentina/Buenos_Aires'
+  };
+
+  if (withTime) {
+    options.hour12 = false,
+    options.year = 'numeric',
+    options.month = 'numeric',
+    options.day = 'numeric',
+    options.hour = '2-digit';
+    options.minute = '2-digit';
+    options.second = '2-digit';
+  }
+
+  return new Date().toLocaleString('en-CA', options);
+}
+
 function logError(message) {
-    const timestamp = new Date().toISOString();
+    const timestamp = todayArg(true);
     const fullMessage = `[${timestamp}] ${message}\n`;
     try {
         fs.appendFileSync(logPath, fullMessage);
@@ -69,7 +87,6 @@ function generateAnswerForMode(mode, idolData, answers, today, todayAllId) {
             idolsWithId[answerId].lastUsed = newDate;
         }
     }
-    console.log('Today Id for all mode:', todayAllId);
     idolsWithId = idolsWithId.filter(idol => !recentGroups.has(idol.group) && idol.id !== todayAllId);
     shuffleArray(idolsWithId); // Shuffle first so if a lot of elements have a null lastUsed, they will be randomly distributed
     idolsWithId.sort((a, b) => {
@@ -91,13 +108,12 @@ function generateAnswerForMode(mode, idolData, answers, today, todayAllId) {
         date: today, // format: YYYY-MM-DD
         answerId: newEntryId
     };
-    console.log(`Generated answer for mode ${mode} on ${today}: ${newEntryId}`);
     return newEntry;
 }
 
 function generateAnswers(targetDate = null){
     try {
-        const today = targetDate ?? new Date().toISOString().slice(0, 10); // format: YYYY-MM-DD
+        const today = targetDate ?? todayArg().slice(0, 10); // format: YYYY-MM-DD
         const idolData = readJSON(idolDataPath);
         const answers = readJSON(answersPath);
         let todayAllId = null;
