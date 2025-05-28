@@ -1,5 +1,6 @@
 import './Kpopdle.css';
 import { useEffect, useState, useRef } from 'react';
+import Confetti from 'react-confetti';
 
 function GuessLabels({mode}) {
     const fields = ["Name", "Group", "Birth Year", "Nationality", "Company"];
@@ -204,6 +205,18 @@ function Kpopdle({ idolData, answer, mode}) {
 
     return (
         <div className='kpopdle-container'>
+            {victory && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0, left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    pointerEvents: 'none',
+                    zIndex: 9999
+                }}>
+                    <Confetti width={window.innerWidth} height={window.innerHeight} />
+                </div>
+            )}
             <GuessInput 
                 idolDataForMode={idolDataForMode}
                 guesses={guesses}
