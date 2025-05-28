@@ -47,24 +47,19 @@ function normalizeString (str){
         .replace(/[\u0300-\u036f]/g, '');
 };
 
-
-function Kpopdle({ idolData, answer, mode}) {
-    const [guesses, setGuesses] = useState([]);
-    const [victory, setVictory] = useState(false);
+function GuessInput({idolDataForMode, guesses, victory, setGuesses, setVictory, answerId}) {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
     const [inputValue, setInputValue] = useState('');
-    const suggestionRefs = useRef(null);
-    const bottomRef = useRef(null);
-    let idolDataForMode = (mode != 'All') ? idolData.filter(idol => idol.groupType === mode) : idolData;
+    const suggestionRefs = useRef([]);
+
     let filteredSuggestions = idolDataForMode.filter(idol =>
         normalizeString(idol.name).includes(normalizeString(inputValue)) && !guesses.some(guess => guess.id == idol.id)
     );
-    suggestionRefs.current = [];
+
     useEffect(() => {
-        setGuesses([]);
-        setVictory(false);
-    },[mode]);
+        setActiveIndex(-1);
+    }, [inputValue, idolDataForMode]);
 
     useEffect(() => {
         if (
@@ -79,11 +74,6 @@ function Kpopdle({ idolData, answer, mode}) {
         }
     }, [activeIndex, showSuggestions]);
 
-    useEffect(() => {
-        if (bottomRef.current) {
-            bottomRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [guesses]);
     const submitGuess = (id = null, name = null) => {
         let guessedIdol = null;
         if (id) {
@@ -95,7 +85,7 @@ function Kpopdle({ idolData, answer, mode}) {
             }
         }
         if (guessedIdol && !guesses.some(guess => guess.id === guessedIdol.id)) {
-            setVictory(guessedIdol.id === answer.id);
+            setVictory(guessedIdol.id === answerId);
             setGuesses([...guesses, guessedIdol]);
             setInputValue('');
             setShowSuggestions(false);
@@ -111,44 +101,75 @@ function Kpopdle({ idolData, answer, mode}) {
             setActiveIndex((prev) => (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length);
         } else if (event.key === 'Enter') {
             if (activeIndex >= 0 && activeIndex < filteredSuggestions.length) {
-                submitGuess(filteredSuggestions[activeIndex].id);
+                submitGuess(filteredSuggestions[activeIndex].id, null);
             } else {
                 submitGuess(null, inputValue);
             }
-            setActiveIndex(-1); // reset after submit
+            setActiveIndex(-1);
         }
-    }
+    };
+
+    return (
+        <div className='input-container'>
+            <input 
+                type="text"
+                value={inputValue}
+                onChange={(e) => {
+                    const value = e.target.value;
+                    setInputValue(value);
+                    setShowSuggestions(value.length>=2);
+                }}
+                className="input-field"
+                onKeyDown={handleKeyDown} 
+                placeholder="Type your guess"
+                disabled={victory}
+                onFocus={() => {setShowSuggestions(inputValue.length>=2);}}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
+            />
+            {showSuggestions && filteredSuggestions.length > 0 && (
+                <ul className="suggestion-box">
+                {filteredSuggestions.map((idol, index) => (
+                    <li key={idol.id} 
+                        ref={el => suggestionRefs.current[index] = el}
+                        className={"suggestion-item" + ((index === activeIndex) ? ' active' : '')}
+                        onMouseDown={() => {submitGuess(idol.id, null);}}>
+                    {idol.name+ " ("+idol.group+")"}
+                    </li>
+                ))}
+                </ul>
+            )}
+        </div>
+    );
+}
+
+function Kpopdle({ idolData, answer, mode}) {
+    const [guesses, setGuesses] = useState([]);
+    const [victory, setVictory] = useState(false);
+    const bottomRef = useRef(null);
+
+    let idolDataForMode = (mode != 'All') ? idolData.filter(idol => idol.groupType === mode) : idolData;
+
+    useEffect(() => {
+        setGuesses([]);
+        setVictory(false);
+    },[mode]);
+
+    useEffect(() => {
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [guesses]);
+
     return (
         <div className='kpopdle-container'>
-            <div className='input-container'>
-                <input 
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        setInputValue(value);
-                        setShowSuggestions(value.length>=2);
-                    }}
-                    className="input-field"
-                    onKeyDown={handleKeyDown} 
-                    placeholder="Type your guess"
-                    disabled={victory}
-                    onFocus={() => {setShowSuggestions(inputValue.length>=2);}}
-                    onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
-                />
-                {showSuggestions && filteredSuggestions.length > 0 && (
-                    <ul className="suggestion-box">
-                    {filteredSuggestions.map((idol, index) => (
-                        <li key={idol.id} 
-                            ref={el => suggestionRefs.current[index] = el}
-                            className={"suggestion-item" + ((index === activeIndex) ? ' active' : '')}
-                            onMouseDown={() => {submitGuess(idol.id);}}>
-                        {idol.name+ " ("+idol.group+")"}
-                        </li>
-                    ))}
-                    </ul>
-                )}
-            </div>
+            <GuessInput 
+                idolDataForMode={idolDataForMode}
+                guesses={guesses}
+                victory={victory}
+                setGuesses={setGuesses}
+                setVictory={setVictory}
+                answerId={answer.id}
+            />
             <GuessList guesses={guesses} answer={answer}/>
             <div ref={bottomRef} />
         </div>
