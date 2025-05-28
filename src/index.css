@@ -25,11 +25,7 @@ a:hover {
 }
 
 body {
-  background-image:url(background2.png);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;     /* stays fixed even when scrolling */
+  background-color: #dac2fe;
   min-height: 100vh;
   margin: 0;
   padding: 0;

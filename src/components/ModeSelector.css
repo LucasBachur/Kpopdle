@@ -12,11 +12,10 @@
 
 .mode-button {
   padding: 30px 40px;
-  border: none;
+  border-color: black;
   border-radius: 8px;
   font-size: 4rem;
   font-weight: bold;
-  color: white;
   min-width: 60px;
   opacity: 0;
   transform: translateX(10px);
