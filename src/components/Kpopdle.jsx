@@ -1,6 +1,22 @@
 import './Kpopdle.css';
 import { useEffect, useState, useRef } from 'react';
 
+function GuessLabels({mode}) {
+    const fields = ["Name", "Group", "Birth Year", "Nationality", "Company"];
+    if (mode === 'All') {
+        fields.push("Group Type");
+    }
+    return (
+        <div className="guess-container labels-row">
+            {fields.map(field => (
+                <div key={field} className="label-item">
+                    {field}
+                </div>
+            ))}
+        </div>
+    );
+}
+
 function GuessField({field, value, answerValue}){
     let classes = '';
     if(value === answerValue){
@@ -17,8 +33,11 @@ function GuessField({field, value, answerValue}){
     );
 }
 
-function Guess({ guess, answer }) {
-    const fields = ["name", "group", "birthYear", "nationality", "company", "groupType"];
+function Guess({ guess, answer, mode }) {
+    const fields = ["name", "group", "birthYear", "nationality", "company"];
+    if (mode === 'All') {
+        fields.push("groupType");
+    }
 
     return (
         <div className='guess-container'>
@@ -29,11 +48,12 @@ function Guess({ guess, answer }) {
     );
 }
 
-function GuessList({ guesses, answer }) {
+function GuessList({ guesses, answer, mode }) {
     return (
         <div>
+            <GuessLabels mode={mode}/>
             {guesses.map((guess, index) => {
-                return <Guess key={index} guess={guess} answer={answer}/>;
+                return <Guess key={index} guess={guess} answer={answer} mode={mode}/>;
             })}
         </div>
     );
@@ -195,6 +215,7 @@ function Kpopdle({ idolData, answer, mode}) {
             <GuessList 
                 guesses={guesses} 
                 answer={answer}
+                mode={mode}
             />
             <div ref={bottomRef} />
         </div>

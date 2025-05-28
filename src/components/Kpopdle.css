@@ -85,6 +85,22 @@
   background-color: #726d6d;
 }
 
+.labels-row {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.label-item {
+    background-color: #9565dd;
+    outline: 1px solid black;
+    border-radius: 17px;
+    padding: 10px;
+    width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .guess-container {
   display: flex;
   padding-top: 10px;
