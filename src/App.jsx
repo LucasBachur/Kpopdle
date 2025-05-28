@@ -1,7 +1,7 @@
 import './App.css'
 import idols from './data/idols.json'
 import answers from './data/dailyAnswers.json'
-import Header from './components/Header'
+import ModeSelector from './components/ModeSelector'
 import Kpopdle from './components/Kpopdle'
 import { useState } from 'react';
 
@@ -32,7 +32,7 @@ function App() {
   )[0];
   return (
     <>
-      <Header setMode = {setMode}/>
+      <ModeSelector setMode={setMode} currentMode={mode}/>
       <Kpopdle idolData={idolData} answer={todaysAnswerData} mode={mode}/>
     </>
   )

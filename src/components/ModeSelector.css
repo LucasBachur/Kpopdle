@@ -1,0 +1,53 @@
+.mode-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.mode-inner {
+  display: flex;
+  gap: 8px;
+}
+
+.mode-button {
+  padding: 30px 40px;
+  border: none;
+  border-radius: 8px;
+  font-size: 4rem;
+  font-weight: bold;
+  color: white;
+  min-width: 60px;
+  opacity: 0;
+  transform: translateX(10px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.mode-button.active.hidden {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.mode-button.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* On hover, reveal all */
+.mode-button.visible {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* Optional: stagger animation */
+.mode-button:nth-child(1).visible {
+  transition-delay: 0.1s;
+}
+.mode-button:nth-child(2).visible {
+  transition-delay: 0.05s;
+}
+
