@@ -58,10 +58,9 @@ function Kpopdle({ idolData, answer, mode}) {
     const bottomRef = useRef(null);
     let idolDataForMode = (mode != 'All') ? idolData.filter(idol => idol.groupType === mode) : idolData;
     let filteredSuggestions = idolDataForMode.filter(idol =>
-        normalizeString(idol.name).includes(normalizeString(inputValue)) && !guesses.some(guess => guess.name == idol.name)
+        normalizeString(idol.name).includes(normalizeString(inputValue)) && !guesses.some(guess => guess.id == idol.id)
     );
     suggestionRefs.current = [];
-
     useEffect(() => {
         setGuesses([]);
         setVictory(false);
@@ -85,15 +84,17 @@ function Kpopdle({ idolData, answer, mode}) {
             bottomRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [guesses]);
-
-    const findIdol = (name) => {
-        const idol = idolDataForMode.find(idol => normalizeString(idol.name) === normalizeString(name));
-        return idol ? idol : null;
-    }
-
-    const submitGuess = (name) => {
-        const guessedIdol = findIdol(name);
-        if (guessedIdol && !guesses.some(guess => guess.name === guessedIdol.name)) {
+    const submitGuess = (id = null, name = null) => {
+        let guessedIdol = null;
+        if (id) {
+            guessedIdol = idolDataForMode.find(idol => idol.id === id);
+        } else if (name) {
+            const matchedIdols = idolDataForMode.filter(idol => normalizeString(idol.name) === normalizeString(name));
+            if (matchedIdols.length === 1) {
+                guessedIdol = matchedIdols[0];
+            }
+        }
+        if (guessedIdol && !guesses.some(guess => guess.id === guessedIdol.id)) {
             setVictory(guessedIdol.id === answer.id);
             setGuesses([...guesses, guessedIdol]);
             setInputValue('');
@@ -110,9 +111,9 @@ function Kpopdle({ idolData, answer, mode}) {
             setActiveIndex((prev) => (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length);
         } else if (event.key === 'Enter') {
             if (activeIndex >= 0 && activeIndex < filteredSuggestions.length) {
-                submitGuess(filteredSuggestions[activeIndex].name);
+                submitGuess(filteredSuggestions[activeIndex].id);
             } else {
-                submitGuess(inputValue);
+                submitGuess(null, inputValue);
             }
             setActiveIndex(-1); // reset after submit
         }
@@ -141,7 +142,7 @@ function Kpopdle({ idolData, answer, mode}) {
                         <li key={idol.id} 
                             ref={el => suggestionRefs.current[index] = el}
                             className={"suggestion-item" + ((index === activeIndex) ? ' active' : '')}
-                            onMouseDown={() => {submitGuess(idol.name);}}>
+                            onMouseDown={() => {submitGuess(idol.id);}}>
                         {idol.name+ " ("+idol.group+")"}
                         </li>
                     ))}
