@@ -2,8 +2,10 @@ import './Kpopdle.css';
 import { useEffect, useState, useRef } from 'react';
 import Confetti from 'react-confetti';
 
+const getAge = birthDate => Math.floor((new Date() - new Date(birthDate).getTime()) / 3.15576e+10)
+
 function GuessLabels({mode}) {
-    const fields = ["Name", "Group", "Birth Year", "Nationality", "Company"];
+    const fields = ["Name", "Group", "Age", "Nationality", "Company"];
     if (mode === 'All') {
         fields.push("Group Type");
     }
@@ -20,22 +22,24 @@ function GuessLabels({mode}) {
 
 function GuessField({field, value, answerValue}){
     let classes = '';
+    let displayValue = value;
     if(value === answerValue){
         classes = ' correct';
     }
     else{
         classes = ' incorrect';
-        if(field === 'birthYear' && value){
+        if(field === 'birthDate' && value){
             classes += value < answerValue ? ' year-up' : ' year-down';
+            displayValue = getAge(value);
         }
     }
     return(
-        <div className={'guess-item'+classes}>{value}</div>
+        <div className={'guess-item'+classes}>{displayValue}</div>
     );
 }
 
 function Guess({ guess, answer, mode }) {
-    const fields = ["name", "group", "birthYear", "nationality", "company"];
+    const fields = ["name", "group", "birthDate", "nationality", "company"];
     if (mode === 'All') {
         fields.push("groupType");
     }
