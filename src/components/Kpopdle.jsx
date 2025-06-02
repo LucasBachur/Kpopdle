@@ -29,7 +29,7 @@ function GuessField({field, value, answerValue}){
     else{
         classes = ' incorrect';
         if(field === 'birthDate' && value){
-            classes += value < answerValue ? ' year-up' : ' year-down';
+            classes += value > answerValue ? ' year-up' : ' year-down';
             displayValue = getAge(value);
         }
     }
