@@ -99,6 +99,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 2px;
 }
 
 .guess-container {
@@ -119,6 +120,7 @@
 }
 
 .guess-item{
+    margin:2px;
     outline: 1px solid black;
     border-radius: 17px;
     padding: 10px;
