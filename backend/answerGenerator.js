@@ -1,14 +1,15 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import process from 'process';
+const fs = require('fs');
+const path = require('path');
 
-const isTest = process.argv[2] === 'Test';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const logPath = path.join(__dirname, '/logs/errorLog.log');
-const idolDataPath = path.join(__dirname, '/src/data/idols.json');
-const answersPath = path.join(__dirname, `/src/data/dailyAnswers${isTest?'Test':''}.json`);
+const idolDataPath = path.join(__dirname, '/data/idols.json');
+const answersPath = path.join(__dirname, 'data/dailyAnswers.json');
+const templatePath = path.join(__dirname, 'data/dailyAnswers.template.json');
+
+if (!fs.existsSync(answersPath)) {
+  fs.copyFileSync(templatePath, answersPath);
+}
+
 const PERCENTILE = 0.1; // 10% of the array
 const MAX_UNUSED_DAYS_FACTOR = 1.7; // Multiplier for the number of idols in the dataset, 
                                     // to determine the maximun number of days it can be unused
@@ -134,43 +135,3 @@ function generateAnswers(targetDate = null){
 }
 
 generateAnswers(); // Generate today's answers
-
-
-/*const year = "2024";
-const startDate = new Date(`${year}-01-23`);
-const endDate = new Date(`${year}-01-31`);
-
-for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
-    const dateStr = date.toISOString().slice(0, 10);
-    generateAnswers(dateStr);
-}*/
-
-/*function countFrequenciesByMode(filePath) {
-  const answersData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-
-  const modes = ['All', 'Girl Group', 'Boy Group'];
-
-  for (const mode of modes) {
-    const freq = {};
-
-    // Count how many times each ID appears
-    for (const entry of answersData[mode]) {
-      const id = entry.answerId;
-      freq[id] = (freq[id] || 0) + 1;
-    }
-
-    // Build a distribution: how many IDs have x appearances
-    const distribution = {};
-    for (const count of Object.values(freq)) {
-      distribution[count] = (distribution[count] || 0) + 1;
-    }
-
-    // Print the distribution
-    console.log(`\nFrequency distribution for mode: ${mode}`);
-    const sortedCounts = Object.keys(distribution).map(Number).sort((a, b) => a - b);
-    for (const count of sortedCounts) {
-      console.log(`  ${distribution[count]} id(s) appear exactly ${count} time(s)`);
-    }
-  }
-}
-countFrequenciesByMode(answersPath);*/

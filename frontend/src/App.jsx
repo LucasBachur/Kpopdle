@@ -1,6 +1,5 @@
 import './App.css'
-import idols from './data/idols.json'
-import answers from './data/dailyAnswers.json'
+import { fetchDataBackend } from '../api.js'
 import ModeSelector from './components/ModeSelector'
 import Kpopdle from './components/Kpopdle'
 import { useState, useEffect } from 'react';
@@ -42,14 +41,38 @@ const cleanupOldLocalStorage = () => {
 
 function App() {
   const [mode, setMode] = useState('All');
-  let idolData = idols;
+  const [idolData, setIdolData] = useState([]);
+  const [answers, setAnswers] = useState({ All: [], "Girl Group": [], "Boy Group": [] });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    cleanupOldLocalStorage();
+  }, []);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const idols = await fetchDataBackend('idols');
+        const dailyAnswers = await fetchDataBackend('answers');
+        setIdolData(idols);
+        setAnswers(dailyAnswers);
+      } catch (err) {
+        console.error('Failed to fetch data:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+
   const todaysAnswer = answers[mode].filter(entry => entry.date === todayArg());
   const todaysAnswerData = todaysAnswer.map(answerEntry =>
     idolData.find(idol => idol.id === answerEntry.answerId)
   )[0];
-  useEffect(() => {
-    cleanupOldLocalStorage();
-  }, []);
+
   return (
     <>
       <ModeSelector setMode={setMode} currentMode={mode}/>
