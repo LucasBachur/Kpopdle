@@ -4,6 +4,24 @@ import Confetti from 'react-confetti';
 
 const getAge = birthDate => Math.floor((new Date() - new Date(birthDate).getTime()) / 3.15576e+10)
 
+function todayArg(withTime = false) {
+  const options = {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    year : 'numeric',
+    month : 'numeric',
+    day : 'numeric'
+  };
+
+  if (withTime) {
+    options.hour12 = false,
+    options.hour = '2-digit';
+    options.minute = '2-digit';
+    options.second = '2-digit';
+  }
+
+  return new Date().toLocaleString('en-CA', options);
+}
+
 function GuessLabels({mode}) {
     const fields = ["Name", "Group", "Age", "Nationality", "Company"];
     if (mode === 'All') {
@@ -177,7 +195,7 @@ function Kpopdle({ idolData, answer, mode}) {
     let idolDataForMode = (mode != 'All') ? idolData.filter(idol => idol.groupType === mode) : idolData;
 
     const getStorageKey = (mode) => {
-        const today = new Date().toISOString().split('T')[0]; // e.g., "2025-05-28"
+        const today = todayArg(); // e.g., "2025-05-28"
         return `kpopdle_guesses_${mode}_${today}`;
     };
 

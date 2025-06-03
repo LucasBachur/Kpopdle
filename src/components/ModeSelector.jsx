@@ -32,7 +32,10 @@ return (
                         setHovered(false);
                     }}
                 >
-                    {m.text}
+                    <div className="button-main-text">{m.text}</div>
+                    {(m.mode === 'Boy Group' || m.mode === 'Girl Group') && (
+                        <div className="button-subtext">{m.mode}</div>
+                    )}
                 </button>
             ))}
         </div>

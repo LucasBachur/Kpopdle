@@ -10,13 +10,25 @@
   gap: 8px;
 }
 
+.button-main-text {
+  font-size: 3.2rem;
+  font-weight: bold;
+}
+
+.button-subtext {
+  font-size: 1.5rem;
+  font-weight: normal;
+  line-height: 1.2;
+  margin-top: 4px;
+}
+
 .mode-button {
-  padding: 30px 40px;
+  padding: 20px 10px;
   border-color: black;
   border-radius: 8px;
   font-size: 3.2rem;
   font-weight: bold;
-  min-width: 60px;
+  width: 160px;
   opacity: 0;
   transform: translateX(10px);
   pointer-events: none;
@@ -35,14 +47,12 @@
   pointer-events: auto;
 }
 
-/* On hover, reveal all */
 .mode-button.visible {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
 }
 
-/* Optional: stagger animation */
 .mode-button:nth-child(1).visible {
   transition-delay: 0.1s;
 }
