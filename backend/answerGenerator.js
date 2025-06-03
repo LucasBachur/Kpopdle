@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const logPath = path.join(__dirname, '/logs/errorLog.log');
 const idolDataPath = path.join(__dirname, '/data/idols.json');
 const answersPath = path.join(__dirname, 'data/dailyAnswers.json');
 const templatePath = path.join(__dirname, 'data/dailyAnswers.template.json');
@@ -35,12 +34,7 @@ function todayArg(withTime = false) {
 
 function logError(message) {
     const timestamp = todayArg(true);
-    const fullMessage = `[${timestamp}] ${message}\n`;
-    try {
-        fs.appendFileSync(logPath, fullMessage);
-    } catch (fileWriteError) {
-        console.error(`[${timestamp}] Failed to write to error log: ${fileWriteError.message}`);
-    }
+    console.error(`[${timestamp}] ${message}`);
 }
 
 function readJSON(filePath) {
