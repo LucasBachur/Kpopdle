@@ -1,5 +1,20 @@
 {
-  "All": [],
-  "Girl Group": [],
-  "Boy Group": []
+  "All": [
+    {
+      "date": "2025-06-02",
+      "answerId": 59
+    }
+  ],
+  "Girl Group": [
+    {
+      "date": "2025-06-02",
+      "answerId": 239
+    }
+  ],
+  "Boy Group": [
+    {
+      "date": "2025-06-02",
+      "answerId": 191
+    }
+  ]
 }
