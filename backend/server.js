@@ -3,13 +3,19 @@ const cors = require('cors');
 const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { SECRET_KEY, PORT, ALLOWED_ORIGIN } = require('./config');
+const { SECRET_KEY, PORT, ALLOWED_ORIGINS } = require('./config');
 const { getFromDB, closeClient } = require('./db');
 
 const app = express();
-app.use(cors(
-    {origin: ALLOWED_ORIGIN}
-));
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 
 app.get('/answers', async (req, res) => {
   const idols = await getFromDB('dailyAnswers');
