@@ -68,7 +68,7 @@ function App() {
 
   if (loading) return <div>Loading...</div>;
 
-  const todaysAnswer = answers[mode].filter(entry => entry.date === todayArg());
+  const todaysAnswer = answers.filter(entry => entry.date === todayArg() && entry.mode === mode);
   const todaysAnswerData = todaysAnswer.map(answerEntry =>
     idolData.find(idol => idol.id === answerEntry.answerId)
   )[0];
