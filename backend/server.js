@@ -17,6 +17,10 @@ app.use(cors({
   }
 }));
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 app.get('/answers', async (req, res) => {
   const idols = await getFromDB('dailyAnswers');
   res.json(idols);
@@ -40,7 +44,7 @@ app.get('/generate', (req, res) => {
         res.send('Answer generated!');
     });
 });
-
+console.log('Starting server...');
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 process.on('SIGINT', async () => {
