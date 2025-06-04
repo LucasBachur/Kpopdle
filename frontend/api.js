@@ -1,4 +1,5 @@
-const BASE_URL = import.meta.env.API_URL || 'http://localhost:3001';
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 export async function fetchDataBackend(endpoint) {
     try {
         const response = await fetch(`${BASE_URL}/${endpoint}`);

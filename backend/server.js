@@ -4,7 +4,7 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const { SECRET_KEY, PORT, ALLOWED_ORIGIN } = require('./config');
-const { getFromDB } = require('./db');
+const { getFromDB, closeClient } = require('./db');
 
 const app = express();
 app.use(cors(
@@ -36,3 +36,10 @@ app.get('/generate', (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+process.on('SIGINT', async () => {
+  console.log('SIGINT received, closing MongoDB connection...');
+  await closeClient();
+  console.log('MongoDB connection closed. Exiting.');
+  process.exit(0);
+});
