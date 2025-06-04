@@ -1,13 +1,6 @@
 const fs = require('fs');
-const path = require('path');
+const { getFromDB, saveAnswers } = require('./db');
 
-const idolDataPath = path.join(__dirname, '/data/idols.json');
-const answersPath = path.join(__dirname, 'data/dailyAnswers.json');
-const templatePath = path.join(__dirname, 'data/dailyAnswers.template.json');
-
-if (!fs.existsSync(answersPath)) {
-  fs.copyFileSync(templatePath, answersPath);
-}
 
 const PERCENTILE = 0.1; // 10% of the array
 const MAX_UNUSED_DAYS_FACTOR = 1.7; // Multiplier for the number of idols in the dataset, 
@@ -60,6 +53,7 @@ function datediff(date1, date2) {
 }
 
 function generateAnswerForMode(mode, idolData, answers, today, todayAllId) {
+    const modeAnswers = answers.filter(entry => entry.mode === mode);
     const relevantIdols = idolData.filter(idol =>
         (mode === 'All' || idol.groupType === mode)
     );
@@ -68,11 +62,11 @@ function generateAnswerForMode(mode, idolData, answers, today, todayAllId) {
         idolsWithId[idol.id] = {id: idol.id, group:idol.group, lastUsed: null};
     });
     const recentGroups = new Set(
-        answers[mode]
+        modeAnswers
         .slice(-GROUP_REPEAT_BLOCK_DAYS)
         .map(entry => idolsWithId[entry.answerId].group)
     );
-    for (const {date, answerId} of answers[mode]) {
+    for (const {date, answerId} of modeAnswers) {
         if (date === today){
             throw new Error(`The answer for (${today}) in the mode ${mode} is already set to ${answerId}.`);
         }
@@ -100,29 +94,31 @@ function generateAnswerForMode(mode, idolData, answers, today, todayAllId) {
         newEntryId = pickRandomFromTop(idolsWithId).id;
     }
     const newEntry = {
+        mode: mode,
         date: today, // format: YYYY-MM-DD
         answerId: newEntryId
     };
     return newEntry;
 }
 
-function generateAnswers(targetDate = null){
+async function generateAnswers(targetDate = null){
     try {
         const today = targetDate ?? todayArg().slice(0, 10); // format: YYYY-MM-DD
-        const idolData = readJSON(idolDataPath);
-        const answers = readJSON(answersPath);
-        let todayAllId = null;
+        const idolData = await getFromDB('idols');
+        const answers = await getFromDB('dailyAnswers');
         
+        let todayAllId = null;
+        let newEntries = [];
+
         const modes = ['All', 'Girl Group', 'Boy Group'];
         for (const mode of modes) {
             const entry = generateAnswerForMode(mode, idolData, answers, today, todayAllId);
             if (mode === 'All') {
                 todayAllId = entry.answerId;
             }
-            answers[mode].push(entry);
+            newEntries.push(entry);
         }
-        
-        fs.writeFileSync(answersPath, JSON.stringify(answers, null, 2));
+        await saveAnswers(newEntries);
     } catch (error) {
         logError(error.message);
     }
