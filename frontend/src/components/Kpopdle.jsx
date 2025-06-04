@@ -41,6 +41,9 @@ function GuessLabels({mode}) {
 function GuessField({field, value, answerValue}){
     let classes = '';
     let displayValue = value;
+    if(field === 'birthDate' && value){
+        displayValue = getAge(value);
+    }
     if(value === answerValue){
         classes = ' correct';
     }
@@ -48,7 +51,6 @@ function GuessField({field, value, answerValue}){
         classes = ' incorrect';
         if(field === 'birthDate' && value){
             classes += value > answerValue ? ' year-up' : ' year-down';
-            displayValue = getAge(value);
         }
     }
     return(
