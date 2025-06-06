@@ -23,15 +23,13 @@ function todayArg(withTime = false) {
 }
 
 const cleanupOldLocalStorage = () => {
-  const todayStr = new Date().toISOString().split('T')[0]; // e.g. "2025-05-28"
+  const todayStr = todayArg(); // e.g. "2025-05-28"
   const prefix = 'kpopdle_guesses_';
-
   Object.keys(localStorage).forEach(key => {
     if (key.startsWith(prefix)) {
       // Extract the date part from the key (last part after last '_')
       const parts = key.split('_');
       const dateStr = parts[parts.length - 1]; // YYYY-MM-DD
-
       if (dateStr !== todayStr) {
         localStorage.removeItem(key);
       }

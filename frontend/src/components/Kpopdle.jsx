@@ -42,16 +42,17 @@ function GuessField({field, value, answerValue}){
     let classes = '';
     let displayValue = value;
     if(field === 'birthDate' && value){
-        displayValue = getAge(value);
-    }
-    if(value === answerValue){
-        classes = ' correct';
-    }
-    else{
-        classes = ' incorrect';
-        if(field === 'birthDate' && value){
+        if(getAge(value) === getAge(answerValue)){
+            classes = ' correct';
+        }
+        else{
+            classes = ' incorrect';
             classes += value > answerValue ? ' year-up' : ' year-down';
         }
+        displayValue = getAge(value);
+    }
+    else{
+        classes = (value === answerValue) ? ' correct' : ' incorrect';
     }
     return(
         <div className={'guess-item'+classes}>{displayValue}</div>
