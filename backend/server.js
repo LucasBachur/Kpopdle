@@ -35,12 +35,15 @@ app.get('/generate', (req, res) => {
     if (req.query.key !== SECRET_KEY) {
         return res.status(403).send('Forbidden');
     }
+    console.log('Received request to generate answers');
+    res.send('Started generating answer');
     exec('node answerGenerator.js', (error, stdout, stderr) => {
         if (error) {
             console.error(`Error: ${error.message}`);
             return res.status(500).send('Error running script');
         }
         if (stderr) console.error(`stderr: ${stderr}`);
+        console.log('Answer generation script finished successfully');
         res.send('Answer generated!');
     });
 });
