@@ -100,7 +100,9 @@ function GuessInput({idolDataForMode, guesses, victory, setGuesses, setVictory, 
     const suggestionRefs = useRef([]);
 
     let filteredSuggestions = idolDataForMode.filter(idol =>
-        normalizeString(idol.name).includes(normalizeString(inputValue)) && !guesses.some(guess => guess.id == idol.id)
+        (normalizeString(idol.name).includes(normalizeString(inputValue))
+        || normalizeString(idol.group).includes(normalizeString(inputValue)))
+         && !guesses.some(guess => guess.id == idol.id)
     );
 
     useEffect(() => {
