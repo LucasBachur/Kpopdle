@@ -79,6 +79,13 @@
   height: 0;
 }
 
+@media (prefers-color-scheme:light){
+  .suggestion-box{
+    background-color: #f0f0f0; /* Light mode background */
+    color: black; /* Light mode text color */
+  }
+}
+
 .suggestion-item {
   padding: 8px;
   margin:0;
