@@ -20,6 +20,7 @@ return (
         className="mode-container"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        onClick={() => setHovered(!hovered)}
     >
         <div className="mode-inner">
             {sortedModes.map((m) => (

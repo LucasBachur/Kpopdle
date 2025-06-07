@@ -1,34 +1,46 @@
+@media (max-width: 1400px) {
+  .mode-inner {
+    flex-direction: column-reverse;
+  }
+}
+
 .mode-container {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 1vw;
+  right: 1vw;
   z-index: 1000;
 }
 
 .mode-inner {
   display: flex;
-  gap: 8px;
+  gap: 0.3vw;
 }
 
 .button-main-text {
-  font-size: 3.2rem;
+  font-size: clamp(1rem, 3.2vw, 3.2rem);
   font-weight: bold;
 }
 
 .button-subtext {
-  font-size: 1.5rem;
+  font-size: clamp(0.5rem, 1.5vw, 1.5rem);
   font-weight: normal;
   line-height: 1.2;
   margin-top: 4px;
 }
 
 .mode-button {
-  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex: 1 1 auto;
+  width: 8vw;
+  padding: 0.8vw 0.8vw;
   border-color: black;
-  border-radius: 8px;
+  border-radius: 0.8vw;
   font-size: 3.2rem;
   font-weight: bold;
-  width: 160px;
   opacity: 0;
   transform: translateX(10px);
   pointer-events: none;

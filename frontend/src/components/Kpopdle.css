@@ -2,15 +2,23 @@
   position: relative;
   margin: 0 auto;
   width: 100%;
-  max-width: 1000px; /* or whatever width works for your layout */
-  padding-left: 16px;
-  padding-right: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+@media (max-width: 800px) {
+  .label-item,
+  .guess-item {
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
 .input-container {
+  max-width: 300px;
+  width: 50%;
   position: sticky;
   top: 20px;
   z-index: 20;
@@ -25,12 +33,12 @@
   padding: 12px 16px;
   border: 2px solid #e0e0e0; /* Light gray border */
   border-radius: 8px; /* Rounded corners */
-  width: 300px;
-  font-size: 16px;
+  width: 100%;
+  font-size: clamp(5px, 3vw, 16px);
   outline: none; /* Removes default focus outline */
   transition: all 0.3s ease; /* Smooth hover/focus effects */
   z-index: 10;
-  margin-bottom: 15px;
+  margin-bottom: 1.5vw;
 }
 
 .input-field:hover {
@@ -48,7 +56,7 @@
   padding: 8px;
   background-color: #242424;
   list-style: none;
-  width: 300px;
+  width: 100%;
   max-height: 200px;
   overflow-y: auto;
   z-index: 10;
@@ -90,22 +98,34 @@
     margin-bottom: 10px;
 }
 
+.label-item,
+.guess-item {
+  flex: 1 1 100px;
+  min-width: 20px;
+  max-width: 100px;
+  outline: 1px solid black;
+  border-radius: 1vw;
+  padding: 0.5vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px;
+  font-size: clamp(5px, 2.4vw, 16px);
+}
+
 .label-item {
-    background-color: #9565dd;
-    outline: 1px solid black;
-    border-radius: 17px;
-    padding: 10px;
-    width: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 2px;
+  background-color: #9565dd;
+}
+
+.guess-list {
+  width: 100%;
 }
 
 .guess-container {
   display: flex;
   padding-top: 10px;
   animation: fadePop 1s ease;
+  justify-content: center; /* Center items within the row */
 }
 
 @keyframes fadePop {
@@ -120,16 +140,8 @@
 }
 
 .guess-item{
-    margin:2px;
-    outline: 1px solid black;
-    border-radius: 17px;
-    padding: 10px;
-    width: 100px;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+  position: relative;
+  aspect-ratio: 1;
 }
 
 .guess-item.correct {
@@ -144,7 +156,7 @@
 .guess-item.year-down::after {
   position: absolute;
   opacity: 0.2;
-  font-size: 120px;
+  font-size: clamp(10px, 13vw, 120px);
   pointer-events: none;
   left: 50%;
   transform: translate(-50%, -50%);

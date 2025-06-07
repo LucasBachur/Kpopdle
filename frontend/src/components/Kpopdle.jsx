@@ -76,7 +76,7 @@ function Guess({ guess, answer, mode }) {
 
 function GuessList({ guesses, answer, mode }) {
     return (
-        <div>
+        <div className='guess-list'>
             <GuessLabels mode={mode}/>
             {guesses.map((guess, index) => {
                 return <Guess key={index} guess={guess} answer={answer} mode={mode}/>;
