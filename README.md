@@ -1,12 +1,38 @@
-# React + Vite
+# K-popdle 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**K-popdle** is a daily guessing game inspired by Wordle, where players guess K-pop idols based on clues. It features three modes: all idols, girl groups, and boy groups.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Live Demo
 
-## Expanding the ESLint configuration
+[https://kpopdle.onrender.com](https://kpopdle.onrender.com)  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 📁 Project Structure
+
+- `frontend/` — React frontend hosted as a static site on Render  
+- `backend/` — Express.js API to serve idol data and generate daily answers  
+- `db.js` — MongoDB Atlas connection logic  
+- `answerGenerator.js` — Script that selects daily answers based on rules  
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React, Vite
+- **Backend**: Node.js, Express
+- **Database**: MongoDB Atlas
+- **Hosting**: Render (both frontend and backend)
+- **Cron**: [cron-job.org](https://cron-job.org) to trigger answer generation
+
+---
+
+## 📬 Contact
+
+- [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/lucas-bachur-76a153208/)
+- [![Discord](https://img.shields.io/badge/Discord-5865F2?style=flat&logo=discord&logoColor=white)](https://discordapp.com/users/301895242074947585)
+- [![GitHub](https://img.shields.io/badge/GitHub-100000?style=flat&logo=github&logoColor=white)](https://github.com/LucasBachur)
+- Email: lucasbachur11@gmail.com
+
