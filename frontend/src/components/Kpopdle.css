@@ -79,6 +79,13 @@
   height: 0;
 }
 
+@media (prefers-color-scheme:light){
+  .suggestion-box{
+    background-color: #f0f0f0; /* Light mode background */
+    color: black; /* Light mode text color */
+  }
+}
+
 .suggestion-item {
   padding: 8px;
   margin:0;
@@ -115,6 +122,12 @@
 
 .label-item {
   background-color: #9565dd;
+}
+
+.label-item.empty-label {
+  background: transparent;
+  outline: none;
+  border: none;
 }
 
 .guess-list {
@@ -174,4 +187,15 @@
 .guess-item.year-down::after {
   content: '▼';
   top:55%;
+}
+
+.guess-item img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1vw;
+  z-index: 0;
 }

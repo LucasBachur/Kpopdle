@@ -23,14 +23,14 @@ function todayArg(withTime = false) {
 }
 
 function GuessLabels({mode}) {
-    const fields = ["Name", "Group", "Age", "Nationality", "Company"];
+    const fields = ["", "Name", "Group", "Age", "Nationality", "Company"];
     if (mode === 'All') {
         fields.push("Group Type");
     }
     return (
         <div className="guess-container labels-row">
             {fields.map(field => (
-                <div key={field} className="label-item">
+                <div key={field} className={`label-item${field === "" ? " empty-label" : ""}`}>
                     {field}
                 </div>
             ))}
@@ -67,6 +67,9 @@ function Guess({ guess, answer, mode }) {
 
     return (
         <div className='guess-container'>
+            <div className='guess-item'>
+                <img src={`/idol-images/${guess.id}.webp`} />
+            </div>
             {fields.map((field) => (
             <GuessField key={field} field={field} value={guess[field]} answerValue={answer[field]}/>
             ))}
@@ -100,7 +103,9 @@ function GuessInput({idolDataForMode, guesses, victory, setGuesses, setVictory, 
     const suggestionRefs = useRef([]);
 
     let filteredSuggestions = idolDataForMode.filter(idol =>
-        normalizeString(idol.name).includes(normalizeString(inputValue)) && !guesses.some(guess => guess.id == idol.id)
+        (normalizeString(idol.name).includes(normalizeString(inputValue))
+        || normalizeString(idol.group).includes(normalizeString(inputValue)))
+         && !guesses.some(guess => guess.id == idol.id)
     );
 
     useEffect(() => {
