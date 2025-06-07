@@ -124,6 +124,12 @@
   background-color: #9565dd;
 }
 
+.label-item.empty-label {
+  background: transparent;
+  outline: none;
+  border: none;
+}
+
 .guess-list {
   width: 100%;
 }
@@ -181,4 +187,15 @@
 .guess-item.year-down::after {
   content: '▼';
   top:55%;
+}
+
+.guess-item img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1vw;
+  z-index: 0;
 }
