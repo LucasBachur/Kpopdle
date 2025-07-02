@@ -2,6 +2,7 @@ import './App.css'
 import { fetchDataBackend } from '../api.js'
 import ModeSelector from './components/ModeSelector'
 import Kpopdle from './components/Kpopdle'
+import LoadingScreen from './components/LoadingScreen';
 import { useState, useEffect } from 'react';
 
 function todayArg(withTime = false) {
@@ -64,7 +65,7 @@ function App() {
     fetchData();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingScreen />;
 
   const todaysAnswer = answers.filter(entry => entry.date === todayArg() && entry.mode === mode);
   const todaysAnswerData = todaysAnswer.map(answerEntry =>
