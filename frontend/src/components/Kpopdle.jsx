@@ -96,7 +96,7 @@ function normalizeString (str){
         .replace(/[\u0300-\u036f]/g, '');
 };
 
-function GuessInput({idolDataForMode, guesses, victory, setGuesses, setVictory, answer}) {
+function GuessInput({idolDataForMode, guesses, victory, setGuesses, setVictory, answer, registerGame}) {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
     const [inputValue, setInputValue] = useState('');
@@ -137,6 +137,9 @@ function GuessInput({idolDataForMode, guesses, victory, setGuesses, setVictory, 
         }
         if (guessedIdol && !guesses.some(guess => guess.id === guessedIdol.id)) {
             setVictory(guessedIdol.id === answer.id);
+            if (guessedIdol.id === answer.id) {
+                registerGame(guesses.length + 1);
+            }
             setGuesses([...guesses, guessedIdol]);
             setInputValue('');
             setShowSuggestions(false);
@@ -192,13 +195,108 @@ function GuessInput({idolDataForMode, guesses, victory, setGuesses, setVictory, 
         </div>
     );
 }
+
+function useStats(mode) {
+  const initialStats = {
+    gamesPlayed: 0,
+    currentStreak: 0,
+    maxStreak: 0,
+    lastPlayedDate: null,
+    guessDistribution: { 1: 0, 2: 2, 3: 5, 4: 10, "5+": 4 }
+  };
+
+  const storageKey = `kpopdleStats_${mode}`;
+
+  const [stats, setStats] = useState(() => {
+    const saved = localStorage.getItem(storageKey);
+    return saved ? JSON.parse(saved) : initialStats;
+  });
+
+  function registerGame(attempts) {
+    setStats(prev => {
+      const today = todayArg();
+      let { gamesPlayed, currentStreak, maxStreak, lastPlayedDate, guessDistribution } = prev;
+
+      gamesPlayed++;
+
+      // streak logic
+      if (lastPlayedDate) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yStr = yesterday.toLocaleDateString("en-CA", { timeZone: "America/Argentina/Buenos_Aires" });
+        if (lastPlayedDate === yStr) {
+          currentStreak++;
+        } else {
+          currentStreak = 1;
+        }
+      } else {
+        currentStreak = 1;
+      }
+      maxStreak = Math.max(maxStreak, currentStreak);
+
+      // attempts distribution
+      const key = attempts <= 4 ? attempts : "5+";
+      guessDistribution = { ...guessDistribution, [key]: (guessDistribution[key] || 0) + 1 };
+
+      const newStats = {
+        gamesPlayed,
+        currentStreak,
+        maxStreak,
+        lastPlayedDate: today,
+        guessDistribution
+      };
+
+      localStorage.setItem(storageKey, JSON.stringify(newStats)); // 👈 guardamos acá
+      return newStats;
+    });
+  }
+
+  return { stats, registerGame };
+}
+
+function StatsModal({ stats, onClose }) {
+  const maxValue = Math.max(1,...Object.values(stats.guessDistribution));
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="close-button" onClick={onClose}>×</button>
+        
+        <h2>Stats</h2>
+        <p>Total plays: {stats.gamesPlayed}</p>
+        <p>Current Streak: {stats.currentStreak}</p>
+        <p>Max Streak: {stats.maxStreak}</p>
+        
+        <h3>Number of tries distribution:</h3>
+        <div className="distribution-container">
+          {Object.entries(stats.guessDistribution).map(([attempts, count]) => {
+            const pct = (count / maxValue) * 100;
+            return (
+                <div key={attempts} className="bar-wrapper">
+                    {count > 0 && <span className="bar-count">{count}</span>}
+                    <div
+                    className="bar"
+                    style={{ height: `${pct}%` }}
+                    title={`${count} veces`}
+                    />
+                    <span className="bar-label">{attempts}</span>
+                </div>
+            );
+        })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const defaultGuesses = [];
 
 function Kpopdle({ idolData, answer, mode}) {
 
     const [guesses, setGuesses] = useState(defaultGuesses);
     const [victory, setVictory] = useState(false);
+    const [showStats, setShowStats] = useState(false);
     const bottomRef = useRef(null);
+    const { stats, registerGame } = useStats(mode);
 
     let idolDataForMode = (mode != 'All') ? idolData.filter(idol => idol.groupType === mode) : idolData;
 
@@ -247,20 +345,28 @@ function Kpopdle({ idolData, answer, mode}) {
                     <Confetti width={window.innerWidth} height={window.innerHeight} />
                 </div>
             )}
-            <GuessInput 
-                idolDataForMode={idolDataForMode}
-                guesses={guesses}
-                victory={victory}
-                setGuesses={setGuesses}
-                setVictory={setVictory}
-                answer={answer}
-            />
+
+            <div className="top-bar">
+                <GuessInput 
+                    idolDataForMode={idolDataForMode}
+                    guesses={guesses}
+                    victory={victory}
+                    setGuesses={setGuesses}
+                    setVictory={setVictory}
+                    answer={answer}
+                    registerGame={registerGame}
+                />
+                <button className="stats-button" onClick={() => setShowStats(true)}>📊</button>
+            </div>
             <GuessList 
                 guesses={guesses} 
                 answer={answer}
                 mode={mode}
             />
             <div ref={bottomRef} />
+            {showStats && (
+                <StatsModal stats={stats} onClose={() => setShowStats(false)} />
+            )}
         </div>
     );
 }

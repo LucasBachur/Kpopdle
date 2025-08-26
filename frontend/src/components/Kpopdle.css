@@ -16,12 +16,22 @@
   }
 }
 
-.input-container {
-  max-width: 300px;
+.top-bar {
+  display: flex;          /* pone hijos en fila */
+  align-items: center;    /* centrados verticalmente */
+  gap: 10px;              /* espacio entre input y palabra */
+  max-width: 400px;
   width: 50%;
   position: sticky;
   top: 20px;
   z-index: 20;
+}
+
+.top-bar > *:first-child {
+  flex: 1;                /* el input crece y ocupa el resto */
+}
+
+.input-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -56,7 +66,7 @@
   padding: 8px;
   background-color: #242424;
   list-style: none;
-  width: 100%;
+  width: 95%;
   max-height: 200px;
   overflow-y: auto;
   z-index: 10;
@@ -98,6 +108,104 @@
 
 .suggestion-item.active {
   background-color: #726d6d;
+}
+
+.stats-button {
+  background: none;
+  border: none;         /* nada de cajas */
+  cursor: pointer;
+  margin-bottom: 1.5vw;
+  padding: 6px 12px;
+  font-size: clamp(15px, 2vw, 20px);      /* agranda el emoji */
+  transition: text-shadow 0.2s ease;
+}
+
+.stats-button:hover {
+  text-shadow: 
+    0 0 2px #6e45e2,
+    0 0 5px #6e45e2;
+}
+
+.close-button {
+  position: absolute;   /* se coloca dentro del modal */
+  top: 1px;
+  right: 1px;
+  background: #dac2fe;
+  border: none;
+  font-size: clamp(15px, 2vw, 35px);  
+  border: 3px solid black;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  color: black;
+  transition: color 0.2s ease;
+  line-height: 1;      /* elimina espacio vertical extra */
+  padding: 0.1px 6px;          /* saca relleno interno */
+}
+
+.close-button:hover {
+  color: #6e45e2;  /* o el color de tu tema */
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200; 
+  pointer-events: auto;
+}
+
+.modal-content {
+  position:relative;
+  background: #dac2fe;
+  padding: 24px 16px 16px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  border: black 2px solid;
+  z-index: 200;
+}
+
+.distribution-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  margin-top: 16px;
+  height: 30vh; /* altura relativa a la pantalla */
+  max-height: 200px; /* evita que se vuelva gigante en pantallas grandes */
+  gap: 8px;
+}
+
+.bar-wrapper {
+  flex: 1;
+  height: 100%;        /* 👈 clave: hereda la altura del contenedor */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;  /* alinea la barra al piso */
+  align-items: center;
+}
+
+.bar {
+  width: 60%; /* que escale según el ancho del wrapper */
+  max-width: 30px;
+  background-color: black;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+}
+
+.bar-label {
+  margin-top: 4px;
+  font-size: clamp(10px, 2vw, 14px); /* responsive */
+}
+
+.bar-count {
+  font-size: 12px;
+  margin-bottom: 4px;
+  opacity: 0.8;
 }
 
 .labels-row {
