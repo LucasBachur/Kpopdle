@@ -154,13 +154,14 @@ function GuessInput({dataForMode, guesses, victory, setGuesses, setVictory, answ
 
 function SongGuess({songData, answer, mode}) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0); // 0 a 100 (%)
   const [guesses, setGuesses] = useState([]);
-  const [maxTime, setMaxTime] = useState(1); // límite de segundos permitido
   const [victory, setVictory] = useState(false);
   const [volume, setVolume] = useState(1); // volumen inicial al máximo (1)
   const audioRef = useRef(null);
   const bottomRef = useRef(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
 
   // Definimos la progresión de tiempo
   const timeUnlocks = [1, 2, 4, 7, 11, 16];
@@ -180,7 +181,7 @@ function SongGuess({songData, answer, mode}) {
       audio.pause();
     } else {
       // Si está en pausa en un punto > maxTime, lo llevamos al inicio
-      if (audio.currentTime > maxTime) {
+      if (audio.currentTime > duration) {
         audio.currentTime = 0;
       }
       audio.play();
@@ -195,27 +196,6 @@ function SongGuess({songData, answer, mode}) {
       audioRef.current.volume = newVolume;
     }
   };
-
-  // Evitar que el audio supere el límite de tiempo
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const checkLimit = () => {
-      if (audio.currentTime >= maxTime) {
-        audio.pause();
-        setIsPlaying(false);
-      }
-      setProgress((audio.currentTime / maxTime) * 100 || 0);
-    };
-
-    audio.addEventListener("timeupdate", checkLimit);
-    audio.addEventListener("ended", () => setIsPlaying(false));
-
-    return () => {
-      audio.removeEventListener("timeupdate", checkLimit);
-    };
-  }, [maxTime]);
 
   useEffect(() => {
     const key = getStorageKey(mode);
@@ -243,20 +223,55 @@ function SongGuess({songData, answer, mode}) {
           localStorage.setItem(key, JSON.stringify(guesses));
       }
       const nextLimit = timeUnlocks[guesses.length];
-      if (nextLimit && !victory) setMaxTime(nextLimit);
-      else setMaxTime(timeUnlocks[timeUnlocks.length - 1]);
+      if (nextLimit && !victory) setDuration(nextLimit);
+      else setDuration(timeUnlocks[timeUnlocks.length - 1]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guesses]);
 
-  function progressAudio(){
+  useEffect(() => {
     const audio = audioRef.current;
-    const nextLimit = timeUnlocks[guesses.length + 1];
-    if (nextLimit) setMaxTime(nextLimit);
+    if (!audio) return;
+
+    const updateTime = () => setCurrentTime(audio.currentTime);
+
+    audio.addEventListener('timeupdate', updateTime);
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateTime);
+    };
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const checkLimit = () => {
+      if (audio.currentTime >= duration) {
+        audio.pause();
+        audio.currentTime = 0; // 🔄 vuelve al inicio
+        setIsPlaying(false);
+      }
+    };
+
+    audio.addEventListener("timeupdate", checkLimit);
+    return () => audio.removeEventListener("timeupdate", checkLimit);
+  }, [duration]);
+
+
+  function progressAudio() {
+    const audio = audioRef.current;
     if (audio) {
       audio.currentTime = 0;
       audio.play();
       setIsPlaying(true);
     }
+  }
+
+  function formatTime(seconds) {
+    if (isNaN(seconds)) return "0:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   }
 
   return (
@@ -272,11 +287,19 @@ function SongGuess({songData, answer, mode}) {
         <input
           type="range"
           min="0"
-          max="100"
-          value={progress}
+          max={duration || 0}
+          value={currentTime}
+          onChange={(e) => {
+            const newTime = Number(e.target.value);
+            audioRef.current.currentTime = newTime;
+            setCurrentTime(newTime);
+          }}
           className="progress-bar"
-          readOnly
         />
+        <div className="time-info">
+          <span>{formatTime(currentTime)}</span>
+          <span>{formatTime(duration)}</span>
+        </div>
 
         {/* Volumen */}
         <div className="volume-container">
