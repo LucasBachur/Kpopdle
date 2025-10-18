@@ -27,14 +27,19 @@ function normalizeString (str){
         .replace(/[\u0300-\u036f]/g, '');
 };
 
-function Guess({ guess, answer}) {
-    const song = guess.title + " - " + guess.group;
-    return (
-        <div className='guess-container'>
-            {song + ((guess.id === answer.id) ? "✅" : " ❌")}
-        </div>
-    );
+function Guess({ guess, answer }) {
+  const correct = guess.id === answer.id;
+  return (
+    <div className={`guess-card ${correct ? "correct" : "incorrect"}`}>
+      <div className="guess-text">
+        <span className="guess-title">{guess.title}</span>
+        <span className="guess-group"> – {guess.group}</span>
+      </div>
+      <div className="guess-status">{correct ? "✅" : "❌"}</div>
+    </div>
+  );
 }
+
 
 function GuessList({ guesses, answer}) {
     return (
@@ -223,6 +228,7 @@ function SongGuess({songData, answer, mode}) {
         setGuesses([]);
         setVictory(false);
     }
+    setIsPlaying(false);
   }, [mode, answer]);
 
   useEffect(() => {
@@ -255,7 +261,6 @@ function SongGuess({songData, answer, mode}) {
 
   return (
     <div className="song-guess">
-      <h1>Guess the Song 🎵</h1>
 
       <audio ref={audioRef} src={"/audios/"+answer.id+".mp3"} />
 
@@ -274,15 +279,20 @@ function SongGuess({songData, answer, mode}) {
         />
 
         {/* Volumen */}
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={volume}
-          onChange={handleVolumeChange}
-          className="volume-bar"
-        />
+        <div className="volume-container">
+          <span className="volume-icon">
+            🔊
+          </span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={volume}
+            onChange={handleVolumeChange}
+            className="volume-bar"
+          />
+        </div>
       </div>
         <>
           <div className="top-bar">
