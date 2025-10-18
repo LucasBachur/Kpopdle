@@ -12,8 +12,25 @@
   cursor: pointer;
 }
 
+.progress-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 0.5rem;
+}
+
 .progress-bar {
-  width: 300px;
+  flex: 1;
+  accent-color: #ff4081; /* podés elegir otro color */
+  cursor: pointer;
+}
+
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  width: 70px;
+  font-size: 0.85rem;
+  color: #ddd;
 }
 
 .top-bar {
@@ -23,7 +40,7 @@
   max-width: 400px;
   width: 50%;
   position: sticky;
-  top: 20px;
+  top: 145px;
   z-index: 20;
   margin-top: 2rem;   /* 👈 distancia desde arriba */
 }
@@ -111,25 +128,126 @@
   background-color: #726d6d;
 }
 
-.songGuesses {
-  margin-top: 1rem;
-}
-
-.songGuess-item {
-  color: red;
-  margin: 0.25rem 0;
-}
-
-.songGuess-correct {
-  color: green;
-}
-
 .controls {
   display: flex;
   align-items: center;
   gap: 1rem;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  position: sticky;
+  top: 20px; /* margen desde arriba */
+  z-index: 50; /* para que quede sobre las guesses */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  width: 100%; /* 👈 esto permite que la barra se expanda */
+  max-width: 600px; /* opcional, para limitarlo visualmente */
 }
 
+/* Contenedor específico para volumen */
+.volume-container {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Iconos */
+.volume-icon {
+  font-size: 1.4rem;
+  user-select: none;
+}
+
+/* Barra de volumen */
 .volume-bar {
   width: 100px;
+  appearance: none;
+  height: 6px;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
 }
+
+/* Estilo del thumb (la bolita que se arrastra) */
+.volume-bar::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: white;
+  border: 2px solid #6e45e2;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.volume-bar::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.guess-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Cada tarjeta */
+.guess-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background-color: #2b2b2b;
+  color: white;
+  border: 2px solid transparent;
+  font-weight: 500;
+  font-size: clamp(12px, 2.5vw, 16px);
+  animation: fadeIn 0.3s ease;
+  transition: transform 0.2s ease, border-color 0.3s ease;
+}
+
+.guess-card:hover {
+  transform: translateY(-2px);
+}
+
+.guess-text {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.guess-title {
+  font-weight: 600;
+}
+
+.guess-group {
+  opacity: 0.8;
+}
+
+.guess-card.correct {
+  border-color: #4caf50; /* verde */
+  background-color: rgba(76, 175, 80, 0.15);
+}
+
+.guess-card.incorrect {
+  border-color: #f44336; /* rojo */
+  background-color: rgba(244, 67, 54, 0.15);
+}
+
+.guess-status {
+  font-size: 1.2rem;
+}
+
+/* Animación simple */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
