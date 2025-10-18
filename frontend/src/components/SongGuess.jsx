@@ -237,7 +237,8 @@ function SongGuess({songData, answer, mode}) {
           localStorage.setItem(key, JSON.stringify(guesses));
       }
       const nextLimit = timeUnlocks[guesses.length];
-      if (nextLimit) setMaxTime(nextLimit);
+      if (nextLimit && !victory) setMaxTime(nextLimit);
+      else setMaxTime(timeUnlocks[timeUnlocks.length - 1]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guesses]);
 
@@ -297,6 +298,7 @@ function SongGuess({songData, answer, mode}) {
           </div>
 
           <GuessList guesses={guesses} answer={answer} />
+          <div ref={bottomRef} />
         </>
     </div>
   );
