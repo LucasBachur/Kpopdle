@@ -1,0 +1,36 @@
+.loading-screen {
+  height: 90vh;
+  width: 100%;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 1px 1px 2px black;
+}
+
+.spinner {
+  border: 6px solid #444;
+  border-top: 6px solid #f5a1c1;
+  border-radius: 50%;
+  width: 7rem;
+  height: 7rem;
+  aspect-ratio: 1 / 1;
+  animation: spin 1s linear infinite;
+}
+
+.main-message {
+  font-size: 4rem;
+  margin-bottom: 10px;
+}
+
+.sub-message {
+  font-size: 1.5rem;
+  line-height: 1.4;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
