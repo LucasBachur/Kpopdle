@@ -43,7 +43,7 @@ function Guess({ guess, answer }) {
 
 function GuessList({ guesses, answer}) {
     return (
-        <div className='guess-list'>
+        <div className='guess-list-ss'>
             {guesses.map((guess, index) => {
                 return <Guess key={index} guess={guess} answer={answer}/>;
             })}
@@ -318,7 +318,7 @@ function SongGuess({songData, answer, mode}) {
         </div>
       </div>
         <>
-          <div className="top-bar">
+          <div className="top-bar-ss">
             <GuessInput 
               dataForMode={songDataForMode}
               guesses={guesses}

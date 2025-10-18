@@ -33,19 +33,19 @@
   color: #ddd;
 }
 
-.top-bar {
+.top-bar-ss {
   display: flex;          /* pone hijos en fila */
   align-items: center;    /* centrados verticalmente */
   gap: 10px;              /* espacio entre input y palabra */
   max-width: 400px;
   width: 50%;
   position: sticky;
-  top: 145px;
+  top: 20px;
   z-index: 20;
   margin-top: 2rem;   /* 👈 distancia desde arriba */
 }
 
-.top-bar > *:first-child {
+.top-bar-ss > *:first-child {
   flex: 1;                /* el input crece y ocupa el resto */
 }
 
@@ -183,7 +183,7 @@
   transform: scale(1.2);
 }
 
-.guess-list {
+.guess-list-ss {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
