@@ -32,10 +32,10 @@ async function getFromDB(dataset) {
   }
 }
 
-async function saveAnswers(entries) {
+async function saveAnswers(collectionName, entries) {
   try {
     const db = await connectToDB();
-    const collection = db.collection('dailyAnswers');
+    const collection = db.collection(collectionName);
     await collection.insertMany(entries);
   } catch (err) {
     console.error('Error saving answers:', err);

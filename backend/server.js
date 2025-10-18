@@ -22,13 +22,23 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/answers', async (req, res) => {
-  const idols = await getFromDB('dailyAnswers');
-  res.json(idols);
+  const data = await getFromDB('dailyAnswers');
+  res.json(data);
 });
 
 app.get('/idols', async (req, res) => {
-  const idols = await getFromDB('idols');
-  res.json(idols);
+  const data = await getFromDB('idols');
+  res.json(data);
+});
+
+app.get('/songs', async (req, res) => {
+  const data = await getFromDB('songs');
+  res.json(data);
+});
+
+app.get('/answersSongs', async (req, res) => {
+  const data = await getFromDB('dailyAnswersSongs');
+  res.json(data);
 });
 
 app.get('/generate', (req, res) => {

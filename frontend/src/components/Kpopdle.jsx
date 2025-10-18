@@ -202,7 +202,7 @@ function useStats(mode) {
     currentStreak: 0,
     maxStreak: 0,
     lastPlayedDate: null,
-    guessDistribution: { 1: 0, 2: 2, 3: 5, 4: 10, "5+": 4 }
+    guessDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, "5+": 0 }
   };
 
   const storageKey = `kpopdleStats_${mode}`;
