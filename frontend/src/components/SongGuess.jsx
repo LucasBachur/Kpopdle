@@ -1,5 +1,6 @@
 import './SongGuess.css'
 import { useState, useRef, useEffect } from "react";
+import Confetti from 'react-confetti';
 
 function todayArg(withTime = false) {
   const options = {
@@ -276,6 +277,18 @@ function SongGuess({songData, answer, mode}) {
 
   return (
     <div className="song-guess">
+      {victory && (
+          <div style={{
+              position: 'fixed',
+              top: 0, left: 0,
+              width: '100vw',
+              height: '100vh',
+              pointerEvents: 'none',
+              zIndex: 9999
+          }}>
+              <Confetti width={window.innerWidth} height={window.innerHeight} />
+          </div>
+      )}
 
       <audio ref={audioRef} src={"/audios/"+answer.id+".mp3"} />
 
