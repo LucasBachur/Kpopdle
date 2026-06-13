@@ -50,11 +50,10 @@ app.get('/generate', (req, res) => {
     exec('node answerGenerator.js', (error, stdout, stderr) => {
         if (error) {
             console.error(`Error: ${error.message}`);
-            return res.status(500).send('Error running script');
+            return;
         }
         if (stderr) console.error(`stderr: ${stderr}`);
         console.log('Answer generation script finished successfully');
-        res.send('Answer generated!');
     });
 });
 console.log('Starting server...');

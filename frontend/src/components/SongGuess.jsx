@@ -1,32 +1,13 @@
 import './SongGuess.css'
 import { useState, useRef, useEffect } from "react";
 import Confetti from 'react-confetti';
+import { todayArg, useStats } from '../utils.js'
+import GuessInput from './GuessInput.jsx'
+import StatsModal from './StatsModal.jsx'
 
-function todayArg(withTime = false) {
-  const options = {
-    timeZone: 'America/Argentina/Buenos_Aires',
-    year : 'numeric',
-    month : 'numeric',
-    day : 'numeric'
-  };
 
-  if (withTime) {
-    options.hour12 = false,
-    options.hour = '2-digit';
-    options.minute = '2-digit';
-    options.second = '2-digit';
-  }
 
-  return new Date().toLocaleString('en-CA', options);
-}
-
-function normalizeString (str){
-    return str
-        .toLowerCase()
-        .replace(/[-:.\s]/g, '')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
-};
+const getStorageKey = (mode) => `kpopdle_song_guesses_${mode}_${todayArg()}`;
 
 function Guess({ guess, answer }) {
   const correct = guess.id === answer.id;
@@ -52,111 +33,14 @@ function GuessList({ guesses, answer}) {
     );
 }
 
-function GuessInput({dataForMode, guesses, victory, setGuesses, setVictory, answer, progressAudio}) {
-    const [showSuggestions, setShowSuggestions] = useState(false);
-    const [activeIndex, setActiveIndex] = useState(-1);
-    const [inputValue, setInputValue] = useState('');
-    const suggestionRefs = useRef([]);
 
-    let filteredSuggestions = dataForMode.filter(song =>
-        (normalizeString(song.title).includes(normalizeString(inputValue))
-        || normalizeString(song.group).includes(normalizeString(inputValue)))
-         && !guesses.some(guess => guess.id == song.id)
-    );
-
-    useEffect(() => {
-        setActiveIndex(-1);
-    }, [inputValue, dataForMode]);
-
-    useEffect(() => {
-        if (
-            showSuggestions &&
-            activeIndex >= 0 &&
-            suggestionRefs.current[activeIndex]
-        ) {
-            suggestionRefs.current[activeIndex].scrollIntoView({
-                behavior: 'smooth',
-                block: 'nearest',
-            });
-        }
-    }, [activeIndex, showSuggestions]);
-
-    const submitGuess = (id = null, title = null) => {
-        let guessedSong = null;
-        if (id) {
-            guessedSong = dataForMode.find(song => song.id === id);
-        } else if (title) {
-            const matchedSongs = dataForMode.filter(song => normalizeString(song.title) === normalizeString(title));
-            if (matchedSongs.length === 1) {
-                guessedSong = matchedSongs[0];
-            }
-        }
-        if (guessedSong && !guesses.some(guess => guess.id === guessedSong.id)) {
-            setVictory(guessedSong.id === answer.id);
-            /*if (guessedIdol.id === answer.id) {
-                registerGame(guesses.length + 1);
-            }*/
-            setGuesses([...guesses, guessedSong]);
-            setInputValue('');
-            setShowSuggestions(false);
-            progressAudio();
-        }
-    }
-
-    const handleKeyDown = (event) => {
-        if (event.key === 'ArrowDown') {
-            event.preventDefault();
-            setActiveIndex((prev) => (prev + 1) % filteredSuggestions.length);
-        } else if (event.key === 'ArrowUp') {
-            event.preventDefault();
-            setActiveIndex((prev) => (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length);
-        } else if (event.key === 'Enter') {
-            if (activeIndex >= 0 && activeIndex < filteredSuggestions.length) {
-                submitGuess(filteredSuggestions[activeIndex].id, null);
-            } else {
-                submitGuess(null, inputValue);
-            }
-            setActiveIndex(-1);
-        }
-    };
-
-    return (
-        <div className='input-container'>
-            <input 
-                type="text"
-                value={inputValue}
-                onChange={(e) => {
-                    const value = e.target.value;
-                    setInputValue(value);
-                    setShowSuggestions(value.length>=2);
-                }}
-                className="input-field"
-                onKeyDown={handleKeyDown} 
-                placeholder="Type your guess"
-                disabled={victory}
-                onFocus={() => {setShowSuggestions(inputValue.length>=2);}}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
-            />
-            {showSuggestions && filteredSuggestions.length > 0 && (
-                <ul className="suggestion-box">
-                {filteredSuggestions.map((song, index) => (
-                    <li key={song.id} 
-                        ref={el => suggestionRefs.current[index] = el}
-                        className={"suggestion-item" + ((index === activeIndex) ? ' active' : '')}
-                        onMouseDown={() => {submitGuess(song.id, null);}}>
-                    {song.title+ " - "+song.group}
-                    </li>
-                ))}
-                </ul>
-            )}
-        </div>
-    );
-}
 
 function SongGuess({songData, answer, mode}) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [guesses, setGuesses] = useState([]);
   const [victory, setVictory] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const { stats, registerGame } = useStats('kpopdleSongStats', mode);
   const [volume, setVolume] = useState(1); // volumen inicial al máximo (1)
   const audioRef = useRef(null);
   const bottomRef = useRef(null);
@@ -169,10 +53,6 @@ function SongGuess({songData, answer, mode}) {
 
   let songDataForMode = (mode != 'All') ? songData.filter(idol => idol.groupType === mode) : songData;
 
-  const getStorageKey = (mode) => {
-      const today = todayArg(); // e.g., "2025-05-28"
-      return `kpopdle_song_guesses_${mode}_${today}`;
-  };
 
   const togglePlay = () => {
     const audio = audioRef.current;
@@ -223,11 +103,11 @@ function SongGuess({songData, answer, mode}) {
       if(guesses.length !== 0){
           localStorage.setItem(key, JSON.stringify(guesses));
       }
+      const isWon = guesses.some(guess => guess.id === answer.id);
       const nextLimit = timeUnlocks[guesses.length];
-      if (nextLimit && !victory) setDuration(nextLimit);
+      if (nextLimit && !isWon) setDuration(nextLimit);
       else setDuration(timeUnlocks[timeUnlocks.length - 1]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [guesses]);
+  }, [guesses, answer]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -332,19 +212,26 @@ function SongGuess({songData, answer, mode}) {
       </div>
         <>
           <div className="top-bar-ss">
-            <GuessInput 
-              dataForMode={songDataForMode}
+            <GuessInput
+              data={songDataForMode}
               guesses={guesses}
               victory={victory}
               setGuesses={setGuesses}
               setVictory={setVictory}
               answer={answer}
-              progressAudio={progressAudio}
+              getLabel={song => `${song.title} - ${song.group}`}
+              getSearchTerms={song => [song.title, song.group]}
+              onGuess={progressAudio}
+              onCorrectGuess={count => registerGame(count)}
             />
+            <button className="stats-button" onClick={() => setShowStats(true)}>📊</button>
           </div>
 
           <GuessList guesses={guesses} answer={answer} />
           <div ref={bottomRef} />
+          {showStats && (
+            <StatsModal stats={stats} onClose={() => setShowStats(false)} />
+          )}
         </>
     </div>
   );

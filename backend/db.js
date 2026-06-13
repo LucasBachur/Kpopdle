@@ -1,53 +1,71 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const { MONGODB_URI } = require('./config');
+const { Pool } = require('pg');
+const { DATABASE_URL } = require('./config');
 
-let client;
-let db;
+const pool = new Pool({ connectionString: DATABASE_URL });
 
-async function connectToDB() {
-  if (db) return db; // Already connected
+const TABLE_MAP = {
+  idols:             'idols',
+  songs:             'songs',
+  dailyAnswers:      'daily_answers',
+  dailyAnswersSongs: 'daily_answers_songs',
+};
 
-  client = new MongoClient(MONGODB_URI, {
-    serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-    }
-  });
-
-  await client.connect();
-  db = client.db('kpopdle');
-  return db;
-}
+const QUERIES = {
+  idols: `
+    SELECT id, name, "group", group_type AS "groupType",
+           TO_CHAR(birth_date, 'YYYY-MM-DD') AS "birthDate",
+           nationality, company
+    FROM idols
+  `,
+  songs: `
+    SELECT id, title, "group", group_type AS "groupType"
+    FROM songs
+  `,
+  daily_answers: `
+    SELECT id, mode, TO_CHAR(date, 'YYYY-MM-DD') AS date, answer_id AS "answerId"
+    FROM daily_answers
+  `,
+  daily_answers_songs: `
+    SELECT id, mode, TO_CHAR(date, 'YYYY-MM-DD') AS date, answer_id AS "answerId"
+    FROM daily_answers_songs
+  `,
+};
 
 async function getFromDB(dataset) {
+  const table = TABLE_MAP[dataset];
+  if (!table) {
+    console.error(`Unknown dataset: ${dataset}`);
+    return [];
+  }
   try {
-    const db = await connectToDB();
-    const idols = db.collection(dataset);
-    const allIdols = await idols.find({}).toArray();
-    return allIdols;
+    const { rows } = await pool.query(QUERIES[table]);
+    return rows;
   } catch (err) {
-    console.error('Error fetching'+ dataset +':', err);
+    console.error(`Error fetching ${dataset}:`, err);
     return [];
   }
 }
 
 async function saveAnswers(collectionName, entries) {
+  const table = TABLE_MAP[collectionName];
+  if (!table) {
+    console.error(`Unknown collection: ${collectionName}`);
+    return;
+  }
   try {
-    const db = await connectToDB();
-    const collection = db.collection(collectionName);
-    await collection.insertMany(entries);
+    for (const entry of entries) {
+      await pool.query(
+        `INSERT INTO ${table} (mode, date, answer_id) VALUES ($1, $2, $3)`,
+        [entry.mode, entry.date, entry.answerId]
+      );
+    }
   } catch (err) {
     console.error('Error saving answers:', err);
   }
 }
 
 async function closeClient() {
-  if (client) {
-    await client.close();
-    client = null;
-    db = null;
-  }
+  await pool.end();
 }
 
 module.exports = { getFromDB, saveAnswers, closeClient };

@@ -1,29 +1,13 @@
 import './App.css'
 import { fetchDataBackend } from '../api.js'
+import { todayArg } from './utils.js'
 import ModeSelector from './components/ModeSelector'
 import Kpopdle from './components/Kpopdle'
 import SongGuess from './components/SongGuess.jsx'
 import LoadingScreen from './components/LoadingScreen';
-import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom'
 
-function todayArg(withTime = false) {
-  const options = {
-    timeZone: 'America/Argentina/Buenos_Aires',
-    year : 'numeric',
-    month : 'numeric',
-    day : 'numeric'
-  };
-
-  if (withTime) {
-    options.hour12 = false,
-    options.hour = '2-digit';
-    options.minute = '2-digit';
-    options.second = '2-digit';
-  }
-
-  return new Date().toLocaleString('en-CA', options);
-}
 
 const cleanupOldLocalStorage = () => {
   const todayStr = todayArg(); // e.g. "2025-05-28"
@@ -42,30 +26,41 @@ const cleanupOldLocalStorage = () => {
 
 function Sidebar(){
   const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
+  const isHoverDevice = useRef(window.matchMedia('(hover: hover) and (pointer: fine)').matches).current;
 
   return(
     <div
       className={`sidebar ${open ? "open" : "closed"}`}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseEnter={isHoverDevice ? () => setOpen(true) : undefined}
+      onMouseLeave={isHoverDevice ? () => setOpen(false) : undefined}
     >
-      <button 
-        className="toggle-btn" 
-        onClick={() => {
-          setOpen(!open);
-        }}
+      <button
+        className="toggle-btn"
+        onClick={isHoverDevice ? undefined : () => setOpen(!open)}
       >
         {open ? "❮" : "❯"}
       </button>
       {open &&(
       <div className="sidebar-content">
         <h2>Games</h2>
-        <Link to="/kpopdle" className={ window.location.pathname === '/kpopdle' ? 'active' : ''}>Kpopdle</Link>
-        <Link to="/songguess" className={ window.location.pathname === '/songguess' ? 'active' : ''}>Guess the Song</Link>
+        <Link to="/kpopdle" className={pathname === '/kpopdle' ? 'active' : ''}>Kpopdle</Link>
+        <Link to="/songguess" className={pathname === '/songguess' ? 'active' : ''}>Guess the Song</Link>
       </div>
       )}
     </div>
   );
+}
+
+function findLatestAnswer(entries, mode, data) {
+  const date = new Date();
+  for (let i = 0; i < 30; i++) {
+    const dateStr = date.toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' });
+    const entry = entries.find(a => a.date === dateStr && a.mode === mode);
+    if (entry) return data.find(item => item.id === entry.answerId);
+    date.setDate(date.getDate() - 1);
+  }
+  return undefined;
 }
 
 function App() {
@@ -75,6 +70,7 @@ function App() {
   const [songData, setSongData] = useState([]);
   const [songAnswers, setSongAnswers] = useState({ All: [], "Girl Group": [], "Boy Group": [] });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     cleanupOldLocalStorage();
@@ -84,16 +80,19 @@ function App() {
     async function fetchData() {
       try {
         setLoading(true);
-        const idols = await fetchDataBackend('idols');
-        const songs = await fetchDataBackend('songs');
-        const dailyAnswers = await fetchDataBackend('answers');
-        const dailyAnswersSongs = await fetchDataBackend('answersSongs');
+        const [idols, songs, dailyAnswers, dailyAnswersSongs] = await Promise.all([
+          fetchDataBackend('idols'),
+          fetchDataBackend('songs'),
+          fetchDataBackend('answers'),
+          fetchDataBackend('answersSongs'),
+        ]);
         setIdolData(idols);
-        setAnswers(dailyAnswers);
         setSongData(songs);
+        setAnswers(dailyAnswers);
         setSongAnswers(dailyAnswersSongs);
       } catch (err) {
         console.error('Failed to fetch data:', err);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -102,15 +101,15 @@ function App() {
   }, []);
 
   if (loading) return <LoadingScreen />;
+  if (error) return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+      <p>Could not connect to the server.</p>
+      <p>Please try again later.</p>
+    </div>
+  );
 
-  const todaysAnswer = answers.filter(entry => entry.date === todayArg() && entry.mode === mode);
-  const todaysAnswerData = todaysAnswer.map(answerEntry =>
-    idolData.find(idol => idol.id === answerEntry.answerId)
-  )[0];
-  const todaysSongAnswer = songAnswers.filter(entry => entry.date === todayArg() && entry.mode === mode);
-  const todaysSongAnswerData = todaysSongAnswer.map(answerEntry =>
-    songData.find(song => song.id === answerEntry.answerId)
-  )[0];
+  const todaysAnswerData = findLatestAnswer(answers, mode, idolData);
+  const todaysSongAnswerData = findLatestAnswer(songAnswers, mode, songData);
 
   return (
     <Router>
