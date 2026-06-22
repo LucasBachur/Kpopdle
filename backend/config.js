@@ -3,7 +3,7 @@ const process = require('process');
 
 dotenv.config();
 
-const REQUIRED_ENV_VARS = ['DATABASE_URL', 'PORT', 'SECRET_KEY'];
+const REQUIRED_ENV_VARS = ['DATABASE_URL', 'PORT', 'SECRET_KEY', 'JWT_SECRET'];
 for (const key of REQUIRED_ENV_VARS) {
   if (!process.env[key]) {
     console.error(`Missing required environment variable: ${key}\nSet it in your .env file and restart the server.`);
@@ -23,4 +23,5 @@ module.exports = {
   PORT,
   ALLOWED_ORIGINS: origins,
   DATABASE_URL: process.env.DATABASE_URL,
+  JWT_SECRET: process.env.JWT_SECRET,
 };

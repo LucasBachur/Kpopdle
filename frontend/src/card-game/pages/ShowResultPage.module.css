@@ -1,0 +1,77 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  color: #eee;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.back {
+  color: #888;
+  text-decoration: none;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.back:hover { color: #f8c300; }
+
+.title {
+  font-size: 1.4rem;
+  flex: 1;
+}
+
+.badge {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.pendingBadge { background: #1c1917; color: #f59e0b; }
+.resolvedBadge { background: #14532d; color: #4ade80; }
+
+.myCard {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  background: #1a1500;
+  border: 1px solid #f8c300;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.myRank {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #f8c300;
+  min-width: 64px;
+  text-align: center;
+}
+
+.myDetails { display: flex; flex-direction: column; gap: 4px; }
+
+.myLabel { font-size: 0.78rem; color: #888; margin: 0; }
+.myScore { font-size: 1.3rem; font-weight: 700; color: #fff; margin: 0; }
+.myReward { font-size: 0.9rem; font-weight: 600; margin: 0; }
+
+.pendingNotice {
+  background: #1c1917;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 14px 16px;
+  color: #f59e0b;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.status { color: #888; font-size: 0.9rem; }
+.error { color: #f87171; font-size: 0.9rem; }

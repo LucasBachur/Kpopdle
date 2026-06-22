@@ -1,0 +1,106 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0d0d1a;
+}
+
+.card {
+  background: #111827;
+  border: 1px solid #333;
+  border-radius: 14px;
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 380px;
+}
+
+.logo {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #f8c300;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #333;
+  margin-bottom: 24px;
+}
+
+.tab {
+  flex: 1;
+  padding: 8px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tab.active {
+  color: #f8c300;
+  border-bottom-color: #f8c300;
+  font-weight: 700;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.field input {
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #1a1a2e;
+  color: #eee;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.field input:focus { border-color: #f8c300; }
+
+.error {
+  color: #f87171;
+  font-size: 0.85rem;
+}
+
+.submit {
+  padding: 11px;
+  border-radius: 8px;
+  border: none;
+  background: #f8c300;
+  color: #000;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  margin-top: 4px;
+}
+
+.submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.submit:not(:disabled):hover { opacity: 0.85; }
+
+.back {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.82rem;
+  color: #666;
+}
+
+.back a { color: #888; text-decoration: none; }
+.back a:hover { color: #f8c300; }

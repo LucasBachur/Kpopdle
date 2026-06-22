@@ -1,0 +1,108 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  color: #eee;
+}
+
+.title {
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #333;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 8px 20px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tab.active {
+  color: #f8c300;
+  border-bottom-color: #f8c300;
+  font-weight: 700;
+}
+
+.showPicker {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.showBtn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #555;
+  background: transparent;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.15s;
+}
+
+.showBtn:hover { background: #333; }
+.showActive { background: #f8c300; color: #000; border-color: #f8c300; font-weight: 700; }
+
+.showMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 0.88rem;
+  color: #aaa;
+}
+
+.statusBadge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.resolved { background: #14532d; color: #4ade80; }
+.pending { background: #1c1917; color: #f59e0b; }
+
+.myResult {
+  background: #1a1500;
+  border: 1px solid #f8c300;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  color: #ddd;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.historyRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  background: #111;
+  border-radius: 8px;
+  font-size: 0.88rem;
+}
+
+.histDate { color: #888; min-width: 90px; }
+.histSong { flex: 1; color: #ddd; }
+.histRank { color: #f8c300; font-weight: 700; min-width: 48px; }
+.histScore { color: #fff; font-weight: 700; }
+
+.status { color: #888; font-size: 0.9rem; padding: 12px 0; }
+.error { color: #f87171; font-size: 0.85rem; margin-bottom: 12px; }

@@ -1,0 +1,73 @@
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid #555;
+  border-radius: 8px;
+  background: #1a1a2e;
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+  width: 110px;
+  min-height: 150px;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.tile:hover { transform: translateY(-3px); }
+
+.tile.selected { border-color: #f8c300; box-shadow: 0 0 8px #f8c300aa; }
+
+.tile.rare { border-color: #888; }
+.tile.super-rare { border-color: #a855f7; }
+.tile.ultra-rare { border-color: #f59e0b; }
+
+.art {
+  width: 100%;
+  object-fit: cover;
+  flex: 1;
+}
+
+.placeholder {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #666;
+  background: #111;
+}
+
+.badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.info {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 6px;
+  background: #0009;
+  font-size: 0.7rem;
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #ddd;
+}
+
+.stat {
+  font-weight: 700;
+  color: #f8c300;
+  margin-left: 4px;
+}

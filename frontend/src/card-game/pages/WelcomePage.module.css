@@ -1,0 +1,191 @@
+/* ── Shared ── */
+
+.badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+.badgeNew      { background: #14532d; color: #4ade80; }
+.badgeUpgrade  { background: #1e3a5f; color: #60a5fa; }
+.badgeOverflow { background: #2a1a1a; color: #888; }
+
+/* ── Reveal phase ── */
+
+.revealPage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: #09090f;
+  color: #eee;
+  cursor: pointer;
+  user-select: none;
+  gap: 0;
+}
+
+.welcomeLabel {
+  font-size: 0.85rem;
+  color: #444;
+  margin: 0 0 20px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.progress {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 0 0 28px;
+  font-variant-numeric: tabular-nums;
+}
+
+.revealCard {
+  background: #1a1a2e;
+  border: 1px solid #2a2a40;
+  border-top: 4px solid;
+  border-radius: 16px;
+  padding: 48px 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  min-width: 240px;
+  animation: popIn 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8) translateY(16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.revealRarity {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.revealName {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.revealGroup {
+  font-size: 0.95rem;
+  color: #888;
+}
+
+.nextBtn {
+  margin-top: 36px;
+  padding: 12px 36px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: transparent;
+  color: #ccc;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nextBtn:hover {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.clickHint {
+  margin-top: 16px;
+  font-size: 0.78rem;
+  color: #2a2a2a;
+}
+
+/* ── Summary phase ── */
+
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 16px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #eee;
+}
+
+.headline {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 0 10px;
+  text-align: center;
+}
+
+.sub {
+  color: #888;
+  margin: 0 0 36px;
+  text-align: center;
+}
+
+.summaryGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 44px;
+}
+
+.summaryCard {
+  background: #1a1a2e;
+  border: 1px solid #2a2a40;
+  border-top: 3px solid;
+  border-radius: 10px;
+  padding: 10px 8px;
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.summaryRarity {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.summaryName {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #eee;
+  line-height: 1.2;
+}
+
+.summaryGroup {
+  font-size: 0.7rem;
+  color: #888;
+}
+
+.continueBtn {
+  padding: 14px 44px;
+  border-radius: 10px;
+  border: none;
+  background: #f8c300;
+  color: #000;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.continueBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.continueBtn:not(:disabled):hover {
+  opacity: 0.85;
+}

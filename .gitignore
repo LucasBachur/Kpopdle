@@ -26,3 +26,10 @@ dist-ssr
 .env
 backend/data/dailyAnswers.json
 backend/data/dailyAnswersTest.json
+
+# Claude Code local settings (contains personal tokens and machine-specific paths)
+.claude/
+
+# Temporary server output files
+server-out.txt
+server-err.txt

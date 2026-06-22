@@ -5,8 +5,14 @@ const fs = require('fs');
 const path = require('path');
 const { SECRET_KEY, PORT, ALLOWED_ORIGINS } = require('./config');
 const { getFromDB, closeClient } = require('./db');
+const authRouter = require('./routes/auth');
+const cardGameRouter = require('./routes/cardGame');
+const authMiddleware = require('./middleware/auth');
+const { initScheduler } = require('./scheduler');
 
 const app = express();
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || ALLOWED_ORIGINS.includes(origin)) {
@@ -16,6 +22,9 @@ app.use(cors({
     }
   }
 }));
+
+app.use('/api/auth', authRouter);
+app.use('/api/card-game', authMiddleware, cardGameRouter);
 
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
@@ -57,7 +66,10 @@ app.get('/generate', (req, res) => {
     });
 });
 console.log('Starting server...');
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  initScheduler();
+});
 
 process.on('SIGINT', async () => {
   console.log('SIGINT received, closing MongoDB connection...');

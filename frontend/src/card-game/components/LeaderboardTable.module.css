@@ -1,0 +1,54 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.th {
+  text-align: left;
+  padding: 10px 12px;
+  color: #888;
+  border-bottom: 1px solid #333;
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #1f1f1f;
+  color: #ddd;
+}
+
+.row:hover .td { background: #1a1a2e; }
+
+.myRow .td { background: #1a1500; }
+.myRow:hover .td { background: #221c00; }
+
+.meLabel { font-weight: 700; color: #f8c300; }
+
+.youBadge {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #f8c300;
+  color: #000;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.score { font-weight: 700; color: #fff; }
+
+.reward {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.status {
+  color: #888;
+  font-size: 0.9rem;
+  padding: 12px 0;
+}

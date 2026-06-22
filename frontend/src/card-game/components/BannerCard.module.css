@@ -1,0 +1,135 @@
+.card {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rarityBadge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.groupName {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #eee;
+}
+
+.endsAt {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.description {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin: 0;
+}
+
+.members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.memberChip {
+  font-size: 0.78rem;
+  padding: 3px 10px;
+  background: #1a1a2e;
+  border: 1px solid #333;
+  border-radius: 20px;
+  color: #ccc;
+}
+
+.memberRarity {
+  color: #888;
+  font-size: 0.7rem;
+}
+
+.rateUp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rateUpLabel {
+  font-size: 0.8rem;
+  color: #888;
+  flex-shrink: 0;
+}
+
+.rateUpSelect {
+  background: #1a1a2e;
+  border: 1px solid #444;
+  color: #eee;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.rateUpSelect:focus {
+  border-color: #666;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.pullBtn {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background: #f8c300;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.pullBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pullBtn:not(:disabled):hover {
+  opacity: 0.85;
+}
+
+.freeBtn {
+  background: #22c55e;
+  color: #000;
+  flex: 1;
+}
+
+.cost {
+  font-size: 0.8rem;
+  font-weight: 400;
+}

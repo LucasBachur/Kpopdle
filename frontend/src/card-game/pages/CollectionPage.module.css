@@ -1,0 +1,101 @@
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  color: #eee;
+}
+
+.title {
+  font-size: 1.6rem;
+  margin-bottom: 16px;
+}
+
+.packPanel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #111827;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.packInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.packLabel {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #eee;
+}
+
+.packSub {
+  font-size: 0.78rem;
+  color: #888;
+}
+
+.claimBtn {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #f8c300;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+.claimBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.claimBtn:not(:disabled):hover { opacity: 0.85; }
+
+.claimed {
+  font-size: 0.85rem;
+  color: #4ade80;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #555;
+  background: transparent;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.15s, color 0.15s;
+}
+
+.filter:hover { background: #333; }
+.filter.active { background: #f8c300; color: #000; border-color: #f8c300; font-weight: 700; }
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.status {
+  color: #888;
+  margin: 24px 0;
+}
+
+.error {
+  color: #f87171;
+  margin: 12px 0;
+}

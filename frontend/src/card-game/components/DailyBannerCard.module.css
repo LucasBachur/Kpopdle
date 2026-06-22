@@ -1,0 +1,78 @@
+.card {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #eee;
+}
+
+.permanent {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.actions {
+  display: flex;
+}
+
+.claimBtn {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background: #22c55e;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.claimBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.claimBtn:not(:disabled):hover {
+  opacity: 0.85;
+}
+
+.exhausted {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+}
+
+.exhaustedLabel {
+  font-size: 0.85rem;
+  color: #555;
+  font-weight: 600;
+}
+
+.countdown {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #444;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
