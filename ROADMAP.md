@@ -1,10 +1,17 @@
 # Kpopdle Card Game — Feature Roadmap
 
-**Last updated**: 2026-06-22
+**Last updated**: 2026-06-26
 
 ---
 
 ## ✅ Completed
+
+### Feature 004 — Platform Hardening
+**Spec**: `specs/004-card-game-hardening/`
+
+Config-driven `gg_only_mode` flag enforced by a `403` guard on all BG-scoped routes via `ggOnlyGuard` middleware; flag surfaced to frontend via `GET /me`; UI hides all BG entry points while enabled. Tightened write validation (banner pull count, slot shape, `genderCategory`). Lineup ownership split into `400` (card not found) vs `403` (wrong owner). Annual UR ticket grant via new `ur_grant_dates` + `ur_grant_log` tables and idempotent daily cron. All quickstart scenarios A–E pass; zero regressions on Feature 001 1–10.
+
+---
 
 ### Feature 001 — Idol Card Game Core
 **Spec**: `specs/001-idol-card-game/`
@@ -31,19 +38,6 @@ Operator seed script assigning multiplier templates (role / company / same-group
 
 ## 🔲 Planned
 
-### Feature 004 — Platform Hardening *(P1)*
-
-Correctness and security items deferred from Feature 001 Phase 9. Required before real player traffic.
-
-**Scope**:
-- `GG_ONLY_MODE` flag in config + 403 guard on all BG routes
-- Input validation on all card-game write routes (`count`, `genderCategory`, `slotPosition` uniqueness)
-- Card ownership validation on `PUT /lineup` — verify each card belongs to the requesting user
-- UR-ticket annual refresh: daily cron issues a new UR ticket 365 days after the original was used
-- Full Feature 001 quickstart validation pass (Scenarios 1–10)
-
----
-
 ### Feature 005 — Banner & Gacha UX Polish *(P2)*
 
 Completes the gacha spec (FR-036–039) and UX details deferred from Feature 001.
@@ -67,6 +61,32 @@ Completes the duplicate/overflow progression loop (FR-009 stub).
 - Convert overflow duplicate → cosmetic item (replaces the current stub)
 - Equip a cosmetic on a specific card
 - Display equipped cosmetic in `CollectionPage` and `CardTile`
+
+---
+
+### Feature 009 — UI Revamp & Animations *(P2 — pre-launch)*
+
+Full visual redesign of the web interface, responsive layout, and pull animations.
+
+**Scope**:
+- Visual redesign: new color palette, typography, component styling across all pages
+- Responsive layout: mobile-first breakpoints for all major pages (lineup, collection, banners, leaderboard)
+- Pull animations: animated gacha pull sequence for daily pulls and banner pulls (card reveal, rarity flash, etc.)
+- General motion polish: page transitions, loading states, micro-interactions
+
+---
+
+### Feature 010 — AWS Infrastructure & Deployment *(P2 — pre-launch)*
+
+Design and provision the production AWS environment for launch.
+
+**Scope**:
+- Network: VPC, subnets, security groups
+- Compute: EC2 or ECS for the Express backend; static hosting (S3 + CloudFront) or SSR for the React frontend
+- Database: RDS PostgreSQL (managed, with automated backups)
+- Environment config: secrets management (SSM Parameter Store or Secrets Manager), env vars
+- CI/CD pipeline: automated build + deploy on push to main
+- Domain + TLS: Route 53 + ACM certificate
 
 ---
 
@@ -97,12 +117,13 @@ Replace direct database inserts with a web interface for content management.
 
 ## Priority Summary
 
-| # | Feature | Priority | Key Unblock |
+| # | Feature | Priority | Pre-launch? |
 |---|---------|----------|-------------|
-| 004 | Platform hardening | **P1** | Required before real player traffic |
-| 005 | Banner & gacha UX polish | P2 | Completes gacha spec |
-| 006 | Cosmetic system | P2 | Completes progression loop |
-| 007 | Boy Group launch | P3 | Needs BG content ready |
-| 008 | Operator admin UI | P3 | Reduces operator friction |
+| 005 | Banner & gacha UX polish | P2 | Yes |
+| 006 | Cosmetic system | P2 | Yes |
+| 009 | UI revamp & animations | P2 | Yes |
+| 010 | AWS infrastructure & deployment | P2 | Yes |
+| 007 | Boy Group launch | P3 | No (v2) |
+| 008 | Operator admin UI | P3 | No (v2) |
 
-Features 003 and 004 should ship before any real player traffic. 005 and 006 round out the v1 feature set. 007 and 008 are v2.
+Features 005, 006, 009, and 010 are required before launch. 007 and 008 are v2.
