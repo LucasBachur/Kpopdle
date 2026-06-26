@@ -130,3 +130,15 @@
 
 .error { color: #f87171; margin: 8px 0; }
 .notice { color: #4ade80; margin: 8px 0; }
+
+.chemistryList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chemistryItem {
+  font-size: 0.85rem;
+  color: #86efac;
+  font-weight: 600;
+}

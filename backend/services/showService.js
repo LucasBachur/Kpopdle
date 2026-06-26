@@ -17,7 +17,7 @@ const {
  * finalScore = baseScore × show_multipliers × random_factor
  * All tuning constants from gacha_config.
  */
-async function calculateScore(lineupSlots, multipliers, config) {
+async function calculateScore(lineupSlots, multipliers, config, groupSizeMap) {
   if (!lineupSlots.length) return { baseScore: 0, finalScore: 0 };
 
   const size = lineupSlots.length;
@@ -37,7 +37,21 @@ async function calculateScore(lineupSlots, multipliers, config) {
 
   const randomRange = config.random_range ?? 0.10;
   const randomFactor = 1 + (Math.random() - 0.5) * randomRange;
-  const finalScore = Math.round(score * randomFactor);
+
+  const groupCounts = new Map();
+  for (const slot of lineupSlots) {
+    if (slot.group) groupCounts.set(slot.group, (groupCounts.get(slot.group) ?? 0) + 1);
+  }
+  let chemistryRatioFinal = 0;
+  for (const [g, n] of groupCounts) {
+    if (n <= 1) continue;
+    const G_size = groupSizeMap?.get(g) ?? n;
+    const ratio = n >= G_size ? 1.0 : 0.5 + 0.5 * Math.log(n - 1) / Math.log(G_size - 1);
+    if (ratio > chemistryRatioFinal) chemistryRatioFinal = ratio;
+  }
+  const chemistryMultiplier = 1 + chemistryRatioFinal * (config.chemistry_max_bonus ?? 0.15);
+
+  const finalScore = Math.round(score * randomFactor * chemistryMultiplier);
 
   return { baseScore, finalScore };
 }
@@ -56,8 +70,11 @@ function isMultiplierApplicable(multiplier, lineupSlots) {
     case 'company':
       return lineupSlots.some(s => s.company?.toLowerCase() === val);
     case 'same_group': {
-      const groups = new Set(lineupSlots.map(s => s.group));
-      return groups.size === 1;
+      if (!val || val === 'any') {
+        const groups = new Set(lineupSlots.map(s => s.group?.toLowerCase()));
+        return groups.size === 1;
+      }
+      return lineupSlots.some(s => s.group?.toLowerCase() === val);
     }
     case 'soloist_only':
       return lineupSlots.every(s => s.groupType === 'Soloist');
@@ -80,6 +97,11 @@ async function resolveShow(showId) {
 
   const config = await getGachaConfig();
   const multipliers = await getShowMultipliers(showId);
+
+  const { rows: groupRows } = await pool.query(
+    `SELECT "group", COUNT(*)::int AS cnt FROM idols GROUP BY "group"`
+  );
+  const groupSizeMap = new Map(groupRows.map(r => [r.group, r.cnt]));
 
   const { rows: lineupRows } = await pool.query(
     `SELECT l.id AS "lineupId", l.user_id AS "userId", l.song_id AS "songId"
@@ -112,7 +134,7 @@ async function resolveShow(showId) {
 
       if (!slots.length) continue;
 
-      const { baseScore, finalScore } = await calculateScore(slots, multipliers, config);
+      const { baseScore, finalScore } = await calculateScore(slots, multipliers, config, groupSizeMap);
       await insertShowEntry(
         showId, lineup.userId, lineup.songId,
         baseScore, finalScore, slots, client
@@ -147,15 +169,18 @@ async function assignRanksAndRewards(showId, genderCategory, client) {
   const total = entries.length;
   if (!total) return;
 
+  let currentRank = 1;
   for (let i = 0; i < entries.length; i++) {
-    const rank = i + 1;
-    const percentile = rank / total;
+    if (i > 0 && entries[i].finalScore < entries[i - 1].finalScore) {
+      currentRank = i + 1;
+    }
+    const percentile = currentRank / total;
     let rewardRarity;
     if (percentile <= 0.10) rewardRarity = 'ultra_rare';
     else if (percentile <= 0.50) rewardRarity = 'super_rare';
     else rewardRarity = 'rare';
 
-    await updateShowEntryRankReward(entries[i].id, rank, rewardRarity, client);
+    await updateShowEntryRankReward(entries[i].id, currentRank, rewardRarity, client);
     await db.query(
       `UPDATE users SET ${currencyCol} = ${currencyCol} + 1 WHERE id = $1`,
       [entries[i].userId]

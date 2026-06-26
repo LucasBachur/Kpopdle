@@ -35,6 +35,10 @@ const DEFAULTS = [
   ['reward_sr_percentile',   '0.50'],
   // Weekly pool
   ['weekly_pool_size',       '25'],
+  // Chemistry bonus cap
+  ['chemistry_max_bonus',    '0.15'],
+  // GG-only launch mode ('1' = Boy Group sealed off; '0' = BG permitted)
+  ['gg_only_mode',           '1'],
 ];
 
 async function seed() {

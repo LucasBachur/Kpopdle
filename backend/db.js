@@ -136,7 +136,8 @@ async function getPlayerCards(userId) {
            i.name AS "idolName", i."group", cd.rarity,
            cd.base_stat AS "baseStat", pc.current_stat AS "currentStat",
            COALESCE(cd.art_path, cd.rarity || '/' || cd.id::text || '.webp') AS "artPath", cd.border_style AS "borderStyle",
-           pc.acquired_at AS "acquiredAt"
+           pc.acquired_at AS "acquiredAt",
+           (SELECT COUNT(*)::int FROM idols i2 WHERE i2."group" = i."group") AS "groupSize"
     FROM player_cards pc
     JOIN card_definitions cd ON cd.id = pc.card_def_id
     JOIN idols i ON i.id = cd.idol_id
@@ -325,14 +326,16 @@ async function getOrCreateTodayShow(date, genderCategory, scheduleId, showName, 
        SET deadline = EXCLUDED.deadline
        WHERE shows.resolution_status = 'pending'
      RETURNING id, date, gender_category AS "genderCategory", schedule_id AS "scheduleId",
-               show_name AS "showName", deadline, resolution_status AS "resolutionStatus"`,
+               show_name AS "showName", deadline, resolution_status AS "resolutionStatus",
+               (xmax = 0) AS "created"`,
     [date, genderCategory, scheduleId, showName, deadlineUtc]
   );
   if (rows.length) return rows[0];
   // Row exists but was already resolved — return it unchanged
   const { rows: existing } = await pool.query(
     `SELECT id, date, gender_category AS "genderCategory", schedule_id AS "scheduleId",
-            show_name AS "showName", deadline, resolution_status AS "resolutionStatus"
+            show_name AS "showName", deadline, resolution_status AS "resolutionStatus",
+            false AS "created"
      FROM shows WHERE date = $1 AND gender_category = $2`,
     [date, genderCategory]
   );
@@ -464,11 +467,42 @@ async function getShowMultipliers(showId) {
   return rows;
 }
 
+async function getShowMultiplierLabels(showId) {
+  const { rows } = await pool.query(
+    `SELECT label FROM show_multipliers WHERE show_id = $1 ORDER BY id`,
+    [showId]
+  );
+  return rows.map(r => r.label);
+}
+
+async function copyScheduleMultipliers(showId, scheduleId) {
+  if (scheduleId == null) return 0;
+  const { rowCount } = await pool.query(
+    `INSERT INTO show_multipliers (show_id, label, multiplier_value, applies_to_type, applies_to_value)
+     SELECT $1, label, multiplier_value, applies_to_type, applies_to_value
+     FROM show_schedule_multipliers WHERE schedule_id = $2
+     ON CONFLICT (show_id, applies_to_type, COALESCE(applies_to_value, '')) DO NOTHING`,
+    [showId, scheduleId]
+  );
+  console.log(`[scheduler] Copied ${rowCount} multiplier templates to show ${showId} from schedule ${scheduleId}`);
+  return rowCount;
+}
+
 // ── T031+: gacha_config ───────────────────────────────────────────────────────
 
 async function getGachaConfig() {
   const { rows } = await pool.query('SELECT key, value FROM gacha_config');
   return Object.fromEntries(rows.map(r => [r.key, parseFloat(r.value)]));
+}
+
+// GG-only launch flag. Enabled (BG sealed off) when the row is missing or the
+// value is anything other than explicit '0'. Returns false only for '0'.
+async function getGgOnlyMode() {
+  const { rows } = await pool.query(
+    `SELECT value FROM gacha_config WHERE key = 'gg_only_mode'`
+  );
+  if (!rows.length) return true;
+  return parseFloat(rows[0].value) !== 0;
 }
 
 // ── T045: banners ─────────────────────────────────────────────────────────────
@@ -728,6 +762,42 @@ async function invalidateLineupsForGender(genderCategory, poolSongIds) {
   return rowCount;
 }
 
+// ── Feature 004: annual UR ticket grant ──────────────────────────────────────
+
+async function getUrGrantDates() {
+  const { rows } = await pool.query('SELECT month, day FROM ur_grant_dates');
+  return rows;
+}
+
+// Idempotent grant for a single calendar date (YYYY-MM-DD). The marker insert
+// and the per-user ticket grant run in one transaction so they commit together.
+// Returns { granted, usersAffected }: granted=false means today was already
+// processed (marker present), so no tickets were added.
+async function grantUrTicketsForDate(grantDateStr) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const { rowCount: marked } = await client.query(
+      `INSERT INTO ur_grant_log (grant_date) VALUES ($1) ON CONFLICT DO NOTHING`,
+      [grantDateStr]
+    );
+    if (marked !== 1) {
+      await client.query('ROLLBACK');
+      return { granted: false, usersAffected: 0 };
+    }
+    const { rowCount: usersAffected } = await client.query(
+      `UPDATE users SET ur_tickets = ur_tickets + 1`
+    );
+    await client.query('COMMIT');
+    return { granted: true, usersAffected };
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
 module.exports = {
   getFromDB, saveAnswers, closeClient, pool,
   // card_definitions
@@ -747,9 +817,9 @@ module.exports = {
   getShowEntries, getShowEntry, insertShowEntry, updateShowEntryRankReward,
   getLeaderboardHistory,
   // show_multipliers
-  getShowMultipliers,
+  getShowMultipliers, getShowMultiplierLabels, copyScheduleMultipliers,
   // gacha_config
-  getGachaConfig,
+  getGachaConfig, getGgOnlyMode,
   // banners
   getActiveBanners, getBannerWithMembers, getDailyBanner,
   getBannerFreePulls, consumeBannerFreePulls, getActiveBannerCardsByRarity,
@@ -761,4 +831,6 @@ module.exports = {
   // weekly pool (feature 002)
   getPoolSize, getEligibleSongIds, getWeekPoolSongIds, weekPoolExists, insertWeekPoolRows,
   getIdolsMissingRoles, invalidateLineupsForGender,
+  // annual UR grant (feature 004)
+  getUrGrantDates, grantUrTicketsForDate,
 };

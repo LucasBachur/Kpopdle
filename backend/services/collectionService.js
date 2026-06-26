@@ -3,7 +3,6 @@ const {
   getAllCardDefs,
   getPlayerCard,
   insertPlayerCard,
-  incrementPlayerCardStat,
   getCardDefById,
   insertOverflowDuplicate,
   getActiveBannerCardsByRarity,
@@ -91,11 +90,7 @@ async function addCardToCollection(userId, cardDefId, client) {
     const card = await insertPlayerCard(userId, cardDefId, def.baseStat, client);
     return { isNew: true, wasUpgrade: false, wasOverflow: false, currentStat: card.currentStat };
   }
-  if (existing.currentStat < ceiling) {
-    const updated = await incrementPlayerCardStat(existing.playerCardId, client);
-    return { isNew: false, wasUpgrade: true, wasOverflow: false, currentStat: updated.currentStat };
-  }
-  // At ceiling — persist as overflow duplicate
+  // All duplicates (below ceiling or at ceiling) are stored for the player to act on manually
   const overflow = await insertOverflowDuplicate(userId, cardDefId, client);
   return { isNew: false, wasUpgrade: false, wasOverflow: true, overflowId: overflow.id, currentStat: existing.currentStat };
 }

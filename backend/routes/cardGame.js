@@ -3,6 +3,7 @@ const { Pool } = require('pg');
 const { DATABASE_URL } = require('../config');
 const {
   getPlayerCards,
+  getPlayerCard,
   getUserTickets,
   decrementTicket,
   getCardDefsByRarity,
@@ -15,9 +16,13 @@ const {
   getOverflowDuplicatesByUser,
   getOverflowDuplicateById,
   deleteOverflowDuplicate,
+  incrementPlayerCardStat,
+  getGgOnlyMode,
+  getBannerWithMembers,
 } = require('../db');
-const { addCardToCollection } = require('../services/collectionService');
+const { addCardToCollection, RARITY_CEILING } = require('../services/collectionService');
 const { claimDailyPull, pull: gachaPull } = require('../services/gachaService');
+const { ggOnlyGuard } = require('../middleware/ggOnlyGuard');
 
 const router = express.Router();
 const pool = new Pool({ connectionString: DATABASE_URL });
@@ -52,7 +57,10 @@ router.get('/me', async (req, res) => {
       bg: !user.lastDailyPullBG || new Date(user.lastDailyPullBG).toLocaleDateString('en-CA', { timeZone: ART_TZ }) !== today,
     };
 
+    const ggOnlyMode = await getGgOnlyMode();
+
     return res.json({
+      ggOnlyMode,
       userId: user.id,
       username: user.username,
       ggCurrency: user.ggCurrency,
@@ -175,7 +183,7 @@ router.post('/tickets/:rarity/redeem', async (req, res) => {
 
 // ── Daily pull ────────────────────────────────────────────────────────────────
 
-router.post('/daily-pull/claim', async (req, res) => {
+router.post('/daily-pull/claim', ggOnlyGuard, async (req, res) => {
   const { genderCategory = 'gg' } = req.body ?? {};
   if (!['gg', 'bg'].includes(genderCategory)) {
     return res.status(400).json({ error: 'genderCategory must be "gg" or "bg"' });
@@ -194,7 +202,7 @@ router.post('/daily-pull/claim', async (req, res) => {
 
 // ── T023: GET /songs/weekly ───────────────────────────────────────────────────
 
-router.get('/songs/weekly', async (req, res) => {
+router.get('/songs/weekly', ggOnlyGuard, async (req, res) => {
   const { genderCategory } = req.query;
   if (!['gg', 'bg'].includes(genderCategory)) {
     return res.status(400).json({ error: 'genderCategory must be "gg" or "bg"' });
@@ -210,7 +218,7 @@ router.get('/songs/weekly', async (req, res) => {
 
 // ── T024: GET+PUT /lineup/:genderCategory ────────────────────────────────────
 
-router.get('/lineup/:genderCategory', async (req, res) => {
+router.get('/lineup/:genderCategory', ggOnlyGuard, async (req, res) => {
   const { genderCategory } = req.params;
   if (!['gg', 'bg'].includes(genderCategory)) {
     return res.status(400).json({ error: 'Invalid gender category' });
@@ -239,7 +247,7 @@ router.get('/lineup/:genderCategory', async (req, res) => {
   }
 });
 
-router.put('/lineup/:genderCategory', async (req, res) => {
+router.put('/lineup/:genderCategory', ggOnlyGuard, async (req, res) => {
   const { genderCategory } = req.params;
   if (!['gg', 'bg'].includes(genderCategory)) {
     return res.status(400).json({ error: 'Invalid gender category' });
@@ -261,18 +269,44 @@ router.put('/lineup/:genderCategory', async (req, res) => {
     });
   }
 
+  // Validate slot shape: every slot needs an integer playerCardId and
+  // slotPosition. Run before the ANY($2::int[]) cast so a null/non-integer id
+  // yields a clear 400 instead of a 500 from a failed array cast.
+  const isInt = (v) => Number.isInteger(v);
+  if (!slots.every(s => s && isInt(s.playerCardId) && isInt(s.slotPosition))) {
+    return res.status(400).json({ error: 'Each slot needs an integer playerCardId and slotPosition' });
+  }
+
   // Validate slot positions are 1-indexed and unique
   const positions = slots.map(s => s.slotPosition);
   if (new Set(positions).size !== positions.length) {
     return res.status(400).json({ error: 'Duplicate slot positions' });
   }
 
-  // Validate card ownership
-  const { rows: owned } = await pool.query(
-    `SELECT card_def_id FROM player_cards WHERE user_id = $1 AND id = ANY($2::int[])`,
-    [req.user.userId, slots.map(s => s.playerCardId)]
+  const cardIds = slots.map(s => s.playerCardId);
+
+  // A card cannot occupy two slots at once.
+  if (new Set(cardIds).size !== cardIds.length) {
+    return res.status(400).json({ error: 'Duplicate cards in lineup' });
+  }
+
+  // Card existence: every playerCardId must exist in player_cards for some
+  // user. Any id absent entirely → 400 (distinct from an ownership failure).
+  const { rows: existing } = await pool.query(
+    `SELECT id FROM player_cards WHERE id = ANY($1::int[])`,
+    [cardIds]
   );
-  if (owned.length !== slots.length) {
+  if (existing.length !== new Set(cardIds).size) {
+    return res.status(400).json({ error: 'One or more cards do not exist' });
+  }
+
+  // Card ownership: every existing card must belong to the requesting user.
+  // A card owned by another user → 403.
+  const { rows: owned } = await pool.query(
+    `SELECT id FROM player_cards WHERE user_id = $1 AND id = ANY($2::int[])`,
+    [req.user.userId, cardIds]
+  );
+  if (owned.length !== new Set(cardIds).size) {
     return res.status(403).json({ error: 'One or more cards do not belong to this player' });
   }
 
@@ -333,13 +367,23 @@ router.post('/banners/:bannerId/pull', async (req, res) => {
   const bannerId = parseInt(req.params.bannerId, 10);
   if (isNaN(bannerId)) return res.status(400).json({ error: 'Invalid bannerId' });
 
-  const { rateUpIdolId = null, count = 1 } = req.body;
+  const { rateUpIdolId = null, count } = req.body;
+  if (count === undefined || count === null) {
+    return res.status(400).json({ error: 'count is required' });
+  }
   const pullCount = parseInt(count, 10);
   if (isNaN(pullCount) || pullCount < 1 || pullCount > 10) {
     return res.status(400).json({ error: 'count must be 1–10' });
   }
 
   try {
+    // Gender comes from the banner record, not the request, so ggOnlyGuard
+    // cannot catch it. Reject BG banners (by id) before spending any currency.
+    const banner = await getBannerWithMembers(bannerId);
+    if (banner?.genderCategory === 'bg' && await getGgOnlyMode()) {
+      return res.status(403).json({ error: 'Boy Group content is not available.' });
+    }
+
     const result = await gachaPull(req.user.userId, bannerId, pullCount, rateUpIdolId, 'gg');
     return res.json(result);
   } catch (err) {
@@ -358,15 +402,44 @@ const {
   getShowById,
   getShowEntries,
   getLeaderboardHistory: dbGetLeaderboardHistory,
+  getShowMultiplierLabels,
 } = require('../db');
 
 router.get('/shows/today', async (req, res) => {
   try {
     const today = todayART();
-    const shows = await dbGetTodayShows(today);
-    return res.json({ date: today, shows });
+    const [shows, { rows: pendingRows }] = await Promise.all([
+      dbGetTodayShows(today),
+      pool.query(
+        `SELECT id FROM shows WHERE gender_category = 'gg' AND resolution_status = 'pending'
+         ORDER BY deadline ASC LIMIT 1`
+      ),
+    ]);
+    const pendingShow = pendingRows[0] || null;
+    const multiplierLabels = pendingShow
+      ? await getShowMultiplierLabels(pendingShow.id)
+      : [];
+    return res.json({ date: today, shows, multiplierLabels });
   } catch (err) {
     console.error('GET /shows/today:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.get('/leaderboard/history', ggOnlyGuard, async (req, res) => {
+  const { genderCategory = 'gg', limit = 20, offset = 0 } = req.query;
+  if (!['gg', 'bg'].includes(genderCategory)) {
+    return res.status(400).json({ error: 'Invalid genderCategory' });
+  }
+  try {
+    const history = await dbGetLeaderboardHistory(
+      genderCategory,
+      Math.min(parseInt(limit, 10) || 20, 100),
+      parseInt(offset, 10) || 0
+    );
+    return res.json({ history });
+  } catch (err) {
+    console.error('GET /leaderboard/history:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 });
@@ -380,7 +453,6 @@ router.get('/leaderboard/:showId', async (req, res) => {
 
     const entries = await getShowEntries(showId);
 
-    // Find the requesting user's own entry
     const myEntry = entries.find(e => e.userId === req.user.userId) || null;
 
     return res.json({
@@ -407,24 +479,6 @@ router.get('/leaderboard/:showId', async (req, res) => {
   }
 });
 
-router.get('/leaderboard/history', async (req, res) => {
-  const { genderCategory = 'gg', limit = 20, offset = 0 } = req.query;
-  if (!['gg', 'bg'].includes(genderCategory)) {
-    return res.status(400).json({ error: 'Invalid genderCategory' });
-  }
-  try {
-    const history = await dbGetLeaderboardHistory(
-      genderCategory,
-      Math.min(parseInt(limit, 10) || 20, 100),
-      parseInt(offset, 10) || 0
-    );
-    return res.json({ history });
-  } catch (err) {
-    console.error('GET /leaderboard/history:', err);
-    return res.status(500).json({ error: 'Server error' });
-  }
-});
-
 // ── T059: POST /overflow/:duplicateId/convert ─────────────────────────────────
 
 router.post('/overflow/:duplicateId/convert', async (req, res) => {
@@ -432,8 +486,8 @@ router.post('/overflow/:duplicateId/convert', async (req, res) => {
   if (isNaN(duplicateId)) return res.status(400).json({ error: 'Invalid duplicateId' });
 
   const { convertTo = 'currency' } = req.body;
-  if (!['currency', 'cosmetic'].includes(convertTo)) {
-    return res.status(400).json({ error: 'convertTo must be "currency" or "cosmetic"' });
+  if (!['currency', 'cosmetic', 'upgrade'].includes(convertTo)) {
+    return res.status(400).json({ error: 'convertTo must be "currency", "cosmetic", or "upgrade"' });
   }
 
   try {
@@ -444,6 +498,20 @@ router.post('/overflow/:duplicateId/convert', async (req, res) => {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
+
+      if (convertTo === 'upgrade') {
+        const playerCard = await getPlayerCard(dup.userId, dup.cardDefId, client);
+        const ceiling = RARITY_CEILING[dup.rarity];
+        if (!playerCard || playerCard.currentStat >= ceiling) {
+          await client.query('ROLLBACK');
+          return res.status(409).json({ error: 'Card is at stat ceiling. Convert to currency or cosmetic instead.' });
+        }
+        const updated = await incrementPlayerCardStat(playerCard.playerCardId, client);
+        await deleteOverflowDuplicate(duplicateId, client);
+        await client.query('COMMIT');
+        return res.json({ upgraded: true, newStat: updated.currentStat });
+      }
+
       await deleteOverflowDuplicate(duplicateId, client);
 
       if (convertTo === 'currency') {

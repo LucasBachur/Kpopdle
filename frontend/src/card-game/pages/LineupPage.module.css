@@ -67,3 +67,31 @@
   font-weight: 600;
   margin-bottom: 16px;
 }
+
+.bonuses {
+  margin-bottom: 20px;
+}
+
+.bonusLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #aaa;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bonusChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bonusChip {
+  padding: 4px 12px;
+  background: #1d4ed8;
+  color: #fff;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}

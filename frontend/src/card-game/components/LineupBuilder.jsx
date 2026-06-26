@@ -75,6 +75,23 @@ export default function LineupBuilder({ genderCategory, onSaved }) {
     ? cards.filter(c => !usedIds.has(c.playerCardId) || slots[pickerSlot]?.playerCardId === c.playerCardId)
     : [];
 
+  const chemistryPreview = (() => {
+    const filled = slots.filter(Boolean);
+    if (filled.length < 2) return [];
+    const groupCounts = new Map();
+    for (const card of filled) {
+      if (card.group) groupCounts.set(card.group, (groupCounts.get(card.group) ?? 0) + 1);
+    }
+    const result = [];
+    for (const [group, n] of groupCounts) {
+      if (n < 2) continue;
+      const G_size = filled.find(c => c.group === group)?.groupSize ?? n;
+      const ratio = n >= G_size ? 1.0 : 1 - Math.pow(0.5, n - 1);
+      result.push({ group, pct: Math.round(ratio * 100) });
+    }
+    return result;
+  })();
+
   return (
     <div className={styles.builder}>
       {/* Song picker */}
@@ -119,6 +136,20 @@ export default function LineupBuilder({ genderCategory, onSaved }) {
                   </button>
                 )}
               </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Chemistry preview */}
+      {chemistryPreview.length > 0 && (
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitle}>Group Chemistry</h3>
+          <div className={styles.chemistryList}>
+            {chemistryPreview.map(({ group, pct }) => (
+              <span key={group} className={styles.chemistryItem}>
+                {group}: {pct}% Chemistry
+              </span>
             ))}
           </div>
         </section>

@@ -99,3 +99,149 @@
   color: #f87171;
   margin: 12px 0;
 }
+
+/* ── Card detail modal ────────────────────────────────────────────── */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  position: relative;
+  background: #111827;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 20px;
+  width: 90%;
+  max-width: 360px;
+  color: #eee;
+}
+
+.modalClose {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.modalClose:hover { color: #eee; }
+
+.modalCardRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.modalArt {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.modalImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modalPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: #1f2937;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #555;
+}
+
+.modalInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+}
+
+.modalName {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.modalGroup {
+  font-size: 0.82rem;
+  color: #aaa;
+}
+
+.modalRarity {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 1px 6px;
+  align-self: flex-start;
+  letter-spacing: 0.04em;
+}
+
+.modalStat {
+  font-size: 0.82rem;
+  color: #aaa;
+}
+
+.dupSection {
+  border-top: 1px solid #2a2a3a;
+  padding-top: 12px;
+}
+
+.dupTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #aaa;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.noDups {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.dupRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.actionBtn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #1f2937;
+  color: #ccc;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.actionBtn:hover:not(:disabled) { background: #374151; color: #fff; }
+.actionBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.cosmeticBtn {
+  border-color: #a855f7;
+  color: #a855f7;
+}
+.cosmeticBtn:hover:not(:disabled) { background: #a855f722; }

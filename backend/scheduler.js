@@ -2,7 +2,10 @@ const cron = require('node-cron');
 const {
   getShowScheduleByDayOfWeek,
   getOrCreateTodayShow,
+  copyScheduleMultipliers,
   getMonday,
+  getUrGrantDates,
+  grantUrTicketsForDate,
 } = require('./db');
 const { resolveAllPendingShows } = require('./services/showService');
 const { ensureWeeklyPool, invalidateStaleLineups } = require('./services/weeklyPoolService');
@@ -51,6 +54,10 @@ async function createTodayShows() {
       const deadline = deadlineUtc(schedule.deadlineTime, today);
       const show = await getOrCreateTodayShow(today, gender, schedule.id, schedule.showName, deadline);
       console.log(`Show ready: id=${show.id} date=${today} gender=${gender} deadline=${deadline}`);
+      if (show.created) {
+        const copied = await copyScheduleMultipliers(show.id, schedule.id);
+        console.log(`[scheduler] Copied ${copied} multiplier(s) to show ${show.id}`);
+      }
     } catch (err) {
       console.error(`Error creating show for ${gender}:`, err);
     }
@@ -81,11 +88,36 @@ async function rotateAllGenders() {
   }
 }
 
+// Annual Ultra-Rare ticket grant. On each operator-configured grant date
+// (ur_grant_dates), every registered player gains exactly one UR ticket.
+// Idempotent across restarts and repeat daily runs via the ur_grant_log marker.
+async function processAnnualUrGrant() {
+  try {
+    const today = todayART();              // YYYY-MM-DD in ART
+    const month = parseInt(today.slice(5, 7), 10);
+    const day = parseInt(today.slice(8, 10), 10);
+
+    const dates = await getUrGrantDates();
+    const matches = dates.some(d => d.month === month && d.day === day);
+    if (!matches) return; // not a configured grant date — no-op
+
+    const { granted, usersAffected } = await grantUrTicketsForDate(today);
+    if (granted) {
+      console.log(`[scheduler] Annual UR grant: +1 ticket to ${usersAffected} user(s) for ${today}.`);
+    } else {
+      console.log(`[scheduler] Annual UR grant: ${today} already processed — no change.`);
+    }
+  } catch (err) {
+    console.error('[scheduler] Annual UR grant failed:', err);
+  }
+}
+
 function initScheduler() {
   // Create today's shows at midnight ART (03:00 UTC)
   cron.schedule('0 3 * * *', async () => {
     console.log('[scheduler] Creating today\'s shows...');
     await createTodayShows();
+    await processAnnualUrGrant();
   }, { timezone: 'UTC' });
 
   // Resolve overdue shows every minute
@@ -101,6 +133,9 @@ function initScheduler() {
 
   // Also create shows on startup (in case server restarted mid-day)
   createTodayShows().catch(err => console.error('[scheduler] Startup show creation failed:', err));
+
+  // Catch up the annual UR grant on startup (restart on a grant date still grants once)
+  processAnnualUrGrant().catch(err => console.error('[scheduler] Startup UR grant failed:', err));
 
   // Catch up any missed weekly rotation on startup
   rotateAllGenders().catch(err => console.error('[scheduler] Startup pool rotation failed:', err));

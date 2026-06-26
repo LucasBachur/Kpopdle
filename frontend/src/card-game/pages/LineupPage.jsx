@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getLineup } from '../services/cardGameApi';
+import { getLineup, getTodayShows } from '../services/cardGameApi';
 import LineupBuilder from '../components/LineupBuilder';
 import styles from './LineupPage.module.css';
 
@@ -14,12 +14,16 @@ export default function LineupPage() {
   const [currentLineup, setCurrentLineup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [multiplierLabels, setMultiplierLabels] = useState([]);
 
   useEffect(() => {
-    getLineup('gg')
-      .then(data => setCurrentLineup(data.lineup))
-      .catch(() => setCurrentLineup(null))
-      .finally(() => setLoading(false));
+    Promise.all([
+      getLineup('gg').catch(() => ({ lineup: null })),
+      getTodayShows().catch(() => ({ multiplierLabels: [] })),
+    ]).then(([lineupData, showsData]) => {
+      setCurrentLineup(lineupData.lineup);
+      setMultiplierLabels(showsData.multiplierLabels ?? []);
+    }).finally(() => setLoading(false));
   }, []);
 
   function handleSaved(result) {
@@ -49,6 +53,17 @@ export default function LineupPage() {
                 <span className={styles.slotName}>{slot.idolName}</span>
                 <span className={styles.slotStat}>{slot.currentStat}</span>
               </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {multiplierLabels.length > 0 && (
+        <div className={styles.bonuses}>
+          <p className={styles.bonusLabel}>Today's Bonuses</p>
+          <div className={styles.bonusChips}>
+            {multiplierLabels.map(label => (
+              <span key={label} className={styles.bonusChip}>{label}</span>
             ))}
           </div>
         </div>
