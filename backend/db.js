@@ -523,7 +523,7 @@ async function getActiveBanners(genderCategory, userId) {
     SELECT b.id, b.group_name AS "groupName",
            b.gender_category AS "genderCategory",
            b.starts_at AS "startsAt", b.ends_at AS "endsAt",
-           b.description,
+           b.description, b.subtitle,
            COALESCE(bfp.free_pulls_remaining, 0) AS "freePullsRemaining",
            ${BANNER_MEMBERS_AGG}
     FROM banners b
@@ -751,6 +751,14 @@ async function getIdolsMissingRoles() {
   };
 }
 
+async function getLineupForAutoEntry(userId, genderCategory) {
+  const { rows } = await pool.query(
+    `SELECT id FROM lineups WHERE user_id = $1 AND gender_category = $2 AND is_valid = TRUE LIMIT 1`,
+    [userId, genderCategory]
+  );
+  return rows[0] || null;
+}
+
 async function invalidateLineupsForGender(genderCategory, poolSongIds) {
   if (poolSongIds.length === 0) return 0;
   const placeholders = poolSongIds.map((_, i) => `$${i + 2}`).join(', ');
@@ -760,6 +768,14 @@ async function invalidateLineupsForGender(genderCategory, poolSongIds) {
     [genderCategory, ...poolSongIds]
   );
   return rowCount;
+}
+
+async function getDailyBannerCards(bannerId) {
+  const { rows } = await pool.query(
+    `SELECT card_def_id AS "cardDefId" FROM banner_cards WHERE banner_id = $1`,
+    [bannerId]
+  );
+  return rows.map(r => r.cardDefId);
 }
 
 // ── Feature 004: annual UR ticket grant ──────────────────────────────────────
@@ -809,7 +825,7 @@ module.exports = {
   // songs
   getCurrentWeekSongs, getMonday,
   // lineups
-  getLineup, upsertLineup, replaceLineupSlots,
+  getLineup, upsertLineup, replaceLineupSlots, getLineupForAutoEntry,
   // shows
   getShowScheduleByDayOfWeek, getOrCreateTodayShow, getShowById,
   getPendingShows, markShowResolved, getTodayShows,
@@ -823,6 +839,7 @@ module.exports = {
   // banners
   getActiveBanners, getBannerWithMembers, getDailyBanner,
   getBannerFreePulls, consumeBannerFreePulls, getActiveBannerCardsByRarity,
+  getDailyBannerCards,
   // overflow_duplicates
   insertOverflowDuplicate, getOverflowDuplicatesByUser,
   getOverflowDuplicateById, deleteOverflowDuplicate,

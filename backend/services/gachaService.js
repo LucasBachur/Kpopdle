@@ -1,12 +1,10 @@
 const {
   pool,
   getGachaConfig,
-  getCardDefsByRarity,
   getBannerWithMembers,
-  getBannerFreePulls,
   consumeBannerFreePulls,
   getDailyBanner,
-  getActiveBannerCardsByRarity,
+  getDailyBannerCards,
   getPityCounter,
   setPityCounter,
   getActiveCardDefsByGender,
@@ -38,8 +36,6 @@ async function claimDailyPull(userId, genderCategory) {
   const col = DAILY_PULL_COL[genderCategory];
   if (!col) throw new Error(`Unknown genderCategory: ${genderCategory}`);
 
-  const config = await getGachaConfig();
-
   const { rows } = await pool.query(
     `SELECT ${col} AS "lastClaim" FROM users WHERE id = $1`,
     [userId]
@@ -57,30 +53,14 @@ async function claimDailyPull(userId, genderCategory) {
   const dailyBanner = await getDailyBanner(genderCategory);
   if (!dailyBanner) throw new Error('No daily banner configured');
 
-  const srRate = config.daily_banner_sr_rate ?? 0.03;
-  const rarity = Math.random() < srRate ? 'super_rare' : 'rare';
-
-  let cardDefId;
-  if (rarity === 'rare') {
-    const rarePool = await getCardDefsByRarity('rare');
-    if (!rarePool.length) throw new Error('No active rare cards available');
-    cardDefId = rarePool[Math.floor(Math.random() * rarePool.length)].id;
-  } else {
-    // SR: pull from active non-daily event banner pools; fall back to global SR pool
-    const eventSrPool = await getActiveBannerCardsByRarity(genderCategory, 'super_rare');
-    if (eventSrPool.length) {
-      cardDefId = eventSrPool[Math.floor(Math.random() * eventSrPool.length)].id;
-    } else {
-      const globalSr = await getCardDefsByRarity('super_rare');
-      if (globalSr.length) {
-        cardDefId = globalSr[Math.floor(Math.random() * globalSr.length)].id;
-      } else {
-        const rarePool = await getCardDefsByRarity('rare');
-        if (!rarePool.length) throw new Error('No active cards available');
-        cardDefId = rarePool[Math.floor(Math.random() * rarePool.length)].id;
-      }
-    }
+  const dailyPool = await getDailyBannerCards(dailyBanner.id);
+  if (!dailyPool.length) {
+    const err = new Error('Daily banner card pool is not configured');
+    err.code = 'POOL_NOT_CONFIGURED';
+    throw err;
   }
+
+  const cardDefId = dailyPool[Math.floor(Math.random() * dailyPool.length)];
 
   const client = await pool.connect();
   try {
@@ -95,7 +75,7 @@ async function claimDailyPull(userId, genderCategory) {
         cardDefId,
         idolName: def?.idolName ?? 'Unknown',
         group: def?.group ?? '',
-        rarity,
+        rarity: def?.rarity ?? 'rare',
         isRateUp: false,
         ...result,
       },
@@ -134,6 +114,7 @@ function resolvePool(members, rarity, rateUpIdolId, isComeback, config) {
 
   const rateUpMember = rarityMembers.find(m => m.idolId === rateUpIdolId);
   if (!rateUpMember) {
+    console.warn(`[gacha] resolvePool: rateUpIdolId=${rateUpIdolId} has no ${rarity} card in banner pool; falling back to uniform distribution`);
     return rarityMembers[Math.floor(Math.random() * rarityMembers.length)].cardDefId;
   }
 
@@ -166,30 +147,7 @@ async function pull(userId, bannerId, count, rateUpIdolId, genderCategory) {
   const multiCost  = config.multi_pull_cost  ?? 9;
   const multiCount = config.multi_pull_count  ?? 10;
 
-  // Free pulls are consumed first, capped at 10 per interaction.
-  const { freePullsRemaining } = await getBannerFreePulls(userId, bannerId);
-  const freeToUse = Math.min(count, freePullsRemaining, 10);
-  const paidCount = count - freeToUse;
-
-  const currencyCost = paidCount === 0 ? 0
-    : paidCount === multiCount ? multiCost
-    : paidCount * singleCost;
-
   const currencyCol = genderCategory === 'bg' ? 'bg_currency' : 'gg_currency';
-  if (paidCount > 0) {
-    const { rows: uRows } = await pool.query(
-      `SELECT ${currencyCol} AS currency FROM users WHERE id = $1`,
-      [userId]
-    );
-    if (!uRows.length) throw new Error('User not found');
-    if (uRows[0].currency < currencyCost) {
-      const err = new Error('Insufficient currency');
-      err.code = 'INSUFFICIENT_CURRENCY';
-      err.have = uRows[0].currency;
-      err.need = currencyCost;
-      throw err;
-    }
-  }
 
   const srThreshold = config.sr_pity_threshold ?? 50;
   const urThreshold = config.ur_pity_threshold ?? 100;
@@ -201,9 +159,37 @@ async function pull(userId, bannerId, count, rateUpIdolId, genderCategory) {
 
   const client = await pool.connect();
   const cards = [];
+  let freeToUse = 0;
+  let currencyCost = 0;
 
   try {
     await client.query('BEGIN');
+
+    const { rows: fpRows } = await client.query(
+      `SELECT free_pulls_remaining FROM banner_free_pulls WHERE user_id=$1 AND banner_id=$2 FOR UPDATE`,
+      [userId, bannerId]
+    );
+    freeToUse = Math.min(count, fpRows[0]?.free_pulls_remaining ?? 0, 10);
+    const paidCount = count - freeToUse;
+
+    currencyCost = paidCount === 0 ? 0
+      : paidCount === multiCount ? multiCost
+      : paidCount * singleCost;
+
+    if (paidCount > 0) {
+      const { rows: uRows } = await client.query(
+        `SELECT ${currencyCol} AS currency FROM users WHERE id = $1`,
+        [userId]
+      );
+      if (!uRows.length) throw new Error('User not found');
+      if (uRows[0].currency < currencyCost) {
+        const err = new Error('Insufficient currency');
+        err.code = 'INSUFFICIENT_CURRENCY';
+        err.have = uRows[0].currency;
+        err.need = currencyCost;
+        throw err;
+      }
+    }
 
     if (freeToUse > 0) {
       await consumeBannerFreePulls(userId, bannerId, freeToUse, client);

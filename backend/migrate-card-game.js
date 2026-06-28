@@ -231,6 +231,8 @@ const SCHEMA = `
   WHERE NOT EXISTS (
     SELECT 1 FROM banners WHERE gender_category = 'bg' AND description = 'daily'
   );
+
+  ALTER TABLE banners ADD COLUMN IF NOT EXISTS subtitle TEXT NULL;
 `;
 
 async function migrate() {

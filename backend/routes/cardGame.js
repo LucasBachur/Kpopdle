@@ -19,6 +19,7 @@ const {
   incrementPlayerCardStat,
   getGgOnlyMode,
   getBannerWithMembers,
+  getLineupForAutoEntry,
 } = require('../db');
 const { addCardToCollection, RARITY_CEILING } = require('../services/collectionService');
 const { claimDailyPull, pull: gachaPull } = require('../services/gachaService');
@@ -194,6 +195,9 @@ router.post('/daily-pull/claim', ggOnlyGuard, async (req, res) => {
   } catch (err) {
     if (err.code === 'ALREADY_CLAIMED') {
       return res.status(409).json({ error: err.message });
+    }
+    if (err.code === 'POOL_NOT_CONFIGURED') {
+      return res.status(500).json({ error: err.message });
     }
     console.error('POST /daily-pull/claim:', err);
     return res.status(500).json({ error: 'Server error' });
@@ -451,7 +455,10 @@ router.get('/leaderboard/:showId', async (req, res) => {
     const show = await getShowById(showId);
     if (!show) return res.status(404).json({ error: 'Show not found' });
 
-    const entries = await getShowEntries(showId);
+    const [entries, lineupRow] = await Promise.all([
+      getShowEntries(showId),
+      getLineupForAutoEntry(req.user.userId, show.genderCategory),
+    ]);
 
     const myEntry = entries.find(e => e.userId === req.user.userId) || null;
 
@@ -472,6 +479,7 @@ router.get('/leaderboard/:showId', async (req, res) => {
         rewardRarity: e.rewardRarity,
         isMe: e.userId === req.user.userId,
       })),
+      autoEntryStatus: { isRegistered: lineupRow !== null },
     });
   } catch (err) {
     console.error('GET /leaderboard/:showId:', err);

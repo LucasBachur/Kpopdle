@@ -39,6 +39,19 @@
   color: #888;
 }
 
+.countdown {
+  font-size: 0.78rem;
+  color: #f59e0b;
+  font-weight: 500;
+}
+
+.subtitle {
+  font-size: 0.82rem;
+  color: #c084fc;
+  margin: -6px 0 0;
+  font-style: italic;
+}
+
 .description {
   font-size: 0.85rem;
   color: #aaa;

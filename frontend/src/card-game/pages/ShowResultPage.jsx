@@ -35,7 +35,7 @@ export default function ShowResultPage() {
   if (error) return <div className={styles.page}><p className={styles.error}>{error}</p></div>;
   if (!data) return null;
 
-  const { show, myEntry, leaderboard } = data;
+  const { show, myEntry, leaderboard, autoEntryStatus } = data;
   const isPending = show.resolutionStatus === 'pending';
 
   return (
@@ -47,6 +47,12 @@ export default function ShowResultPage() {
           {isPending ? 'In Progress' : 'Final'}
         </span>
       </div>
+
+      {autoEntryStatus?.isRegistered && (
+        <div className={styles.autoEntryCard}>
+          Your lineup is registered for today's show
+        </div>
+      )}
 
       {myEntry && !isPending && (
         <div className={styles.myCard}>

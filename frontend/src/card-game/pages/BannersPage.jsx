@@ -111,7 +111,6 @@ export default function BannersPage() {
                 key={banner.id}
                 banner={banner}
                 userCurrency={me?.ggCurrency ?? 0}
-                freePulls={banner.freePullsRemaining ?? 0}
                 onPull={handlePull}
                 pulling={pulling}
               />
