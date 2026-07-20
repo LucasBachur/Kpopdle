@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  input::placeholder { color: inherit; opacity: .65; }
+</style>
+</helmet>
+<div style="min-height:100vh; position:relative; background:linear-gradient(165deg, oklch(0.87 0.058 300), oklch(0.85 0.058 300)); font-family:'Plus Jakarta Sans',sans-serif;">
+
+  <dc-import name="Sidebar" active="collection" hint-size="76px,100vh"></dc-import>
+
+  <main style="margin-left:76px; min-width:0; padding:40px 48px 56px;">
+    <div style="display:flex; justify-content:center; margin:0 0 30px;">
+      <h1 style="margin:0; padding:12px 34px; font-size:30px; font-weight:700; color:#2a2138; letter-spacing:-.02em; text-align:center; background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.9); border-radius:16px; box-shadow:0 6px 20px rgba(40,20,70,.08);">My Collection</h1>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:10px; margin:0 0 30px; flex-wrap:wrap;">
+      <div style="padding:9px 18px; border-radius:999px; background:#f5c43d; color:#1b1622; font-size:13px; font-weight:700; cursor:pointer;">All</div>
+      <div style="display:flex; align-items:center; gap:7px; padding:9px 16px; border-radius:999px; background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.85); color:#473d59; font-size:13px; font-weight:600; cursor:pointer;"><span style="width:8px; height:8px; border-radius:50%; background:#b3b6c4;"></span>Rare</div>
+      <div style="display:flex; align-items:center; gap:7px; padding:9px 16px; border-radius:999px; background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.85); color:#473d59; font-size:13px; font-weight:600; cursor:pointer;"><span style="width:8px; height:8px; border-radius:50%; background:#9b5de5;"></span>Super Rare</div>
+      <div style="display:flex; align-items:center; gap:7px; padding:9px 16px; border-radius:999px; background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.85); color:#473d59; font-size:13px; font-weight:600; cursor:pointer;"><span style="width:8px; height:8px; border-radius:50%; background:#eaa31c;"></span>Ultra Rare</div>
+      <div title="Sort" style="width:40px; height:40px; flex:none; display:flex; align-items:center; justify-content:center; border-radius:11px; background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.85); color:#473d59; cursor:pointer;">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 3v12M5 15l-2.5-2.5M5 15l2.5-2.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 15V3M13 3l-2.5 2.5M13 3l2.5 2.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div style="flex:1;"></div>
+      <div style="display:flex; align-items:center; gap:9px; background:rgba(255,255,255,.7); border:1px solid rgba(255,255,255,.9); border-radius:12px; padding:11px 15px; width:280px; color:#6a5f7d;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/><line x1="11" y1="11" x2="14.5" y2="14.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input placeholder="Search idols…" style="border:none; background:none; outline:none; font-family:inherit; font-size:14px; color:#2a2138; width:100%;">
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:22px;">
+      <sc-for list="{{ cards }}" as="card" hint-placeholder-count="14">
+        <div style="position:relative; cursor:pointer; border-radius:13px; transition:transform .18s ease, box-shadow .18s ease; transform:{{ card.scale }}; z-index:{{ card.z }}; box-shadow:{{ card.shadow }};" onMouseEnter="{{ card.enter }}" onMouseLeave="{{ card.leave }}">
+          <div style="position:relative; aspect-ratio:5/7; border-radius:13px; overflow:hidden; border:2.5px solid; border-color:{{ card.border }}; background:linear-gradient(135deg,#e9def6,#dccdf1);">
+            <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(45deg,#00000008 0 9px,#0000 9px 18px);"></div>
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.16em; color:#7a6a93; opacity:.55;">PHOTO</div>
+            <div style="position:absolute; left:0; right:0; bottom:0; padding:24px 10px 9px 46px; background:linear-gradient(to top, rgba(20,14,30,.86), transparent); opacity:{{ card.nameOpacity }}; transition:opacity .18s ease; font-weight:600; font-size:14px; color:#fff;">{{ card.name }}</div>
+            <div style="position:absolute; left:8px; bottom:8px; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(18,12,26,.85); color:#f5c43d; font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:13px; z-index:2;">{{ card.stat }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { hover: null };
+
+  cards() {
+    return [
+      { name: 'Giselle', stat: 85, rarity: 'R' }, { name: 'Karina', stat: 85, rarity: 'R' },
+      { name: 'Ningning', stat: 85, rarity: 'R' }, { name: 'Winter', stat: 83, rarity: 'R' },
+      { name: 'Jennie', stat: 85, rarity: 'R' }, { name: 'Jisoo', stat: 85, rarity: 'R' },
+      { name: 'Lisa', stat: 85, rarity: 'R' }, { name: 'Rosé', stat: 83, rarity: 'R' },
+      { name: 'Chaeyoung', stat: 85, rarity: 'R' }, { name: 'Dahyun', stat: 85, rarity: 'R' },
+      { name: 'Jeongyeon', stat: 85, rarity: 'R' }, { name: 'Jihyo', stat: 85, rarity: 'R' },
+      { name: 'Mina', stat: 85, rarity: 'R' }, { name: 'Momo', stat: 85, rarity: 'R' },
+      { name: 'Nayeon', stat: 85, rarity: 'R' }, { name: 'Sana', stat: 85, rarity: 'R' },
+      { name: 'Tzuyu', stat: 85, rarity: 'R' }, { name: 'Giselle', stat: 92, rarity: 'SR' },
+      { name: 'Karina', stat: 95, rarity: 'SR' }, { name: 'Ningning', stat: 95, rarity: 'SR' },
+      { name: 'Winter', stat: 92, rarity: 'SR' }, { name: 'Karina', stat: 98, rarity: 'UR' },
+    ];
+  }
+
+  renderVals() {
+    const colors = { R: '#b3b6c4', SR: '#eaa31c', UR: '#9b5de5' };
+    const hovered = this.state.hover;
+    return {
+      cards: this.cards().map((card, i) => ({
+        ...card,
+        border: colors[card.rarity],
+        scale: hovered === i ? 'scale(1.05)' : 'scale(1)',
+        nameOpacity: hovered === i ? 1 : 0,
+        z: hovered === i ? 20 : 1,
+        shadow: hovered === i ? '0 16px 34px rgba(25,10,50,.32)' : '0 3px 10px rgba(25,10,50,.10)',
+        enter: () => this.setState({ hover: i }),
+        leave: () => this.setState({ hover: null }),
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>

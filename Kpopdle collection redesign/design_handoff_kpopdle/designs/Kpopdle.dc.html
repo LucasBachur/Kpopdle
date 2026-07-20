@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  a { color: #7a4fd6; text-decoration: none; }
+  a:hover { color: #5a34ad; }
+  input::placeholder { color: #7b7188; opacity: 1; }
+  @keyframes kp-modal-in { from { opacity:0; transform:translateY(14px) scale(.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+  @keyframes kp-fade { from { opacity:0; } to { opacity:1; } }
+  @keyframes kp-row-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes kp-pop { 0%{ transform:scale(.9); } 60%{ transform:scale(1.04); } 100%{ transform:scale(1); } }
+  #kpDrop::-webkit-scrollbar { width:7px; }
+  #kpDrop::-webkit-scrollbar-thumb { background:rgba(255,255,255,.16); border-radius:8px; }
+</style>
+</helmet>
+<div style="min-height:100vh; position:relative; background:linear-gradient(165deg, oklch(0.87 0.058 300), oklch(0.85 0.058 300)); font-family:'Plus Jakarta Sans',sans-serif;">
+
+  <dc-import name="Sidebar" active="kpopdle" hint-size="76px,100vh"></dc-import>
+
+  <main style="margin-left:76px; min-width:0; padding:44px 44px 90px;">
+    <div style="position:relative; max-width:1040px; margin:0 auto;">
+
+      <!-- header: title + mode selector -->
+      <div style="position:relative; height:84px; margin-bottom:30px;">
+        <div style="position:absolute; left:0; right:0; top:16px; display:flex; justify-content:center;">
+          <h1 style="margin:0; padding:12px 34px; font-size:30px; font-weight:700; color:#2a2138; letter-spacing:-.02em; text-align:center; background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.9); border-radius:16px; box-shadow:0 6px 20px rgba(40,20,70,.08);">Kpopdle</h1>
+        </div>
+        <div onMouseEnter="{{ modeEnter }}" onMouseLeave="{{ modeLeave }}" style="position:absolute; top:0; right:0; display:flex; gap:10px;">
+          <sc-for list="{{ modeCards }}" as="m" hint-placeholder-count="1">
+            <div onClick="{{ m.onClick }}" style="width:84px; height:84px; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; background:{{ m.bg }}; color:{{ m.color }}; border:2px solid {{ m.border }}; box-shadow:{{ m.shadow }}; transition:transform .14s ease;" style-hover="transform:translateY(-2px);">
+              <span style="font-size:25px; font-weight:800; line-height:1; letter-spacing:-.01em;">{{ m.big }}</span>
+              <span style="font-size:10.5px; font-weight:600; margin-top:4px; text-align:center; line-height:1.15;">{{ m.sub }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- guess bar -->
+      <div style="display:flex; justify-content:center; align-items:center; gap:12px; margin-bottom:8px;">
+        <div style="position:relative; width:440px;">
+          <input value="{{ query }}" onInput="{{ onInput }}" onKeyDown="{{ onKey }}" placeholder="Type your guess" style="width:100%; height:56px; padding:0 20px; border-radius:15px; border:1px solid rgba(255,255,255,.1); outline:none; background:#1b1622; color:#fff; font-family:inherit; font-size:16px; font-weight:500; box-shadow:0 8px 22px rgba(27,22,34,.28);" style-focus="border-color:#f5c43d; box-shadow:0 0 0 3px rgba(245,196,61,.28), 0 8px 22px rgba(27,22,34,.28);">
+          <sc-if value="{{ showSuggest }}" hint-placeholder-val="{{ false }}">
+            <div id="kpDrop" style="position:absolute; top:64px; left:0; right:0; z-index:40; max-height:288px; overflow-y:auto; padding:7px; background:#1b1622; border:1px solid rgba(255,255,255,.08); border-radius:15px; box-shadow:0 24px 54px rgba(20,10,40,.5); animation:kp-fade .14s ease both;">
+              <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="5">
+                <div onClick="{{ s.onClick }}" style="display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:11px; cursor:pointer; transition:background .12s ease;" style-hover="background:rgba(245,196,61,.14);">
+                  <span style="width:34px; height:34px; flex:none; border-radius:9px; overflow:hidden; position:relative; background:linear-gradient(135deg,#3a2c52,#2a2038); display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:#c9a6ff;">{{ s.initial }}</span>
+                  <span style="font-size:15px; font-weight:600; color:#fff;">{{ s.name }}</span>
+                  <span style="font-size:13px; color:#9a8fb0; margin-left:2px;">{{ s.group }}</span>
+                  <span style="margin-left:auto; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.08em; color:{{ s.tagColor }}; background:{{ s.tagBg }}; padding:3px 8px; border-radius:6px;">{{ s.tag }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <div onClick="{{ toggleStats }}" title="Statistics" style="width:56px; height:56px; flex:none; display:flex; align-items:center; justify-content:center; border-radius:15px; cursor:pointer; background:#1b1622; border:1px solid rgba(255,255,255,.1); box-shadow:0 8px 22px rgba(27,22,34,.28); transition:transform .14s ease;" style-hover="transform:translateY(-2px);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <rect x="3.5" y="12" width="4.2" height="8" rx="1.4" fill="#66a84e"/>
+            <rect x="9.9" y="7" width="4.2" height="13" rx="1.4" fill="#f5c43d"/>
+            <rect x="16.3" y="4" width="4.2" height="16" rx="1.4" fill="#9b5de5"/>
+          </svg>
+        </div>
+      </div>
+
+      <div style="height:26px;"></div>
+
+      <!-- win banner -->
+      <sc-if value="{{ won }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:724px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; gap:12px; padding:15px 22px; border-radius:16px; background:radial-gradient(120% 160% at 50% -40%, rgba(245,196,61,.28), transparent 65%), #171220; border:1px solid rgba(245,196,61,.4); box-shadow:0 12px 30px rgba(20,10,40,.32); animation:kp-pop .4s ease both;">
+          <span style="color:#f5c43d; display:flex;"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M4 8l4 3 4-6 4 6 4-3-1.6 10H5.6L4 8z"/></svg></span>
+          <span style="font-size:17px; font-weight:800; color:#fff;">Solved in {{ guessCount }} &mdash; it was {{ answerName }}!</span>
+        </div>
+      </sc-if>
+
+      <!-- category headers -->
+      <div style="display:grid; grid-template-columns:84px repeat(5, 116px); gap:12px; justify-content:center; margin-bottom:12px;">
+        <div></div>
+        <sc-for list="{{ headers }}" as="h" hint-placeholder-count="5">
+          <div style="display:flex; align-items:center; justify-content:center; padding:11px 8px; border-radius:999px; background:#9257d9; border:1px solid #6f3fb5; box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 3px 9px rgba(80,40,140,.26); font-size:13.5px; font-weight:700; color:#fff; letter-spacing:-.01em;">{{ h }}</div>
+        </sc-for>
+      </div>
+
+      <!-- guess rows -->
+      <sc-if value="{{ hasGuesses }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+          <sc-for list="{{ rows }}" as="row" hint-placeholder-count="2">
+            <div style="display:grid; grid-template-columns:84px repeat(5, 116px); gap:12px; animation:kp-row-in .3s ease both;">
+              <div style="position:relative; aspect-ratio:1; border-radius:14px; overflow:hidden; border:1px solid rgba(255,255,255,.7); background:linear-gradient(135deg,#e9def6,#dccdf1); box-shadow:0 3px 9px rgba(25,10,50,.12);">
+                <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(45deg,#00000010 0 8px,#0000 8px 16px);"></div>
+                <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:24px; font-weight:700; color:#6a5a86; opacity:.6;">{{ row.initial }}</div>
+              </div>
+              <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="5">
+                <div style="position:relative; aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:14px; overflow:hidden; background:{{ cell.bg }}; border:1px solid {{ cell.border }}; box-shadow:{{ cell.shadow }};">
+                  <sc-if value="{{ cell.showArrow }}" hint-placeholder-val="{{ false }}">
+                    <span style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:64px; line-height:1; color:rgba(255,255,255,.26);">{{ cell.arrow }}</span>
+                  </sc-if>
+                  <span style="position:relative; font-size:15px; font-weight:700; color:#fff; text-align:center; padding:4px; line-height:1.2; text-shadow:0 1px 2px rgba(0,0,0,.18);">{{ cell.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ hasGuesses }}" hint-placeholder-val="{{ false }}"></sc-if>
+      <sc-if value="{{ noGuesses }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:724px; margin:0 auto; padding:40px; text-align:center; color:#6a5f7d; font-size:14px;">Type an idol above to start narrowing it down &mdash; <span style="color:#5a9e3f; font-weight:700;">green</span> means a match.</div>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <!-- stats modal -->
+  <sc-if value="{{ statsOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeStats }}" style="position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:24px; background:rgba(18,12,26,.6); backdrop-filter:blur(5px); animation:kp-fade .16s ease both;">
+      <div onClick="{{ stopProp }}" style="position:relative; width:460px; max-width:100%; border-radius:24px; overflow:hidden; background:radial-gradient(120% 70% at 50% -10%, rgba(155,93,229,.26), transparent 60%), #171220; border:1px solid rgba(255,255,255,.09); box-shadow:0 30px 80px rgba(10,5,25,.6); animation:kp-modal-in .24s cubic-bezier(.2,.7,.3,1) both;">
+        <div style="position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,#9b5de5,#f5c43d,#e0533d,#9b5de5);"></div>
+        <div style="padding:30px 30px 28px;">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:22px;">
+            <div>
+              <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.24em; color:#c9a6ff;">YOUR RECORD</div>
+              <div style="font-size:24px; font-weight:800; color:#fff; margin-top:5px; letter-spacing:-.01em;">Statistics</div>
+            </div>
+            <div onClick="{{ closeStats }}" title="Close" style="width:34px; height:34px; flex:none; display:flex; align-items:center; justify-content:center; border-radius:10px; cursor:pointer; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); color:#b9b1c6; transition:background .14s ease, color .14s ease;" style-hover="background:rgba(255,255,255,.14); color:#fff;">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:26px;">
+            <sc-for list="{{ statTiles }}" as="t" hint-placeholder-count="4">
+              <div style="text-align:center; padding:14px 6px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07);">
+                <div style="font-size:26px; font-weight:800; color:{{ t.color }}; line-height:1;">{{ t.value }}</div>
+                <div style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.1em; color:#8a7f9a; margin-top:7px; line-height:1.3;">{{ t.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.18em; color:#8a7f9a; margin-bottom:12px;">GUESS DISTRIBUTION</div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:26px;">
+            <sc-for list="{{ dist }}" as="d" hint-placeholder-count="5">
+              <div style="display:flex; align-items:center; gap:11px;">
+                <span style="width:22px; flex:none; text-align:center; font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:#b9b1c6;">{{ d.k }}</span>
+                <div style="flex:1; height:26px; border-radius:7px; background:rgba(255,255,255,.06); overflow:hidden;">
+                  <div style="height:100%; border-radius:7px; width:{{ d.width }}; background:{{ d.bar }}; display:flex; align-items:center; justify-content:flex-end; padding-right:9px; transition:width .5s cubic-bezier(.2,.7,.3,1);">
+                    <span style="font-family:'Space Mono',monospace; font-size:11px; font-weight:700; color:{{ d.countColor }};">{{ d.c }}</span>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; padding-top:20px; border-top:1px solid rgba(255,255,255,.08);">
+            <div>
+              <div style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.16em; color:#8a7f9a;">NEXT KPOPDLE</div>
+              <div style="font-family:'Space Mono',monospace; font-size:26px; font-weight:700; color:#f5c43d; margin-top:4px; letter-spacing:.02em;">{{ nextIn }}</div>
+            </div>
+            <div onClick="{{ closeStats }}" style="padding:13px 24px; border-radius:12px; cursor:pointer; background:#f5c43d; color:#1b1622; font-size:14px; font-weight:700; box-shadow:0 6px 18px rgba(245,196,61,.35); transition:transform .14s ease;" style-hover="transform:translateY(-1px);">Keep playing</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1120,&quot;height&quot;:760},&quot;startMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;gg&quot;,&quot;all&quot;,&quot;bg&quot;],&quot;default&quot;:&quot;gg&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Start mode&quot;},&quot;answerName&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Ryujin&quot;,&quot;Karina&quot;,&quot;Wonyoung&quot;,&quot;Minji&quot;,&quot;Sana&quot;],&quot;default&quot;:&quot;Ryujin&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Secret idol&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      query: '',
+      guesses: ['sana', 'lia'],
+      statsOpen: false,
+      mode: props.startMode || 'gg',
+      modeHover: false,
+      now: Date.now(),
+    };
+  }
+
+  componentDidMount() {
+    this._t = setInterval(() => { if (this.state.statsOpen) this.setState({ now: Date.now() }); }, 1000);
+  }
+  componentWillUnmount() { clearInterval(this._t); }
+
+  // ============================================================
+  //  IDOL DATABASE — [id, name, group, age, nationality, company, g]
+  //  g = 'gg' (girl group) or 'bg' (boy group)
+  // ============================================================
+  idols() {
+    return [
+      ['sana', 'Sana', 'TWICE', 29, 'Japanese', 'JYP', 'gg'],
+      ['nayeon', 'Nayeon', 'TWICE', 30, 'Korean', 'JYP', 'gg'],
+      ['momo', 'Momo', 'TWICE', 29, 'Japanese', 'JYP', 'gg'],
+      ['mina', 'Mina', 'TWICE', 28, 'Japanese', 'JYP', 'gg'],
+      ['jihyo', 'Jihyo', 'TWICE', 28, 'Korean', 'JYP', 'gg'],
+      ['jeongyeon', 'Jeongyeon', 'TWICE', 28, 'Korean', 'JYP', 'gg'],
+      ['dahyun', 'Dahyun', 'TWICE', 27, 'Korean', 'JYP', 'gg'],
+      ['chaeyoung', 'Chaeyoung', 'TWICE', 26, 'Korean', 'JYP', 'gg'],
+      ['tzuyu', 'Tzuyu', 'TWICE', 26, 'Taiwanese', 'JYP', 'gg'],
+      ['yeji', 'Yeji', 'ITZY', 25, 'Korean', 'JYP', 'gg'],
+      ['lia', 'Lia', 'ITZY', 25, 'Korean', 'JYP', 'gg'],
+      ['ryujin', 'Ryujin', 'ITZY', 25, 'Korean', 'JYP', 'gg'],
+      ['chaeryeong', 'Chaeryeong', 'ITZY', 24, 'Korean', 'JYP', 'gg'],
+      ['yuna', 'Yuna', 'ITZY', 22, 'Korean', 'JYP', 'gg'],
+      ['karina', 'Karina', 'aespa', 25, 'Korean', 'SM', 'gg'],
+      ['winter', 'Winter', 'aespa', 24, 'Korean', 'SM', 'gg'],
+      ['giselle', 'Giselle', 'aespa', 25, 'Japanese', 'SM', 'gg'],
+      ['ningning', 'Ningning', 'aespa', 23, 'Chinese', 'SM', 'gg'],
+      ['minji', 'Minji', 'NewJeans', 21, 'Korean', 'ADOR', 'gg'],
+      ['hanni', 'Hanni', 'NewJeans', 21, 'Vietnamese', 'ADOR', 'gg'],
+      ['danielle', 'Danielle', 'NewJeans', 20, 'Korean', 'ADOR', 'gg'],
+      ['haerin', 'Haerin', 'NewJeans', 19, 'Korean', 'ADOR', 'gg'],
+      ['hyein', 'Hyein', 'NewJeans', 17, 'Korean', 'ADOR', 'gg'],
+      ['jennie', 'Jennie', 'BLACKPINK', 30, 'Korean', 'YG', 'gg'],
+      ['jisoo', 'Jisoo', 'BLACKPINK', 30, 'Korean', 'YG', 'gg'],
+      ['lisa', 'Lisa', 'BLACKPINK', 28, 'Thai', 'YG', 'gg'],
+      ['rose', 'Rosé', 'BLACKPINK', 28, 'Korean', 'YG', 'gg'],
+      ['sakura', 'Sakura', 'LE SSERAFIM', 27, 'Japanese', 'HYBE', 'gg'],
+      ['chaewon', 'Chaewon', 'LE SSERAFIM', 25, 'Korean', 'HYBE', 'gg'],
+      ['yunjin', 'Yunjin', 'LE SSERAFIM', 24, 'Korean', 'HYBE', 'gg'],
+      ['kazuha', 'Kazuha', 'LE SSERAFIM', 22, 'Japanese', 'HYBE', 'gg'],
+      ['eunchae', 'Eunchae', 'LE SSERAFIM', 19, 'Korean', 'HYBE', 'gg'],
+      ['wonyoung', 'Wonyoung', 'IVE', 21, 'Korean', 'Starship', 'gg'],
+      ['yujin', 'Yujin', 'IVE', 22, 'Korean', 'Starship', 'gg'],
+      ['rei', 'Rei', 'IVE', 24, 'Japanese', 'Starship', 'gg'],
+      ['liz', 'Liz', 'IVE', 21, 'Korean', 'Starship', 'gg'],
+      ['hwasa', 'Hwasa', 'MAMAMOO', 30, 'Korean', 'RBW', 'gg'],
+      ['isa', 'Isa', 'STAYC', 23, 'Korean', 'High Up', 'gg'],
+      ['asa', 'Asa', 'BABYMONSTER', 20, 'Japanese', 'YG', 'gg'],
+      ['minnie', 'Minnie', '(G)I-DLE', 27, 'Thai', 'Cube', 'gg'],
+      ['miyeon', 'Miyeon', '(G)I-DLE', 29, 'Korean', 'Cube', 'gg'],
+      ['soyeon', 'Soyeon', '(G)I-DLE', 27, 'Korean', 'Cube', 'gg'],
+      ['jungkook', 'Jungkook', 'BTS', 28, 'Korean', 'HYBE', 'bg'],
+      ['jimin', 'Jimin', 'BTS', 30, 'Korean', 'HYBE', 'bg'],
+      ['v', 'V', 'BTS', 30, 'Korean', 'HYBE', 'bg'],
+      ['felix', 'Felix', 'Stray Kids', 25, 'Australian', 'JYP', 'bg'],
+      ['bangchan', 'Bang Chan', 'Stray Kids', 28, 'Australian', 'JYP', 'bg'],
+      ['hyunjin', 'Hyunjin', 'Stray Kids', 25, 'Korean', 'JYP', 'bg'],
+      ['soobin', 'Soobin', 'TXT', 25, 'Korean', 'HYBE', 'bg'],
+      ['yeonjun', 'Yeonjun', 'TXT', 26, 'Korean', 'HYBE', 'bg'],
+      ['heeseung', 'Heeseung', 'ENHYPEN', 24, 'Korean', 'HYBE', 'bg'],
+      ['jay', 'Jay', 'ENHYPEN', 24, 'Korean', 'HYBE', 'bg'],
+      ['mingyu', 'Mingyu', 'SEVENTEEN', 28, 'Korean', 'Pledis', 'bg'],
+      ['hoshi', 'Hoshi', 'SEVENTEEN', 29, 'Korean', 'Pledis', 'bg'],
+      ['hongjoong', 'Hongjoong', 'ATEEZ', 27, 'Korean', 'KQ', 'bg'],
+      ['san', 'San', 'ATEEZ', 27, 'Korean', 'KQ', 'bg'],
+    ].map(a => ({ id: a[0], name: a[1], group: a[2], age: a[3], nat: a[4], company: a[5], g: a[6] }));
+  }
+
+  byId(id) { return this.idols().find(x => x.id === id); }
+
+  answer() {
+    const name = this.props.answerName || 'Ryujin';
+    return this.idols().find(x => x.name === name) || this.byId('ryujin');
+  }
+
+  pool() {
+    const mode = this.state.mode;
+    return this.idols().filter(x => mode === 'all' ? true : x.g === mode);
+  }
+
+  addGuess(idol) {
+    this.setState(s => {
+      if (s.guesses.includes(idol.id)) return { query: '' };
+      return { guesses: s.guesses.concat([idol.id]), query: '' };
+    });
+  }
+
+  greenBg() { return 'linear-gradient(160deg,#67a94f,#528b3e)'; }
+  redBg() { return 'linear-gradient(160deg,#cb5139,#b03c28)'; }
+  cell(match, label, extra) {
+    return Object.assign({
+      label: String(label),
+      bg: match ? this.greenBg() : this.redBg(),
+      border: match ? '#437233' : '#8f2f1f',
+      shadow: match
+        ? 'inset 0 1px 0 rgba(255,255,255,.26), 0 4px 10px rgba(60,110,40,.22)'
+        : 'inset 0 1px 0 rgba(255,255,255,.16), 0 4px 10px rgba(150,50,30,.2)',
+      showArrow: false,
+      arrow: '',
+    }, extra || {});
+  }
+
+  suggestions() {
+    const q = this.state.query.trim().toLowerCase();
+    if (!q) return [];
+    return this.pool()
+      .filter(x => !this.state.guesses.includes(x.id) && x.name.toLowerCase().includes(q))
+      .slice(0, 6);
+  }
+
+  fmtCountdown() {
+    const d = new Date(this.state.now);
+    const end = new Date(this.state.now);
+    end.setHours(24, 0, 0, 0);
+    let s = Math.max(0, Math.floor((end - d) / 1000));
+    const h = Math.floor(s / 3600); s -= h * 3600;
+    const m = Math.floor(s / 60); s -= m * 60;
+    const p = n => String(n).padStart(2, '0');
+    return p(h) + ':' + p(m) + ':' + p(s);
+  }
+
+  renderVals() {
+    const ans = this.answer();
+    const sug = this.suggestions();
+
+    // mode selector
+    const allModes = [
+      { key: 'bg', big: 'BG', sub: 'Boy Group', bg: '#bfe1ee', color: '#173842', border: '#8fcbe0' },
+      { key: 'all', big: 'All', sub: 'Everyone', bg: '#2a2138', color: '#fff', border: '#1b1622' },
+      { key: 'gg', big: 'GG', sub: 'Girl Group', bg: '#f6cdd6', color: '#4a2530', border: '#eeaebd' },
+    ];
+    const decorate = m => {
+      const active = m.key === this.state.mode;
+      return Object.assign({}, m, {
+        shadow: active
+          ? '0 0 0 3px rgba(245,196,61,.95), 0 10px 24px rgba(40,20,70,.2)'
+          : '0 4px 12px rgba(40,20,70,.12)',
+        onClick: () => this.setState({ mode: m.key, modeHover: false }),
+      });
+    };
+    const modeCards = this.state.modeHover
+      ? allModes.map(decorate)
+      : [decorate(allModes.find(m => m.key === this.state.mode))];
+
+    // rows
+    const rows = this.state.guesses.map(id => {
+      const g = this.byId(id);
+      const ageMatch = g.age === ans.age;
+      const ageCell = this.cell(ageMatch, g.age, ageMatch ? {} : {
+        showArrow: true,
+        arrow: ans.age > g.age ? '\u25B2' : '\u25BC',
+      });
+      return {
+        initial: g.name.charAt(0).toUpperCase(),
+        cells: [
+          this.cell(g.id === ans.id, g.name),
+          this.cell(g.group === ans.group, g.group),
+          ageCell,
+          this.cell(g.nat === ans.nat, g.nat),
+          this.cell(g.company === ans.company, g.company),
+        ],
+      };
+    });
+
+    const won = this.state.guesses.includes(ans.id);
+
+    // stats
+    const statTiles = [
+      { value: '128', label: 'PLAYED', color: '#fff' },
+      { value: '87%', label: 'WIN RATE', color: '#fff' },
+      { value: '12', label: 'CURRENT', color: '#f5c43d' },
+      { value: '31', label: 'MAX', color: '#f5c43d' },
+    ];
+    const distRaw = [
+      { k: '1', c: 6 }, { k: '2', c: 22 }, { k: '3', c: 48, hl: true }, { k: '4', c: 31 }, { k: '5+', c: 21 },
+    ];
+    const maxC = Math.max.apply(null, distRaw.map(d => d.c));
+    const dist = distRaw.map(d => ({
+      k: d.k, c: d.c,
+      width: Math.max(11, d.c / maxC * 100) + '%',
+      bar: d.hl ? 'linear-gradient(90deg,#eaa31c,#f5c43d)' : '#7a4fd6',
+      countColor: d.hl ? '#1b1622' : '#efe6ff',
+    }));
+
+    return {
+      headers: ['Name', 'Group', 'Age', 'Nationality', 'Company'],
+      query: this.state.query,
+      onInput: e => this.setState({ query: e.target.value }),
+      onKey: e => { if (e.key === 'Enter' && sug.length) this.addGuess(sug[0]); },
+
+      showSuggest: sug.length > 0,
+      suggestions: sug.map(x => ({
+        name: x.name, group: x.group, initial: x.name.charAt(0).toUpperCase(),
+        tag: x.g === 'bg' ? 'BG' : 'GG',
+        tagBg: x.g === 'bg' ? 'rgba(120,190,220,.16)' : 'rgba(238,120,155,.16)',
+        tagColor: x.g === 'bg' ? '#9dd3e6' : '#f2a8bd',
+        onClick: () => this.addGuess(x),
+      })),
+
+      modeCards,
+      modeEnter: () => this.setState({ modeHover: true }),
+      modeLeave: () => this.setState({ modeHover: false }),
+
+      rows,
+      hasGuesses: this.state.guesses.length > 0,
+      noGuesses: this.state.guesses.length === 0,
+
+      won, answerName: ans.name, guessCount: this.state.guesses.length + (won ? 0 : 0),
+
+      statsOpen: this.state.statsOpen,
+      toggleStats: () => this.setState(s => ({ statsOpen: !s.statsOpen })),
+      closeStats: () => this.setState({ statsOpen: false }),
+      stopProp: e => e.stopPropagation(),
+      statTiles, dist,
+      nextIn: this.fmtCountdown(),
+    };
+  }
+}
+</script>
+</body>
+</html>

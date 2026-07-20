@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</helmet>
+<div onClick="{{ onClick }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" style="position:relative; width:100%; aspect-ratio:5/7; cursor:{{ cursor }}; font-family:'Plus Jakarta Sans',sans-serif;">
+  <sc-if value="{{ showDashed }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute; inset:0; border:2px dashed; border-color:{{ dashColor }}; border-radius:13px; display:flex; align-items:center; justify-content:center; background:{{ dashBg }};">
+      <div style="position:absolute; top:8px; left:0; right:0; text-align:center; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.05em; color:#8a7ea0;">#{{ rank }}</div>
+      <div style="font-weight:600; font-size:13px; color:{{ dashLabelColor }};">{{ dashLabel }}</div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ showCard }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute; inset:0; border-radius:13px; overflow:hidden; border:2.5px solid; border-color:{{ border }}; background:linear-gradient(135deg,#e9def6,#dccdf1); transform:{{ cardScale }}; transition:transform .16s ease; box-shadow:{{ cardShadow }};">
+      <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(45deg,#00000008 0 9px,#0000 9px 18px);"></div>
+      <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.14em; color:#7a6a93; opacity:.5;">PHOTO</div>
+      <sc-if value="{{ hasRank }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute; top:6px; left:6px; padding:2px 7px; border-radius:7px; background:rgba(18,12,26,.82); color:#fff; font-size:10px; font-weight:700; font-family:'Space Mono',monospace;">#{{ rank }}</div>
+      </sc-if>
+      <div style="position:absolute; left:0; right:0; bottom:0; padding:20px 8px 7px 38px; background:linear-gradient(to top, rgba(20,14,30,.86), transparent); opacity:{{ nameOpacity }}; transition:opacity .16s ease; font-weight:600; font-size:12px; color:#fff;">{{ idolName }}</div>
+      <div style="position:absolute; left:6px; bottom:6px; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(18,12,26,.85); color:#f5c43d; font-weight:800; font-size:12px;">{{ stat }}</div>
+      <div style="position:absolute; inset:0; background:rgba(232,224,242,.68); display:flex; align-items:center; justify-content:center; opacity:{{ dimOpacity }}; pointer-events:none; transition:opacity .16s ease;">
+        <div style="font-size:10px; font-weight:700; color:#5f5470; background:rgba(255,255,255,.85); padding:3px 9px; border-radius:999px; letter-spacing:.02em;">In lineup</div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;140px&quot;,&quot;height&quot;:&quot;196px&quot;},&quot;cardState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;empty&quot;,&quot;active&quot;,&quot;filled&quot;,&quot;picker&quot;,&quot;pickerDim&quot;],&quot;default&quot;:&quot;picker&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;idolName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Karina&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;stat&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:95,&quot;tsType&quot;:&quot;number&quot;},&quot;rarity&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;R&quot;,&quot;SR&quot;,&quot;UR&quot;],&quot;default&quot;:&quot;SR&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;rank&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;number&quot;},&quot;onClick&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+class Component extends DCLogic {
+  state = { hovered: false };
+
+  renderVals() {
+    const s = this.props.cardState ?? 'picker';
+    const rarityBorders = { R: '#b3b6c4', SR: '#eaa31c', UR: '#9b5de5' };
+    const border = rarityBorders[this.props.rarity] ?? '#b3b6c4';
+    const isEmpty = s === 'empty';
+    const isActive = s === 'active';
+    const isFilled = s === 'filled';
+    const isDim = s === 'pickerDim';
+    const isPicker = s === 'picker';
+    const showDashed = isEmpty || isActive;
+    const hov = this.state.hovered;
+    const growable = isPicker || isFilled;
+    return {
+      showDashed,
+      showCard: !showDashed,
+      dashColor: isActive ? '#e0a51f' : 'rgba(70,50,90,.32)',
+      dashBg: isActive ? 'rgba(245,196,61,.14)' : 'rgba(255,255,255,.18)',
+      dashLabel: isActive ? 'picking…' : '+ Add',
+      dashLabelColor: isActive ? '#b9820f' : '#8a7ea0',
+      rank: this.props.rank ?? '',
+      hasRank: this.props.rank != null && this.props.rank !== '',
+      idolName: this.props.idolName ?? '',
+      stat: this.props.stat ?? '',
+      border,
+      cardScale: hov && growable ? 'scale(1.05)' : 'scale(1)',
+      cardShadow: hov && growable ? '0 14px 30px rgba(25,10,50,.28)' : '0 2px 8px rgba(25,10,50,.10)',
+      nameOpacity: hov ? 1 : 0,
+      dimOpacity: isDim ? 1 : 0,
+      cursor: isDim ? 'default' : 'pointer',
+      onEnter: () => this.setState({ hovered: true }),
+      onLeave: () => this.setState({ hovered: false }),
+      onClick: this.props.onClick ?? (() => {}),
+    };
+  }
+}
+</script>
+</body>
+</html>

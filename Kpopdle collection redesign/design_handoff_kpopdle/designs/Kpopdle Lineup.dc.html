@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  input::placeholder { color: inherit; opacity: .6; }
+</style>
+</helmet>
+<div style="min-height:100vh; position:relative; background:linear-gradient(165deg, oklch(0.87 0.058 300), oklch(0.85 0.058 300)); font-family:'Plus Jakarta Sans',sans-serif;">
+
+  <dc-import name="Sidebar" active="lineup" hint-size="76px,100vh"></dc-import>
+
+  <main style="margin-left:76px; min-width:0; padding:40px 44px 64px;">
+
+    <!-- ============ VIEW STATE ============ -->
+    <sc-if value="{{ isView }}" hint-placeholder-val="{{ true }}">
+      <div style="max-width:1080px; margin:0 auto;">
+        <div style="display:flex; justify-content:center; margin-bottom:26px;">
+          <h1 style="margin:0; padding:12px 34px; font-size:30px; font-weight:700; color:#2a2138; letter-spacing:-.02em; background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.9); border-radius:16px; box-shadow:0 6px 20px rgba(40,20,70,.08);">My Lineup</h1>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 300px; gap:22px; align-items:start;">
+          <!-- current lineup panel -->
+          <div style="background:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.9); border-radius:20px; padding:26px 28px 30px; box-shadow:0 8px 28px rgba(40,20,70,.08);">
+            <div style="display:flex; align-items:center; gap:14px; margin-bottom:22px;">
+              <div style="width:46px; height:46px; flex:none; border-radius:12px; background:#1b1622; display:flex; align-items:center; justify-content:center; color:#f5c43d;">
+                <svg width="22" height="22" viewBox="0 0 20 20" fill="none"><path d="M7 15.5V5l9-2v10.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="5" cy="15.5" r="2" stroke="currentColor" stroke-width="1.6"/><circle cx="14" cy="13.5" r="2" stroke="currentColor" stroke-width="1.6"/></svg>
+              </div>
+              <div style="min-width:0;">
+                <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.16em; color:#8a7ea0;">CURRENT SONG</div>
+                <div style="font-size:19px; font-weight:700; color:#2a2138; margin-top:2px;">{{ selectedSong.title }} <span style="font-weight:500; color:#7a6e8c; font-size:15px;">· {{ selectedSong.group }}</span></div>
+              </div>
+              <div style="margin-left:auto; flex:none; display:flex; align-items:center; gap:6px; padding:7px 13px; border-radius:999px; background:rgba(245,196,61,.2); color:#8a6410; font-size:12px; font-weight:700;">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6" r="2.6" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 16c.6-2.8 2.9-4.4 5.5-4.4s4.9 1.6 5.5 4.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                {{ slotsLabel }}
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(112px, 1fr)); gap:14px;">
+              <sc-for list="{{ savedCards }}" as="card" hint-placeholder-count="9">
+                <dc-import name="LineupCard" card-state="filled" idol-name="{{ card.name }}" stat="{{ card.stat }}" rarity="{{ card.rarity }}" rank="{{ card.rank }}" hint-size="100%,150px" style="width:100%;"></dc-import>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- side rail: boosts + actions -->
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div style="background:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.9); border-radius:18px; padding:20px; box-shadow:0 8px 28px rgba(40,20,70,.08);">
+              <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.16em; color:#8a7ea0;">TODAY'S BOOSTS</div>
+              <div style="display:flex; align-items:center; gap:7px; margin:6px 0 15px;">
+                <span style="width:8px; height:8px; border-radius:50%; background:#e0533d;"></span>
+                <span style="font-size:15px; font-weight:700; color:#2a2138;">{{ todayShow }}</span>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                <sc-for list="{{ boosts }}" as="b" hint-placeholder-count="4">
+                  <div style="display:flex; align-items:center; gap:5px; padding:7px 13px; border-radius:999px; font-size:12px; font-weight:600; color:{{ b.color }}; background:{{ b.bg }}; border:1px solid {{ b.borderc }};"><span style="font-weight:800;">+</span>{{ b.label }}</div>
+                </sc-for>
+              </div>
+              <div style="margin-top:14px; font-size:11px; color:#8a7ea0; line-height:1.5;">Boosts change per daily show — tweak your lineup to match today's programme.</div>
+            </div>
+            <button onClick="{{ goEdit }}" style="width:100%; padding:15px; border:none; border-radius:14px; background:#f5c43d; color:#1b1622; font-family:inherit; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 6px 18px rgba(245,196,61,.4);">Edit Lineup</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ EDIT STATE — BOTTOM DOCK ============ -->
+    <sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:1200px; margin:0 auto;">
+        <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:20px;">
+          <div onClick="{{ goView }}" title="Back to overview" style="width:42px; height:42px; flex:none; display:flex; align-items:center; justify-content:center; border-radius:12px; background:rgba(255,255,255,.65); border:1px solid rgba(255,255,255,.9); color:#2a2138; cursor:pointer; transition:background .15s ease;" style-hover="background:rgba(255,255,255,.95);">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M12 4 6 10l6 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div style="position:relative;">
+            <div onClick="{{ toggleSongList }}" style="display:flex; align-items:center; gap:10px; padding:11px 15px; border-radius:12px; background:rgba(255,255,255,.65); border:1px solid rgba(255,255,255,.9); color:#2a2138; cursor:pointer;">
+              <span style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.14em; color:#a2650c;">SONG</span>
+              <span style="font-size:14px; font-weight:700;">{{ selectedSong.title }}</span>
+              <span style="font-size:12px; color:#7a6e8c;">{{ selectedSong.group }}</span>
+              <span style="font-size:11px; font-weight:700; color:#8a6410; background:rgba(245,196,61,.24); padding:2px 8px; border-radius:999px;">{{ slotsLabel }}</span>
+              <span style="font-size:12px; color:#7a6e8c;">▾</span>
+            </div>
+            <sc-if value="{{ showSongList }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; top:54px; left:0; width:340px; max-height:300px; overflow-y:auto; background:#fff; border:1px solid #ece7f2; border-radius:14px; box-shadow:0 20px 50px rgba(40,20,70,.24); z-index:20; padding:8px;">
+                <div style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.16em; color:#a79cba; padding:8px 10px 6px;">WEEKLY ROTATION</div>
+                <sc-for list="{{ songRows }}" as="song" hint-placeholder-count="6">
+                  <div onClick="{{ song.onClick }}" style="display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:9px; cursor:pointer; background:{{ song.bg }};">
+                    <span style="font-size:13px; font-weight:600; color:#2a2138; flex:1;">{{ song.title }}</span>
+                    <span style="font-size:11px; color:#8a7ea0;">{{ song.group }}</span>
+                    <span style="font-size:11px; font-weight:700; color:#8a6410; background:rgba(245,196,61,.22); padding:2px 8px; border-radius:999px;">{{ song.slots }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <div style="display:flex; align-items:center; gap:7px; flex-wrap:wrap;">
+            <span style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.14em; color:#8a7ea0;">TODAY · {{ todayShow }}</span>
+            <sc-for list="{{ boosts }}" as="b" hint-placeholder-count="4">
+              <div style="display:flex; align-items:center; gap:4px; padding:6px 11px; border-radius:999px; font-size:11px; font-weight:600; color:{{ b.color }}; background:{{ b.bg }}; border:1px solid {{ b.borderc }};"><span style="font-weight:800;">+</span>{{ b.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.85); border-radius:20px; padding:22px 24px 24px;">
+          <div style="font-size:15px; font-weight:700; color:#2a2138; margin-bottom:16px;">Your collection <span style="color:#8a7ea0; font-weight:500; font-size:13px;">· tap to add to slot {{ activeLabel }}</span></div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:16px;">
+            <sc-for list="{{ pickerCards }}" as="card" hint-placeholder-count="14">
+              <dc-import name="LineupCard" card-state="{{ card.state }}" idol-name="{{ card.name }}" stat="{{ card.stat }}" rarity="{{ card.rarity }}" on-click="{{ card.onClick }}" hint-size="100%,168px" style="width:100%;"></dc-import>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- fixed loadout dock -->
+        <div style="position:sticky; bottom:16px; margin-top:20px; background:rgba(27,22,34,.96); border:1px solid rgba(255,255,255,.1); border-radius:20px; padding:18px 22px; box-shadow:0 -6px 30px rgba(20,10,40,.3); display:flex; align-items:center; gap:20px;">
+          <div style="flex:none; text-align:center; padding-right:20px; border-right:1px solid rgba(255,255,255,.12);">
+            <div style="font-size:24px; font-weight:800; color:#fff; line-height:1;">{{ progressText }}</div>
+            <div style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.12em; color:#8a7f9a; margin-top:4px;">SLOTS</div>
+          </div>
+          <div style="flex:1; min-width:0; display:flex; gap:12px; overflow-x:auto; padding:3px;">
+            <sc-for list="{{ editSlots }}" as="slot" hint-placeholder-count="9">
+              <div style="flex:none; width:88px;">
+                <dc-import name="LineupCard" card-state="{{ slot.state }}" idol-name="{{ slot.name }}" stat="{{ slot.stat }}" rarity="{{ slot.rarity }}" rank="{{ slot.rank }}" on-click="{{ slot.onClick }}" hint-size="88px,123px" style="width:88px;"></dc-import>
+              </div>
+            </sc-for>
+          </div>
+          <button onClick="{{ onSave }}" style="flex:none; padding:15px 28px; border:none; border-radius:13px; font-family:inherit; font-size:15px; font-weight:700; cursor:{{ saveCursor }}; background:{{ saveBg }}; color:{{ saveColor }}; opacity:{{ saveOpacity }};">Submit</button>
+        </div>
+      </div>
+    </sc-if>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const songs = this.songs();
+    const initial = songs.find(s => s.id === 'dtna');
+    const coll = this.collection();
+    const slots = Array(initial.slots).fill(null);
+    ['karina', 'winter', 'nayeon', 'jisoo', 'rose'].forEach((id, i) => {
+      slots[i] = coll.find(c => c.id === id);
+    });
+    this.state = { screen: 'view', songId: 'dtna', slots, active: 5, showSongList: false };
+  }
+
+  songs() {
+    return [
+      { id: 'btm', title: 'Beautiful Monster', group: 'STAYC', slots: 1 },
+      { id: 'bg', title: 'Bubble Gum', group: 'Kep1er', slots: 2 },
+      { id: 'magnetic', title: 'Magnetic', group: 'ILLIT', slots: 3 },
+      { id: 'dw', title: 'Dirty Work', group: 'aespa', slots: 4 },
+      { id: 'ditto', title: 'Ditto', group: 'NewJeans', slots: 5 },
+      { id: 'qc', title: 'Queencard', group: '(G)I-DLE', slots: 6 },
+      { id: 'dtna', title: 'Dance the Night Away', group: 'TWICE', slots: 9 },
+      { id: 'supershy', title: 'Super Shy', group: 'NewJeans', slots: 12 },
+    ];
+  }
+
+  collection() {
+    return [
+      { id: 'karina', name: 'Karina', stat: 95, rarity: 'SR' },
+      { id: 'winter', name: 'Winter', stat: 92, rarity: 'SR' },
+      { id: 'minji', name: 'Minji', stat: 93, rarity: 'SR' },
+      { id: 'chaewon', name: 'Chaewon', stat: 91, rarity: 'SR' },
+      { id: 'yuna', name: 'Yuna', stat: 90, rarity: 'SR' },
+      { id: 'giselle', name: 'Giselle', stat: 85, rarity: 'R' },
+      { id: 'ningning', name: 'Ningning', stat: 85, rarity: 'R' },
+      { id: 'jennie', name: 'Jennie', stat: 85, rarity: 'R' },
+      { id: 'jisoo', name: 'Jisoo', stat: 85, rarity: 'R' },
+      { id: 'lisa', name: 'Lisa', stat: 85, rarity: 'R' },
+      { id: 'rose', name: 'Rosé', stat: 83, rarity: 'R' },
+      { id: 'nayeon', name: 'Nayeon', stat: 85, rarity: 'R' },
+      { id: 'sana', name: 'Sana', stat: 85, rarity: 'R' },
+      { id: 'mina', name: 'Mina', stat: 85, rarity: 'R' },
+      { id: 'momo', name: 'Momo', stat: 85, rarity: 'R' },
+      { id: 'jihyo', name: 'Jihyo', stat: 85, rarity: 'R' },
+      { id: 'dahyun', name: 'Dahyun', stat: 85, rarity: 'R' },
+      { id: 'chaeyoung', name: 'Chaeyoung', stat: 85, rarity: 'R' },
+      { id: 'tzuyu', name: 'Tzuyu', stat: 85, rarity: 'R' },
+      { id: 'jeongyeon', name: 'Jeongyeon', stat: 85, rarity: 'R' },
+    ];
+  }
+
+  savedLineup() {
+    const c = this.collection();
+    const ids = ['winter', 'karina', 'nayeon', 'jisoo', 'rose', 'sana', 'mina', 'chaewon', 'yuna'];
+    return ids.map((id, i) => {
+      const idol = c.find(x => x.id === id);
+      return { ...idol, rank: i + 1 };
+    });
+  }
+
+  pick(idol) {
+    this.setState(s => {
+      if (s.slots.some(x => x && x.id === idol.id)) return {};
+      const slots = [...s.slots];
+      let a = s.active;
+      if (a < 0 || a >= slots.length || slots[a]) a = slots.findIndex(x => !x);
+      if (a === -1) return {};
+      slots[a] = idol;
+      const next = slots.findIndex(x => !x);
+      return { slots, active: next };
+    });
+  }
+
+  clickSlot(i) {
+    this.setState(s => {
+      const slots = [...s.slots];
+      if (slots[i]) { slots[i] = null; return { slots, active: i }; }
+      return { active: i };
+    });
+  }
+
+  selectSong(song) {
+    this.setState({ songId: song.id, slots: Array(song.slots).fill(null), active: 0, showSongList: false });
+  }
+
+  renderVals() {
+    const songs = this.songs();
+    const selectedSong = songs.find(s => s.id === this.state.songId);
+    const slots = this.state.slots;
+    const active = this.state.active;
+    const filled = slots.filter(Boolean).length;
+    const total = slots.length;
+    const canSave = filled === total && total > 0;
+    const screen = this.state.screen;
+
+    const boostDefs = [
+      { label: 'JYP Idols', synergy: false },
+      { label: 'Maknaes', synergy: false },
+      { label: 'Rappers', synergy: false },
+      { label: 'Group Synergy', synergy: true },
+    ];
+
+    return {
+      isView: screen === 'view',
+      isEdit: screen === 'edit',
+      goEdit: () => this.setState({ screen: 'edit' }),
+      goView: () => this.setState({ screen: 'view', showSongList: false }),
+
+      selectedSong,
+      slotsLabel: selectedSong.slots + (selectedSong.slots === 1 ? ' slot' : ' slots'),
+      todayShow: 'M COUNTDOWN',
+      boosts: boostDefs.map(b => ({
+        label: b.label,
+        color: b.synergy ? '#1b1622' : '#4a3d63',
+        bg: b.synergy ? 'rgba(245,196,61,.85)' : 'rgba(155,93,229,.14)',
+        borderc: b.synergy ? 'rgba(245,196,61,.9)' : 'rgba(155,93,229,.28)',
+      })),
+
+      savedCards: this.savedLineup(),
+
+      progressText: filled + ' / ' + total,
+      activeLabel: active >= 0 ? '#' + (active + 1) : '—',
+      saveBg: canSave ? '#f5c43d' : 'rgba(120,105,140,.25)',
+      saveColor: canSave ? '#1b1622' : '#8a7ea0',
+      saveOpacity: canSave ? 1 : 0.75,
+      saveCursor: canSave ? 'pointer' : 'not-allowed',
+      onSave: () => { if (canSave) this.setState({ screen: 'view' }); },
+
+      showSongList: this.state.showSongList,
+      toggleSongList: () => this.setState(s => ({ showSongList: !s.showSongList })),
+      songRows: songs.map(song => ({
+        title: song.title,
+        group: song.group,
+        slots: song.slots,
+        bg: song.id === this.state.songId ? 'rgba(245,196,61,.16)' : 'transparent',
+        onClick: () => this.selectSong(song),
+      })),
+
+      editSlots: slots.map((slot, i) => {
+        if (slot) return { state: 'filled', name: slot.name, stat: slot.stat, rarity: slot.rarity, rank: i + 1, onClick: () => this.clickSlot(i) };
+        if (i === active) return { state: 'active', name: '', stat: '', rarity: 'R', rank: i + 1, onClick: () => {} };
+        return { state: 'empty', name: '', stat: '', rarity: 'R', rank: i + 1, onClick: () => this.clickSlot(i) };
+      }),
+
+      pickerCards: this.collection().map(idol => {
+        const used = slots.some(x => x && x.id === idol.id);
+        return {
+          state: used ? 'pickerDim' : 'picker',
+          name: idol.name,
+          stat: idol.stat,
+          rarity: idol.rarity,
+          onClick: used ? () => {} : () => this.pick(idol),
+        };
+      }),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<style>
+  @keyframes skScrimIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes skAlbumDrop {
+    0% { transform:translate(-50%,-50%) translate(0,-640px) rotate(-10deg) scale(.9); opacity:0; }
+    60% { opacity:1; }
+    100% { transform:translate(-50%,-50%) translate(0,-40px) rotate(0deg) scale(1); opacity:1; }
+  }
+  @keyframes skDiscSpin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+  @keyframes skTonearmSeq {
+    0% { transform:translate(-50%,-50%) translate(555px,-338px) rotate(-30deg); }
+    40.688% { transform:translate(-50%,-50%) translate(555px,-338px) rotate(-30deg); }
+    53.103% { transform:translate(-50%,-50%) translate(555px,-338px) rotate(16deg); animation-timing-function: cubic-bezier(.3,.1,.2,1); }
+    100% { transform:translate(-50%,-50%) translate(555px,-338px) rotate(16deg); }
+  }
+  @keyframes skPackPop {
+    0% { transform:translate(-50%,-50%) translate(0,-10px) scale(.3); opacity:0; }
+    70% { transform:translate(-50%,-50%) translate(0,-10px) scale(1.08); opacity:1; }
+    100% { transform:translate(-50%,-50%) translate(0,-10px) scale(1); opacity:1; }
+  }
+  @keyframes skAlbumSeq {
+    0% { transform:translate(-50%,-50%) translate(0,-640px) rotate(-10deg) scale(.9); opacity:0; animation-timing-function: cubic-bezier(.22,1,.36,1); }
+    4.655% { opacity:1; }
+    11.724% { transform:translate(-50%,-50%) translate(0,-40px) rotate(0deg) scale(1); opacity:1; animation-timing-function: cubic-bezier(.22,.61,.36,1); }
+    26.897% { transform:translate(-50%,-50%) translate(-90px,-40px) rotate(0deg) scale(1); opacity:1; }
+    66.897% { transform:translate(-50%,-50%) translate(-90px,-40px) rotate(0deg) scale(1); opacity:1; animation-timing-function: cubic-bezier(.4,0,.2,1); }
+    79.310% { transform:translate(-50%,-50%) translate(-620px,0) rotate(-14deg) scale(1); opacity:0; }
+    100% { transform:translate(-50%,-50%) translate(-620px,0) rotate(-14deg) scale(1); opacity:0; }
+  }
+  @keyframes skDiscSeq {
+    0% { transform:translate(-50%,-50%) translate(0,-40px) scale(1); opacity:0; }
+    26.886% { opacity:0; }
+    26.897% { transform:translate(-50%,-50%) translate(0,-40px) scale(1); opacity:1; animation-timing-function: cubic-bezier(.22,.61,.36,1); }
+    36.548% { transform:translate(-50%,-50%) translate(140px,-40px) scale(1); }
+    40.688% { transform:translate(-50%,-50%) translate(140px,-40px) scale(1); animation-timing-function: cubic-bezier(.3,.1,.2,1); }
+    53.103% { transform:translate(-50%,-50%) translate(480px,-300px) scale(1); }
+    100% { transform:translate(-50%,-50%) translate(480px,-300px) scale(1); }
+  }
+  @keyframes skPackSeq {
+    0% { transform:translate(-50%,-50%) translate(0,-40px) scale(1); opacity:0; }
+    53.093% { opacity:0; }
+    53.103% { transform:translate(-50%,-50%) translate(0,-40px) scale(1); opacity:1; animation-timing-function: cubic-bezier(.22,.61,.36,1); }
+    62.759% { transform:translate(-50%,-50%) translate(140px,-40px) scale(1); opacity:1; animation-timing-function: cubic-bezier(.3,.1,.2,1); }
+    66.897% { transform:translate(-50%,-50%) translate(140px,-40px) scale(1); opacity:1; }
+    75.172% { transform:translate(-50%,-50%) translate(0,-10px) scale(1); opacity:1; }
+    91.724% { transform:translate(-50%,-50%) translate(0,-10px) scale(1); opacity:1; animation-timing-function: cubic-bezier(.4,0,.2,1); }
+    100% { transform:translate(-50%,-50%) translate(0,-10px) scale(1); opacity:1; }
+  }
+
+  @keyframes skCutSweep {
+    0% { width:0; opacity:0; }
+    25% { opacity:1; }
+    100% { width:100%; opacity:1; }
+  }
+  @keyframes skGlowPulse {
+    0%, 100% { transform:scale(1); opacity:.85; }
+    50% { transform:scale(1.18); opacity:1; }
+  }
+  @keyframes skFlapPeel {
+    0% { transform:translateY(0) rotate(0deg); opacity:1; }
+    100% { transform:translateY(-160px) rotate(-8deg); opacity:0; }
+  }
+</style>
+</helmet>
+
+<div style="font-family:'Plus Jakarta Sans',sans-serif; color:#e8e3f0; position:relative;">
+  <!-- hero art -->
+  <div style="position:relative; height:172px; border-radius:16px; overflow:hidden; background:linear-gradient(135deg, {{ accentA }}, {{ accentB }});">
+    <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(45deg,#ffffff12 0 12px,#0000 12px 24px);"></div>
+    <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:12px; letter-spacing:.18em; color:#ffffffaa;">GROUP KEY ART</div>
+    <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,10,22,.92), rgba(15,10,22,.1) 60%);"></div>
+    <div style="position:absolute; top:12px; left:14px; display:flex; gap:8px; align-items:center;">
+      <span style="padding:4px 11px; border-radius:999px; font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:{{ typeTextColor }}; background:{{ typeBg }};">{{ typeLabel }}</span>
+    </div>
+    <div onClick="{{ onRates }}" title="Drop rates" style="position:absolute; top:12px; right:14px; width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.45); border:1px solid #ffffff2a; color:#fff; font-weight:800; font-size:14px; cursor:pointer;">%</div>
+    <div style="position:absolute; left:16px; right:16px; bottom:12px;">
+      <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.14em; color:#f5c43d;">{{ group }}</div>
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:10px;">
+        <div style="font-size:24px; font-weight:800; color:#fff; letter-spacing:-.01em; line-height:1.1;">{{ comeback }}</div>
+        <div style="flex:none; font-size:12px; font-weight:600; color:#f7b955;">{{ endsIn }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- base rarity + rate-up note -->
+  <div style="display:flex; align-items:center; gap:10px; margin:16px 0 6px;">
+    <span style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.14em; color:#9890a6;">RATE-UP</span>
+    <span style="font-size:12px; color:#b9b1c6;">{{ rateNote }}</span>
+  </div>
+  <div style="min-height:17px; margin-bottom:6px; font-size:11px; font-weight:600; color:{{ hintColor }};">{{ pullHint }}</div>
+
+  <!-- rate-up row: placeholder/selected card, plus options that expand to the right -->
+  <div ref="{{ rowRef }}" style="display:flex; flex-wrap:wrap; align-items:flex-start; height:{{ rowHeight }}; margin-bottom:20px;">
+    <div onClick="{{ openPicker }}" style="width:{{ placeholderWidth }}; padding:{{ placeholderPad }}; flex:none; overflow:hidden; transition:width .22s ease, padding .22s ease, opacity .22s ease; opacity:{{ placeholderOpacity }}; cursor:pointer;">
+      <div style="box-sizing:border-box; width:92px; aspect-ratio:5/7; border-radius:11px; background:#241c30; border:1.5px dashed rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; text-align:center; padding:8px;">
+        <span style="font-size:10.5px; font-weight:700; color:#9890a6; line-height:1.35;">No rate-up selected</span>
+      </div>
+    </div>
+    <sc-for list="{{ memberCards }}" as="m" hint-placeholder-count="5">
+      <div onClick="{{ m.onClick }}" onMouseEnter="{{ m.onEnter }}" onMouseLeave="{{ m.onLeave }}" style="width:{{ m.slotWidth }}; padding:{{ m.slotPad }}; flex:none; overflow:hidden; transition:width .22s ease, padding .22s ease, opacity .22s ease; opacity:{{ m.slotOpacity }}; cursor:pointer;">
+        <div style="box-sizing:border-box; position:relative; width:92px; aspect-ratio:5/7; border-radius:11px; overflow:hidden; border:2.5px solid; border-color:{{ m.border }}; background:linear-gradient(135deg,#2a2136,#342a44); transform:{{ m.scale }}; transition:transform .15s ease; box-shadow:{{ m.ring }};">
+          <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(45deg,#ffffff0a 0 8px,#0000 8px 16px);"></div>
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.12em; color:#8a7f9a; opacity:.7;">PHOTO</div>
+          <div style="position:absolute; left:0; right:0; bottom:0; padding:16px 6px 6px; background:linear-gradient(to top, rgba(10,6,16,.9), transparent); font-weight:600; font-size:11px; color:#fff; text-align:center;">{{ m.name }}</div>
+          <div style="position:absolute; top:5px; right:5px; padding:1px 6px; border-radius:6px; font-size:9px; font-weight:800; color:{{ m.rarityTextColor }}; background:{{ m.border }};">{{ m.rarity }}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <!-- pity -->
+  <div style="margin-top:18px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+      <span style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.14em; color:#9890a6;">PITY · GUARANTEED {{ pityRarity }}</span>
+      <span style="font-size:11px; font-weight:700; color:#c8c0d6;">{{ pityText }}</span>
+    </div>
+    <div style="height:7px; border-radius:999px; background:#ffffff14; overflow:hidden;">
+      <div style="height:100%; width:{{ pityPct }}; border-radius:999px; background:linear-gradient(90deg,#f5c43d,#9b5de5);"></div>
+    </div>
+  </div>
+
+  <!-- pull actions -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:18px;">
+    <button onClick="{{ onPull10 }}" style="padding:15px; border:none; border-radius:13px; font-family:inherit; font-size:15px; font-weight:800; cursor:{{ pullCursor }}; background:{{ pull10Bg }}; color:{{ pull10Color }}; opacity:{{ pullOpacity }}; display:flex; align-items:center; justify-content:center; gap:8px;">
+      Summon ×10 <span style="display:inline-flex; align-items:center; gap:4px; font-weight:700; font-size:13px; opacity:.85;">{{ cost10 }}<span style="color:{{ lightColor10 }};">◈</span></span>
+    </button>
+    <button onClick="{{ onPull1 }}" style="padding:15px; border:1px solid {{ pull1Border }}; border-radius:13px; font-family:inherit; font-size:15px; font-weight:800; cursor:{{ pullCursor }}; background:{{ pull1Bg }}; color:{{ pull1Color }}; opacity:{{ pullOpacity }}; display:flex; align-items:center; justify-content:center; gap:8px;">
+      Summon ×1 <span style="display:inline-flex; align-items:center; gap:4px; font-weight:700; font-size:13px; opacity:.85;">{{ cost1 }}<span style="color:{{ lightColor1 }};">◈</span></span>
+    </button>
+  </div>
+
+  <!-- SUMMON SEQUENCE OVERLAY -->
+  <sc-if value="{{ seqActive }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:400; background:rgba(10,6,16,.8); animation:skScrimIn .4s ease forwards; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+
+      <div style="position:absolute; inset:0; z-index:15; pointer-events:none; background:radial-gradient(circle at center, rgba(155,93,229,.35), transparent 60%); opacity:{{ urFlashOpacity }}; transition:opacity .5s ease;"></div>
+
+      <sc-if value="{{ showSkip }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ onSkip }}" style="position:absolute; top:calc(50% - 260px); left:calc(50% + 170px); padding:9px 16px; border-radius:10px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25); color:#fff; font-size:12px; font-weight:700; cursor:pointer; letter-spacing:.03em; z-index:20;">Skip ›</div>
+      </sc-if>
+
+      <sc-if value="{{ showAlbum }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute; top:50%; left:50%; width:230px; height:230px; border-radius:16px; background:linear-gradient(135deg,#4a3a68,#241c30); box-shadow:0 30px 60px rgba(0,0,0,.5); display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding:18px; overflow:hidden; z-index:{{ albumStyle.zIndex }}; animation:{{ albumStyle.animation }}; transform:{{ albumStyle.transform }};">
+          <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(45deg,#ffffff0d 0 12px,#0000 12px 24px);"></div>
+          <div style="position:relative; font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.14em; color:#f5c43d;">{{ seqGroup }}</div>
+          <div style="position:relative; font-size:19px; font-weight:800; color:#fff; text-align:center; line-height:1.15;">{{ seqComeback }}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showDisc }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute; top:50%; left:50%; width:150px; height:150px; z-index:1; border-radius:14px; transform:translate(-50%,-50%) translate(480px,-300px); background:linear-gradient(135deg,#241c30,#171220); border:1px solid rgba(255,255,255,.08); box-shadow:0 20px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);">
+          <div style="position:absolute; top:50%; left:50%; width:10px; height:10px; border-radius:50%; background:#0a0510; transform:translate(-50%,-50%); box-shadow:0 0 0 2px rgba(255,255,255,.08);"></div>
+        </div>
+        <div style="position:absolute; top:50%; left:50%; width:6px; height:72px; z-index:4; transform-origin:top center; transform:{{ tonearmStyle.transform }}; animation:{{ tonearmStyle.animation }};">
+          <div style="position:absolute; inset:0; border-radius:3px; background:linear-gradient(180deg,#d6d9de,#8f95a1); box-shadow:0 3px 8px rgba(0,0,0,.4);"></div>
+          <div style="position:absolute; top:-5px; left:50%; width:12px; height:12px; border-radius:50%; background:#e8eaef; transform:translate(-50%,0); box-shadow:0 2px 4px rgba(0,0,0,.4);"></div>
+          <div style="position:absolute; bottom:-3px; left:50%; width:14px; height:8px; border-radius:2px; background:#3a3140; transform:translate(-50%,0);"></div>
+        </div>
+        <div style="position:absolute; top:50%; left:50%; width:108px; height:108px; border-radius:50%; z-index:{{ discStyle.zIndex }}; animation:{{ discStyle.animation }}; transform:{{ discStyle.transform }};">
+          <div style="position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle at center, #16101f 0 8px, #2c2338 9px 36px, #0d0912 37px 38px, #3a2d4a 39px 100%); box-shadow:0 14px 30px rgba(0,0,0,.5); overflow:hidden; animation:{{ discStyle.spinAnim }}; animation-delay:{{ discStyle.spinDelay }};">
+            <div style="position:absolute; top:-32%; left:-28%; width:78%; height:78%; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.55), rgba(255,255,255,.12) 45%, rgba(255,255,255,0) 72%); mix-blend-mode:screen;"></div>
+            <div style="position:absolute; bottom:-24%; right:-20%; width:55%; height:55%; border-radius:50%; background:radial-gradient(circle at 65% 65%, rgba(255,255,255,.4), rgba(255,255,255,0) 70%); mix-blend-mode:screen;"></div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showPack }}" hint-placeholder-val="{{ false }}">
+        <div data-summon-pack="1" style="position:absolute; top:50%; left:50%; width:124px; height:172px; z-index:{{ packStyle.zIndex }}; animation:{{ packStyle.animation }}; transform:{{ packStyle.transform }};">
+
+          <!-- body (starts at the cut line) -->
+          <div style="position:absolute; top:16px; left:0; right:0; bottom:0; border-radius:0 0 8px 8px; overflow:hidden; background:linear-gradient(135deg,#d3d6db,#a8adb6); box-shadow:0 16px 30px rgba(0,0,0,.4); border-left:1px solid rgba(255,255,255,.55); border-right:1px solid rgba(255,255,255,.55);">
+            <div style="position:absolute; inset:-20px; background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.35) 0 2px, transparent 2px 14px); background-position:0 -16px; mix-blend-mode:overlay; opacity:.8;"></div>
+            <div style="position:absolute; inset:0; box-shadow:inset 0 2px 3px rgba(255,255,255,.7);"></div>
+          </div>
+
+          <!-- bottom crimp -->
+          <svg style="position:absolute; left:2px; right:2px; bottom:-5px; width:calc(100% - 4px); height:8px;" viewBox="0 0 120 8" preserveAspectRatio="none">
+            <path d="{{ zzPathD }}" fill="#b7bbc4"></path>
+            <polyline points="{{ zzPoints }}" fill="none" stroke="#fff" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"></polyline>
+          </svg>
+
+          <!-- top flap (cuts, then flies up and away) -->
+          <div style="position:absolute; top:0; left:0; right:0; height:16px; overflow:visible; animation:skFlapPeel .3s cubic-bezier(.5,0,.4,1) {{ peelDelayMs }} both;">
+            <div style="position:absolute; inset:0; border-radius:8px 8px 0 0; overflow:hidden; background:linear-gradient(135deg,#d3d6db,#a8adb6); border-left:1px solid rgba(255,255,255,.55); border-right:1px solid rgba(255,255,255,.55);">
+              <div style="position:absolute; inset:-20px; background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.35) 0 2px, transparent 2px 14px); mix-blend-mode:overlay; opacity:.8;"></div>
+            </div>
+            <!-- top crimp -->
+            <svg style="position:absolute; left:2px; right:2px; top:-5px; width:calc(100% - 4px); height:8px; transform:scaleY(-1);" viewBox="0 0 120 8" preserveAspectRatio="none">
+              <path d="{{ zzPathD }}" fill="#c7cad0"></path>
+              <polyline points="{{ zzPoints }}" fill="none" stroke="#fff" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"></polyline>
+            </svg>
+          </div>
+
+          <!-- cut line sweeping right to left -->
+          <div style="position:absolute; top:16px; right:0; height:2px; border-radius:1px; background:#0a0510; box-shadow:0 0 5px rgba(0,0,0,.6); animation:skCutSweep .4s cubic-bezier(.4,0,.2,1) {{ cutDelayMs }} both;"></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showGrid }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:28px; padding:20px;">
+          <div style="display:grid; grid-template-columns:{{ gridCols }}; gap:16px;">
+            <sc-for list="{{ seqCards }}" as="c" hint-placeholder-count="10">
+              <div style="position:relative; width:104px; aspect-ratio:5/7; opacity:{{ cardWrapOpacity }};">
+                <div style="position:absolute; inset:{{ c.glowInset }}; z-index:0; border-radius:50%; filter:blur(16px); background:{{ c.raysBg }}; opacity:{{ c.raysOpacity }}; transform:scale({{ c.raysScale }}); animation:{{ c.glowAnim }}; transition:opacity .5s ease {{ c.raysDelay }}, transform .6s cubic-bezier(.34,1.56,.64,1) {{ c.raysDelay }}; pointer-events:none;"></div>
+                <div onClick="{{ c.onClick }}" onMouseEnter="{{ c.onEnter }}" onMouseLeave="{{ c.onLeave }}" style="position:relative; z-index:1; width:100%; height:100%; cursor:pointer; perspective:800px; opacity:1;">
+                  <div style="position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform {{ c.flipDuration }} cubic-bezier(.45,.05,.35,1); transform:{{ c.flipTransform }};">
+                    <div style="position:absolute; inset:0; border-radius:11px; backface-visibility:hidden; background:linear-gradient(135deg,#2a2136,#181320); border:2px solid rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center; box-shadow:{{ c.backGlow }}; transition:box-shadow .3s ease;">
+                      <span style="font-size:22px; font-weight:900; color:#f5c43d; opacity:.55;">✦</span>
+                    </div>
+                    <div style="position:absolute; inset:0; border-radius:11px; backface-visibility:hidden; transform:rotateY(180deg) scale({{ c.faceScale }}); transition:box-shadow .3s ease, transform .4s cubic-bezier(.34,1.56,.64,1) {{ c.faceDelay }}; border:2.5px solid {{ c.border }}; background:linear-gradient(135deg,#2a2136,#342a44); overflow:hidden;">
+                      <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(45deg,#ffffff0a 0 8px,#0000 8px 16px);"></div>
+                      <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.1em; color:#8a7f9a;">PHOTO</div>
+                      <div style="position:absolute; top:-20%; left:{{ c.sweepX }}; width:40%; height:180%; background:{{ c.sweepColor }}; opacity:{{ c.sweepOpacity }}; transform:rotate(18deg); transition:left .55s ease {{ c.sweepDelay }}; pointer-events:none; mix-blend-mode:screen;"></div>
+                      <div style="position:absolute; left:0; right:0; bottom:0; padding:14px 5px 5px; background:linear-gradient(to top, rgba(10,6,16,.92), transparent); font-weight:600; font-size:10px; color:#fff; text-align:center;">{{ c.name }}</div>
+                      <div style="position:absolute; top:5px; right:5px; padding:1px 6px; border-radius:6px; font-size:9px; font-weight:800; color:{{ c.rarityTextColor }}; background:{{ c.border }}; opacity:{{ c.badgeOpacity }}; transform:scale({{ c.badgeScale }}); transition:transform .4s cubic-bezier(.34,1.56,.64,1) {{ c.badgeDelay }}, opacity .2s ease {{ c.badgeDelay }};">{{ c.rarity }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex; gap:12px; opacity:{{ buttonsOpacity }}; pointer-events:{{ buttonsPointer }};">
+            <sc-if value="{{ showFlipAll }}" hint-placeholder-val="{{ true }}">
+              <div onClick="{{ onFlipAll }}" style="padding:12px 24px; border-radius:11px; background:#f5c43d; color:#1b1622; font-weight:800; font-size:13px; cursor:pointer;">Flip All</div>
+            </sc-if>
+            <div onClick="{{ onCloseSeq }}" style="padding:12px 24px; border-radius:11px; background:{{ continueBg }}; border:1px solid rgba(255,255,255,.25); color:{{ continueColor }}; font-weight:800; font-size:13px; cursor:{{ continueCursor }}; opacity:{{ continueOpacity }};">Continue</div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;440px&quot;,&quot;height&quot;:&quot;620px&quot;},&quot;banner&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object&quot;},&quot;selected&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;maxMembers&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:0,&quot;tsType&quot;:&quot;number&quot;},&quot;onSelect&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(name: string) =&gt; void&quot;},&quot;onPull&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;},&quot;onRates&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+class Component extends DCLogic {
+  state = { hovered: null, pickerOpen: false, closing: false, seq: null, urFlash: false };
+  rowRef = React.createRef();
+  seqTimers = [];
+
+  handleOutsideClick = (e) => {
+    if (this.state.pickerOpen && !this.state.closing && this.rowRef.current && !this.rowRef.current.contains(e.target)) {
+      this.setState({ closing: true });
+      setTimeout(() => this.setState({ pickerOpen: false, closing: false }), 220);
+    }
+  };
+
+  componentDidMount() {
+    document.addEventListener('mousedown', this.handleOutsideClick);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleOutsideClick);
+    this.clearSeqTimers();
+  }
+
+
+  clearSeqTimers() {
+    this.seqTimers.forEach(t => t && typeof t === 'object' && t.cancel ? t.cancel() : clearTimeout(t));
+    this.seqTimers = [];
+  }
+
+  generatePull(b, count) {
+    const members = (b.members && b.members.length) ? b.members : [{ name: '???' }];
+    const pick = () => members[Math.floor(Math.random() * members.length)].name;
+    const roll = () => {
+      const r = Math.random();
+      if (r < 0.04) return 'UR';
+      if (r < 0.22) return 'SR';
+      return 'R';
+    };
+    const cards = [];
+    for (let i = 0; i < count; i++) {
+      const rarity = count === 1 ? (Math.random() < 0.06 ? 'UR' : (Math.random() < 0.28 ? 'SR' : 'R')) : roll();
+      cards.push({ id: i, name: pick(), rarity, maskRarity: rarity, surprise: false, flipped: false, revealed: false });
+    }
+    if (count === 10) {
+      const idx = Math.floor(Math.random() * count);
+      cards[idx] = { ...cards[idx], rarity: 'UR', maskRarity: 'SR', surprise: true };
+    }
+    return cards;
+  }
+
+  setStage(stage) {
+    this.setState(s => s.seq ? { seq: { ...s.seq, stage } } : null);
+  }
+
+  zigzagPoints(count, w, h) {
+    const step = w / count;
+    const pts = ['0,0'];
+    for (let i = 0; i < count; i++) {
+      const xMid = i * step + step / 2;
+      const xEnd = (i + 1) * step;
+      pts.push(`${xMid.toFixed(2)},${h}`, `${xEnd.toFixed(2)},0`);
+    }
+    return pts.join(' ');
+  }
+
+  zigzagPathD(count, w, h) {
+    const step = w / count;
+    let d = 'M0,0';
+    for (let i = 0; i < count; i++) {
+      const xMid = i * step + step / 2;
+      const xEnd = (i + 1) * step;
+      d += ` L${xMid.toFixed(2)},${h} L${xEnd.toFixed(2)},0`;
+    }
+    return d + ' Z';
+  }
+
+  startPull(count) {
+    this.clearSeqTimers();
+    const b = this.props.banner ?? {};
+    const cards = this.generatePull(b, count);
+    const type = count === 10 ? 'x10' : 'x1';
+    this.setState({ seq: { type, cards, stage: 'seq', hoveredIdx: null } });
+    (this.props.onPull ?? (() => {}))();
+    const gridAt = 6650;
+    this.seqTimers.push(setTimeout(() => this.runCardsOutSequence(), gridAt));
+  }
+
+  runCardsOutSequence() {
+    this.setStage('cardsOut');
+    const pack = document.querySelector('[data-summon-pack]');
+    const partialDropMs = 300;
+    if (pack) {
+      pack.animate([
+        { transform: 'translate(-50%,-50%) translate(0,-10px) scale(1)' },
+        { transform: 'translate(-50%,-50%) translate(0,220px) scale(1)' },
+      ], { duration: partialDropMs, easing: 'ease', fill: 'forwards' });
+    }
+    const cardDuration = 333, cardStagger = 333, cardCount = 10;
+    this.seqTimers.push(setTimeout(() => this.emergeCards(0, cardDuration, cardStagger), partialDropMs));
+    const cardsDoneMs = partialDropMs + (cardCount - 1) * cardStagger + cardDuration;
+    this.seqTimers.push(setTimeout(() => {
+      if (pack) {
+        pack.animate([
+          { transform: 'translate(-50%,-50%) translate(0,220px) scale(1)', opacity: 1 },
+          { transform: 'translate(-50%,-50%) translate(0,480px) scale(.9)', opacity: 0 },
+        ], { duration: 367, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' });
+      }
+      this.seqTimers.push(setTimeout(() => this.setStage('grid'), 367));
+    }, cardsDoneMs));
+  }
+
+  emergeCards(tries, duration, stagger) {
+    tries = tries || 0;
+    duration = duration ?? 500;
+    stagger = stagger ?? 500;
+    const seq = this.state.seq;
+    if (!seq) return;
+    const isX10 = seq.type === 'x10';
+    const sel = isX10 ? 'div[style*="repeat(5"]' : 'div[style*="repeat(1"]';
+    const grid = document.querySelector(sel);
+    const els = grid ? [...grid.children] : [];
+    if (els.length === 0 && tries < 40) {
+      const id = requestAnimationFrame(() => this.emergeCards(tries + 1, duration, stagger));
+      this.seqTimers.push({ cancel: () => cancelAnimationFrame(id) });
+      return;
+    }
+    const pack = document.querySelector('[data-summon-pack]');
+    const packRect = pack ? pack.getBoundingClientRect() : null;
+    const packCx = packRect ? packRect.left + packRect.width / 2 : null;
+    const packCy = packRect ? packRect.top + packRect.height / 2 : null;
+    els.forEach((el, i) => {
+      let dx, dy;
+      if (packCx != null) {
+        const r = el.getBoundingClientRect();
+        dx = packCx - (r.left + r.width / 2);
+        dy = packCy - (r.top + r.height / 2);
+      } else {
+        dx = isX10 ? (2 - (i % 5)) * 120 : 0;
+        dy = isX10 ? (i < 5 ? 61 : -101) : 70;
+      }
+      const delay = i * stagger;
+      const spin = (i % 2 === 0 ? 1 : -1) * (10 + (i % 5) * 4);
+      const arcLift = -34 - (i % 3) * 10;
+      el.animate([
+        { transform: `translate(${dx}px,${dy}px) scale(.3) rotate(${spin}deg)`, opacity: 0, offset: 0 },
+        { transform: `translate(${dx}px,${dy}px) scale(.34) rotate(${spin}deg)`, opacity: 1, offset: 0.15 },
+        { transform: `translate(${dx * 0.45}px,${dy * 0.45 + arcLift}px) scale(.7) rotate(${spin * 0.4}deg)`, opacity: 1, offset: 0.55 },
+        { transform: 'translate(0px,-8px) scale(1.08) rotate(0deg)', opacity: 1, offset: 0.82 },
+        { transform: 'translate(0px,0px) scale(1) rotate(0deg)', opacity: 1, offset: 1 },
+      ], { duration, delay, easing: 'cubic-bezier(.25,.6,.3,1)', fill: 'both' });
+    });
+  }
+
+  triggerUrFlash() {
+    this.setState({ urFlash: true });
+    this.seqTimers.push(setTimeout(() => this.setState({ urFlash: false }), 500));
+  }
+
+  flipCard(id) {
+    this.setState(s => {
+      if (!s.seq) return null;
+      const cards = s.seq.cards.map(c => c.id === id ? { ...c, flipped: true } : c);
+      return { seq: { ...s.seq, cards } };
+    });
+    const card = (this.state.seq?.cards ?? []).find(c => c.id === id);
+    if (card && card.surprise && !card.revealed) {
+      this.seqTimers.push(setTimeout(() => {
+        this.setState(s => {
+          if (!s.seq) return null;
+          const cards = s.seq.cards.map(c => c.id === id ? { ...c, revealed: true } : c);
+          return { seq: { ...s.seq, cards } };
+        });
+        this.triggerUrFlash();
+      }, 260));
+    } else if (card && card.rarity === 'UR') {
+      this.triggerUrFlash();
+    }
+  }
+
+  flipAll() {
+    const cards = this.state.seq?.cards ?? [];
+    cards.forEach((c, i) => {
+      if (!c.flipped) this.seqTimers.push(setTimeout(() => this.flipCard(c.id), i * 70));
+    });
+  }
+
+  skipSeq() {
+    this.clearSeqTimers();
+    const pack = document.querySelector('[data-summon-pack]');
+    if (pack) pack.getAnimations().forEach(a => a.cancel());
+    this.setState(s => {
+      if (!s.seq) return null;
+      const cards = s.seq.cards.map(c => ({ ...c, flipped: false, revealed: false }));
+      return { seq: { ...s.seq, stage: 'grid', cards, skipped: true } };
+    });
+  }
+
+  closeSeq() {
+    this.clearSeqTimers();
+    this.setState({ seq: null });
+  }
+
+  seqVals(b) {
+    const seq = this.state.seq;
+    if (!seq) return { seqActive: false };
+    const rarityBorders = { R: '#b3b6c4', SR: '#eaa31c', UR: '#9b5de5' };
+    const rarityTextColors = { R: '#2a2138', SR: '#3a2600', UR: '#fff' };
+    const stage = seq.stage;
+    const isX10 = seq.type === 'x10';
+    const count = seq.cards.length;
+    const interactive = stage === 'grid';
+
+    const skipped = !!seq.skipped;
+    const albumStyle = {
+      animation: 'skAlbumSeq 7250ms linear forwards',
+      transform: 'translate(-50%,-50%)',
+      zIndex: 3,
+    };
+    const discStyle = skipped ? {
+      animation: 'none',
+      transform: 'translate(-50%,-50%) translate(480px,-300px)',
+      spinAnim: 'skDiscSpin 3s linear infinite',
+      spinDelay: '0ms',
+      zIndex: 2,
+    } : {
+      animation: 'skDiscSeq 7250ms linear forwards',
+      transform: 'translate(-50%,-50%)',
+      spinAnim: 'skDiscSpin 3s linear infinite',
+      spinDelay: '4150ms',
+      zIndex: 2,
+    };
+    const tonearmStyle = skipped ? {
+      animation: 'none',
+      transform: 'translate(-50%,-50%) translate(555px,-338px) rotate(16deg)',
+    } : {
+      animation: 'skTonearmSeq 7250ms linear forwards',
+      transform: 'translate(-50%,-50%) translate(555px,-338px) rotate(-30deg)',
+    };
+    const packStyle = {
+      animation: 'skPackSeq 7250ms linear forwards',
+      transform: 'translate(-50%,-50%)',
+      opacity: 1,
+      zIndex: 1,
+    };
+
+    return {
+      seqActive: true,
+      seqGroup: b.group ?? '',
+      seqComeback: b.comeback ?? '',
+      seqAccentA: b.accentA ?? '#6a4bbd',
+      seqAccentB: b.accentB ?? '#3a2a5c',
+      showAlbum: stage !== 'grid',
+      showDisc: true,
+      showPack: stage === 'seq' || stage === 'cardsOut',
+      showGrid: stage === 'grid' || stage === 'cardsOut',
+      showSkip: stage !== 'grid' && stage !== 'cardsOut',
+      showFlipAll: count > 1,
+      interactive,
+      cardWrapOpacity: stage === 'cardsOut' ? 0 : 1,
+      buttonsOpacity: interactive ? 1 : 0,
+      buttonsPointer: interactive ? 'auto' : 'none',
+      allFlipped: seq.cards.every(c => c.flipped),
+      continueBg: 'rgba(255,255,255,.1)',
+      continueColor: seq.cards.every(c => c.flipped) ? '#fff' : 'rgba(255,255,255,.4)',
+      continueCursor: seq.cards.every(c => c.flipped) ? 'pointer' : 'not-allowed',
+      continueOpacity: seq.cards.every(c => c.flipped) ? 1 : 0.5,
+      albumStyle, discStyle, packStyle, tonearmStyle,
+      packSetRef: this.packSetRef,
+      zzPoints: this.zigzagPoints(9, 120, 8),
+      zzPathD: this.zigzagPathD(9, 120, 8),
+      cutDelayMs: '5950ms',
+      peelDelayMs: '6350ms',
+      gridCols: count === 10 ? 'repeat(5,1fr)' : 'repeat(1,1fr)',
+      onSkip: () => this.skipSeq(),
+      onFlipAll: () => this.flipAll(),
+      onCloseSeq: () => { if (this.state.seq && this.state.seq.cards.every(c => c.flipped)) this.closeSeq(); },
+      urFlashOpacity: this.state.urFlash ? 1 : 0,
+      seqCards: seq.cards.map((c, i) => {
+        const displayRarity = (c.surprise && !c.revealed) ? c.maskRarity : c.rarity;
+        const hovered = seq.hoveredIdx === c.id;
+        const glowShadow = {
+          R: '0 0 0 2.5px rgba(179,182,196,.9), 0 0 20px rgba(179,182,196,.5)',
+          SR: '0 0 0 2.5px rgba(245,196,61,.9), 0 0 22px rgba(245,196,61,.55)',
+          UR: '0 0 0 2.5px rgba(155,93,229,.9), 0 0 24px rgba(155,93,229,.6)',
+        };
+        const fxMap = {
+          R: { flipDuration: '.5s', fxDelay: '.05s', raysBg: 'transparent', sweepColor: 'transparent', glowInset: '-22%', glowAnim: 'none' },
+          SR: { flipDuration: '.55s', fxDelay: '.22s', raysBg: 'radial-gradient(circle, rgba(245,196,61,.55) 0%, rgba(245,196,61,.22) 45%, transparent 72%)', sweepColor: 'linear-gradient(90deg, transparent, rgba(245,196,61,.55), transparent)', glowInset: '-22%', glowAnim: 'none' },
+          UR: { flipDuration: '.7s', fxDelay: '.32s', raysBg: 'radial-gradient(circle, rgba(155,93,229,.65) 0%, rgba(155,93,229,.28) 45%, transparent 72%)', sweepColor: 'linear-gradient(90deg, transparent, rgba(200,162,255,.6), transparent)', glowInset: '-42%', glowAnim: 'skGlowPulse 2.4s ease-in-out infinite' },
+        };
+        const fx = fxMap[displayRarity] ?? fxMap.R;
+        const flipped = c.flipped;
+        return {
+          id: c.id,
+          name: c.name,
+          rarity: displayRarity,
+          border: rarityBorders[displayRarity] ?? '#b3b6c4',
+          rarityTextColor: rarityTextColors[displayRarity] ?? '#2a2138',
+          flipTransform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+          flipDuration: fx.flipDuration,
+          backGlow: (hovered && !flipped) ? (glowShadow[c.rarity] ?? glowShadow.R) : '0 4px 14px rgba(10,5,20,.4)',
+          faceScale: flipped ? 1 : 0.9,
+          faceDelay: fx.fxDelay,
+          badgeOpacity: flipped ? 1 : 0,
+          badgeScale: flipped ? 1 : 0.3,
+          badgeDelay: fx.fxDelay,
+          raysBg: fx.raysBg,
+          raysOpacity: (flipped && displayRarity !== 'R') ? 1 : 0,
+          raysScale: flipped ? 1 : 0.4,
+          raysDelay: fx.fxDelay,
+          glowInset: fx.glowInset,
+          glowAnim: flipped ? fx.glowAnim : 'none',
+          sweepColor: fx.sweepColor,
+          sweepOpacity: displayRarity === 'R' ? 0 : 1,
+          sweepX: flipped ? '140%' : '-60%',
+          sweepDelay: fx.fxDelay,
+          onClick: () => { if (interactive && !c.flipped) this.flipCard(c.id); },
+          onEnter: () => { if (interactive) this.setState(s => s.seq ? { seq: { ...s.seq, hoveredIdx: c.id } } : null); },
+          onLeave: () => { if (interactive) this.setState(s => s.seq ? { seq: { ...s.seq, hoveredIdx: null } } : null); },
+        };
+      }),
+    };
+  }
+
+  renderVals() {
+    const b = this.props.banner ?? {};
+    const selected = this.props.selected ?? null;
+    const isComeback = b.typeIsComeback;
+    const rarityBorders = { R: '#b3b6c4', SR: '#eaa31c', UR: '#9b5de5' };
+    const members = b.members ?? [];
+    const requiresSelect = !!isComeback;
+    const canPull = requiresSelect ? !!selected : true;
+    const hasSelected = !!selected;
+    const selectedMember = members.find(m => m.name === selected);
+    const pickerOpen = this.state.pickerOpen;
+    const closing = this.state.closing;
+    const SLOT_W = '114px';
+    const SLOT_PAD = '9px';
+    const PER_ROW = 5;
+    const ROW_H = 147;
+    // reserve height for the tallest state across ALL banners (placeholder slot + every
+    // member slot), so the panel height never changes between open/closed, selected/unselected,
+    // or when switching to a banner with a different group size.
+    const maxMembers = Math.max(members.length, this.props.maxMembers ?? 0);
+    const rows = Math.max(1, Math.ceil((maxMembers + 1) / PER_ROW));
+    const rowHeight = (rows * ROW_H) + 'px';
+
+    const openPicker = () => this.setState({ pickerOpen: true, closing: false });
+    const selectMember = (name) => {
+      (this.props.onSelect ?? (() => {}))(name);
+      this.setState({ closing: true });
+      setTimeout(() => this.setState({ pickerOpen: false, closing: false }), 220);
+    };
+
+    return {
+      accentA: b.accentA ?? '#6a4bbd',
+      accentB: b.accentB ?? '#3a2a5c',
+      group: b.group ?? '',
+      comeback: b.comeback ?? '',
+      endsIn: b.endsIn ?? '',
+      typeLabel: isComeback ? 'Comeback' : 'Special',
+      typeBg: isComeback ? 'rgba(155,93,229,.9)' : 'rgba(234,163,28,.92)',
+      typeTextColor: isComeback ? '#fff' : '#3a2600',
+      rateNote: isComeback
+        ? 'Members are SR — pick one to boost odds and unlock their UR version.'
+        : 'Members are UR — pick one to boost your odds for that idol.',
+      pityRarity: 'UR',
+      pityText: '47 / 90',
+      pityPct: Math.round((47 / 90) * 100) + '%',
+
+      openPicker,
+      rowHeight,
+      placeholderWidth: hasSelected ? '0px' : SLOT_W,
+      placeholderPad: hasSelected ? '0px' : SLOT_PAD,
+      placeholderOpacity: hasSelected ? 0 : 1,
+
+      memberCards: members.map(m => {
+        const isSel = selected === m.name;
+        const hov = this.state.hovered === m.name;
+        const expanded = pickerOpen ? (closing ? isSel : true) : (hasSelected && isSel);
+        return {
+          name: m.name,
+          rarity: m.rarity,
+          border: rarityBorders[m.rarity] ?? '#b3b6c4',
+          rarityTextColor: m.rarity === 'SR' ? '#3a2600' : '#fff',
+          scale: hov ? 'scale(1.06)' : 'scale(1)',
+          ring: isSel ? '0 0 0 2.5px rgba(255,255,255,.95), 0 0 14px rgba(255,255,255,.35)' : (hov ? '0 0 0 2px rgba(245,196,61,.95)' : '0 2px 8px rgba(10,5,20,.4)'),
+          slotWidth: expanded ? SLOT_W : '0px',
+          slotPad: expanded ? SLOT_PAD : '0px',
+          slotOpacity: expanded ? 1 : 0,
+          onClick: pickerOpen ? (() => selectMember(m.name)) : (isSel ? openPicker : (() => {})),
+          onEnter: () => this.setState({ hovered: m.name }),
+          onLeave: () => this.setState({ hovered: null }),
+        };
+      }),
+
+      cost1: b.cost1 ?? 1,
+      cost10: b.cost10 ?? 9,
+      lightColor1: canPull ? '#8fd3ff' : '#6a6a7a',
+      lightColor10: canPull ? '#1b1622' : '#6a6a7a',
+      pullCursor: canPull ? 'pointer' : 'not-allowed',
+      pullOpacity: canPull ? 1 : 0.55,
+      pull10Bg: canPull ? '#f5c43d' : 'rgba(120,105,140,.25)',
+      pull10Color: canPull ? '#1b1622' : '#8a7ea0',
+      pull1Bg: 'transparent',
+      pull1Border: canPull ? 'rgba(245,196,61,.7)' : 'rgba(255,255,255,.12)',
+      pull1Color: canPull ? '#f5c43d' : '#8a7ea0',
+      pullHint: canPull ? '' : 'Select a rate-up idol to summon on this banner.',
+      hintColor: '#c98a12',
+      onPull1: () => this.startPull(1),
+      onPull10: () => this.startPull(10),
+      onRates: this.props.onRates ?? (() => {}),
+
+      ...this.seqVals(b),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

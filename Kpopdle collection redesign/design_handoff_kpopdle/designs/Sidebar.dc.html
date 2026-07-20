@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</helmet>
+<aside onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" style="background:#1b1622; color:#b9b1c6; display:flex; flex-direction:column; padding:24px 16px; position:fixed; left:0; top:0; z-index:50; height:100vh; font-family:'Plus Jakarta Sans',sans-serif; transition:width .22s ease, box-shadow .22s ease; width:{{ railW }}; box-shadow:{{ railShadow }};">
+  <div style="display:flex; align-items:center; justify-content:{{ headJustify }}; margin-bottom:22px; gap:8px;">
+    <div style="display:{{ hideClosed }}; align-items:center; gap:10px; min-width:0; padding-left:8px;">
+      <span style="font-size:18px; font-weight:700; color:#fff; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; opacity:{{ labelOpacity }}; width:{{ labelWidth }}; transition:opacity .18s ease;">Kpopdle</span>
+    </div>
+    <div onClick="{{ toggle }}" title="Toggle sidebar" style="width:30px; height:30px; flex:none; border-radius:9px; display:flex; align-items:center; justify-content:center; background:#ffffff0d; border:1px solid #ffffff1a; color:#c8c0d6; cursor:pointer; transition:background .16s ease, color .16s ease;" style-hover="background:#ffffff1f; color:#fff;">
+      <span style="display:flex; transform:{{ chevronRotate }}; transition:transform .24s cubic-bezier(.4,0,.2,1);">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M10 3.5 5.5 8 10 12.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+    </div>
+  </div>
+
+  <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.18em; color:#6f6780; padding:6px 12px 6px; height:22px; white-space:nowrap; overflow:hidden; opacity:{{ labelOpacity }}; transition:opacity .18s ease;">GAMES</div>
+  <sc-for list="{{ games }}" as="item" hint-placeholder-count="2">
+    <a title="{{ item.name }}" style="display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:10px; text-decoration:none; cursor:pointer; white-space:nowrap; font-size:14px; position:relative; color:{{ item.color }}; font-weight:{{ item.weight }}; background:{{ item.bg }};">
+      <span style="position:absolute; left:0; top:9px; bottom:9px; width:3px; border-radius:3px; background:{{ item.accent }};"></span>
+      <span style="flex:none; width:20px; height:20px; display:flex; align-items:center; justify-content:center;" data-icon="{{ item.icon }}"></span>
+      <span style="overflow:hidden; opacity:{{ labelOpacity }}; width:{{ labelWidth }}; transition:opacity .18s ease;">{{ item.name }}</span>
+    </a>
+  </sc-for>
+
+  <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.18em; color:#6f6780; padding:16px 12px 6px; height:32px; white-space:nowrap; overflow:hidden; opacity:{{ labelOpacity }}; transition:opacity .18s ease;">CARD GAME</div>
+  <sc-for list="{{ cardGame }}" as="item" hint-placeholder-count="4">
+    <a title="{{ item.name }}" style="display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:10px; text-decoration:none; cursor:pointer; white-space:nowrap; font-size:14px; position:relative; color:{{ item.color }}; font-weight:{{ item.weight }}; background:{{ item.bg }};">
+      <span style="position:absolute; left:0; top:9px; bottom:9px; width:3px; border-radius:3px; background:{{ item.accent }};"></span>
+      <span style="flex:none; width:20px; height:20px; display:flex; align-items:center; justify-content:center;" data-icon="{{ item.icon }}"></span>
+      <span style="overflow:hidden; opacity:{{ labelOpacity }}; width:{{ labelWidth }}; transition:opacity .18s ease;">{{ item.name }}</span>
+    </a>
+  </sc-for>
+
+  <div style="flex:1;"></div>
+  <div style="height:1px; background:#ffffff14; margin:14px 8px;"></div>
+  <div style="display:flex; align-items:center; justify-content:center; gap:10px; padding:6px 10px;">
+    <div style="width:32px; height:32px; flex:none; border-radius:50%; background:linear-gradient(135deg,#f5c43d,#eaa31c); display:flex; align-items:center; justify-content:center; color:#1b1622; font-weight:700; font-size:13px;">{{ userInitial }}</div>
+    <div style="display:{{ hideClosed }}; min-width:0; overflow:hidden; opacity:{{ labelOpacity }}; width:{{ labelWidth }}; transition:opacity .18s ease;">
+      <div style="font-size:13px; font-weight:600; color:#e8e3f0; white-space:nowrap;">{{ username }}</div>
+    </div>
+  </div>
+  <div title="Log out" style="margin-top:8px; padding:9px; text-align:center; border:1px solid #ffffff1f; border-radius:9px; color:#b9b1c6; font-size:13px; font-weight:500; cursor:pointer; white-space:nowrap; overflow:hidden;">{{ logoutLabel }}</div>
+</aside>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;76px&quot;,&quot;height&quot;:&quot;620px&quot;},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;kpopdle&quot;,&quot;song&quot;,&quot;collection&quot;,&quot;lineup&quot;,&quot;banners&quot;,&quot;shows&quot;],&quot;default&quot;:&quot;collection&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;username&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;GeosatWasOnce&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { pinned: false, hovered: false };
+
+  componentDidMount() { this.paintIcons(); }
+  componentDidUpdate() { this.paintIcons(); }
+
+  paintIcons() {
+    const icons = {
+      grid: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="2.5" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="11.5" y="2.5" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="2.5" y="11.5" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="11.5" y="11.5" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg>',
+      music: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7 15.5V5l9-2v10.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="5" cy="15.5" r="2" stroke="currentColor" stroke-width="1.6"/><circle cx="14" cy="13.5" r="2" stroke="currentColor" stroke-width="1.6"/></svg>',
+      cards: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4.5" width="10" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M7 4.5l2.5-1.6a2 2 0 0 1 2.7.6l4 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      lineup: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6" r="2.6" stroke="currentColor" stroke-width="1.6"/><path d="M4.5 16c.6-2.8 2.9-4.4 5.5-4.4s4.9 1.6 5.5 4.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+      banners: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="4" width="15" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="8.5" r="1.6" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 15l4.5-4 3 2.5 2.5-2 3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      trophy: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M6 3.5h8v3a4 4 0 0 1-8 0v-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 4.5H3.5v1A2.5 2.5 0 0 0 6 8M14 4.5h2.5v1A2.5 2.5 0 0 1 14 8M10 10.5v3M7 16.5h6M8 16.5l.5-3M12 16.5l-.5-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    };
+    document.querySelectorAll('[data-icon]').forEach(el => {
+      const key = el.getAttribute('data-icon');
+      if (icons[key] && el.getAttribute('data-painted') !== key) {
+        el.innerHTML = icons[key];
+        el.setAttribute('data-painted', key);
+      }
+    });
+  }
+
+  navItem(id, name, icon, active) {
+    return {
+      id, name, icon,
+      color: active ? '#fff' : '#9890a6',
+      weight: active ? 600 : 500,
+      bg: active ? 'rgba(245,196,61,.15)' : 'transparent',
+      accent: active ? '#f5c43d' : 'transparent',
+    };
+  }
+
+  renderVals() {
+    const active = this.props.active ?? 'collection';
+    const open = this.state.pinned || this.state.hovered;
+    const c = !open;
+    const username = this.props.username ?? 'GeosatWasOnce';
+    return {
+      railW: c ? '76px' : '250px',
+      railShadow: c ? '0 0 0 rgba(0,0,0,0)' : '8px 0 40px rgba(20,10,40,.35)',
+      headJustify: c ? 'center' : 'space-between',
+      hideClosed: c ? 'none' : 'flex',
+      chevronRotate: c ? 'rotate(180deg)' : 'rotate(0deg)',
+      labelOpacity: c ? 0 : 1,
+      labelWidth: c ? '0px' : 'auto',
+      logoutLabel: c ? '\u23FB' : 'Log out',
+      username,
+      userInitial: username.charAt(0).toUpperCase(),
+      onEnter: () => this.setState({ hovered: true }),
+      onLeave: () => this.setState({ hovered: false }),
+      toggle: () => this.setState(s => {
+        const isOpen = s.pinned || s.hovered;
+        return isOpen ? { pinned: false, hovered: false } : { pinned: true };
+      }),
+      games: [
+        this.navItem('kpopdle', 'Kpopdle', 'grid', active === 'kpopdle'),
+        this.navItem('song', 'Guess the Song', 'music', active === 'song'),
+      ],
+      cardGame: [
+        this.navItem('collection', 'Collection', 'cards', active === 'collection'),
+        this.navItem('lineup', 'Lineup', 'lineup', active === 'lineup'),
+        this.navItem('banners', 'Banners', 'banners', active === 'banners'),
+        this.navItem('shows', 'Shows', 'trophy', active === 'shows'),
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

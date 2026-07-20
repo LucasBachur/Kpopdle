@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+</style>
+</helmet>
+<div style="min-height:100vh; position:relative; background:linear-gradient(165deg, oklch(0.87 0.058 300), oklch(0.85 0.058 300)); font-family:'Plus Jakarta Sans',sans-serif;">
+
+  <dc-import name="Sidebar" active="banners" hint-size="76px,100vh"></dc-import>
+
+  <main style="margin-left:76px; min-width:0; padding:34px 44px 80px;">
+
+    <!-- header -->
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:20px; margin-bottom:24px;">
+      <h1 style="margin:0; padding:11px 26px; font-size:26px; font-weight:700; color:#2a2138; letter-spacing:-.02em; background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.9); border-radius:14px; box-shadow:0 6px 20px rgba(40,20,70,.08);">Banners</h1>
+
+      <div style="display:flex; align-items:center; gap:12px; padding:9px 14px 9px 16px; border-radius:12px; background:#1b1622; color:#fff; flex:1; max-width:480px;">
+        <span style="font-size:14px; font-weight:700; color:#fff; white-space:nowrap;">Daily Summon</span>
+        <span style="font-family:'Space Mono',monospace; font-size:11px; color:#6f6780; white-space:nowrap; margin-left:auto;">22:57:20</span>
+        <div onClick="{{ openDailyRates }}" title="Drop rates" style="flex:none; width:28px; height:28px; border-radius:9px; display:flex; align-items:center; justify-content:center; background:#ffffff12; border:1px solid #ffffff2a; color:#fff; font-weight:800; font-size:12px; cursor:pointer;">%</div>
+        <button onClick="{{ onOpenDaily }}" style="flex:none; padding:9px 18px; border:none; border-radius:10px; background:#f5c43d; color:#1b1622; font-family:inherit; font-size:13px; font-weight:800; cursor:pointer; white-space:nowrap;">Free Pull</button>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:9px; padding:9px 16px 9px 13px; border-radius:12px; background:#1b1622; color:#fff;">
+        <svg width="18" height="20" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="9" rx="4" fill="#f5c43d"/><rect x="10.5" y="10.5" width="3" height="8.5" rx="1.4" fill="#f5c43d"/><rect x="8.5" y="18.5" width="7" height="3.2" rx="1.6" fill="#eaa31c"/></svg>
+        <span style="font-size:16px; font-weight:800; letter-spacing:.01em;">9,892</span>
+      </div>
+    </div>
+
+    <!-- CAROUSEL -->
+    <div style="display:flex; align-items:flex-start; justify-content:center; gap:22px;">
+        <!-- left stack -->
+        <div style="display:flex; flex-direction:column; gap:13px; flex:none; padding-top:6px;">
+          <sc-for list="{{ cLeft }}" as="s" hint-placeholder-count="3">
+            <div ref="{{ s.setRef }}" onClick="{{ s.onClick }}" style="position:relative; z-index:20; width:206px; border-radius:15px; overflow:hidden; cursor:{{ s.cursor }}; background:#1b1622; box-shadow:0 8px 22px rgba(30,15,55,.18); transform-origin:top left; opacity:{{ s.opacity }}; pointer-events:{{ s.pe }}; transition:transform .16s ease;" style-hover="transform:translateY(-2px);">
+              <div style="position:relative; height:116px; background:linear-gradient(135deg, {{ s.accentA }}, {{ s.accentB }});">
+                <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(45deg,#ffffff12 0 12px,#0000 12px 24px);"></div>
+                <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.16em; color:#ffffff88;">GROUP KEY ART</div>
+                <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(20,13,30,.95), rgba(20,13,30,.05) 65%);"></div>
+                <span style="position:absolute; top:10px; left:11px; padding:3px 9px; border-radius:999px; font-size:9px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:{{ s.typeTextColor }}; background:{{ s.typeBg }};">{{ s.typeLabel }}</span>
+                <div style="position:absolute; left:12px; right:12px; bottom:9px;">
+                  <div style="font-family:'Space Mono',monospace; font-size:8px; letter-spacing:.12em; color:#f5c43d;">{{ s.group }}</div>
+                  <div style="font-size:16px; font-weight:800; color:#fff; line-height:1.1;">{{ s.comeback }}</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:flex-end; padding:9px 12px;">
+                <span style="font-size:10px; font-weight:600; color:#f7b955;">{{ s.endsIn }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <!-- center card -->
+        <div ref="{{ centerRef }}" style="position:relative; z-index:30; flex:none; width:860px; max-width:100%; background:#181320; border:1px solid #ffffff14; border-radius:26px; padding:26px; box-shadow:0 30px 72px rgba(10,5,25,.6); transform-origin:top left;">
+          <dc-import name="SummonPanel" banner="{{ cBanner }}" selected="{{ cSelected }}" max-members="{{ cMaxMembers }}" on-select="{{ cOnSelect }}" on-pull="{{ onPull }}" on-rates="{{ cOnRates }}" hint-size="100%,600px"></dc-import>
+        </div>
+        <!-- right stack -->
+        <div style="display:flex; flex-direction:column; gap:13px; flex:none; padding-top:6px;">
+          <sc-for list="{{ cRight }}" as="s" hint-placeholder-count="3">
+            <div ref="{{ s.setRef }}" onClick="{{ s.onClick }}" style="position:relative; z-index:20; width:206px; border-radius:15px; overflow:hidden; cursor:{{ s.cursor }}; background:#1b1622; box-shadow:0 8px 22px rgba(30,15,55,.18); transform-origin:top left; opacity:{{ s.opacity }}; pointer-events:{{ s.pe }}; transition:transform .16s ease;" style-hover="transform:translateY(-2px);">
+              <div style="position:relative; height:116px; background:linear-gradient(135deg, {{ s.accentA }}, {{ s.accentB }});">
+                <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(45deg,#ffffff12 0 12px,#0000 12px 24px);"></div>
+                <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.16em; color:#ffffff88;">GROUP KEY ART</div>
+                <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(20,13,30,.95), rgba(20,13,30,.05) 65%);"></div>
+                <span style="position:absolute; top:10px; left:11px; padding:3px 9px; border-radius:999px; font-size:9px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:{{ s.typeTextColor }}; background:{{ s.typeBg }};">{{ s.typeLabel }}</span>
+                <div style="position:absolute; left:12px; right:12px; bottom:9px;">
+                  <div style="font-family:'Space Mono',monospace; font-size:8px; letter-spacing:.12em; color:#f5c43d;">{{ s.group }}</div>
+                  <div style="font-size:16px; font-weight:800; color:#fff; line-height:1.1;">{{ s.comeback }}</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:flex-end; padding:9px 12px;">
+                <span style="font-size:10px; font-weight:600; color:#f7b955;">{{ s.endsIn }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+    <!-- RATES POPUP -->
+    <sc-if value="{{ ratesOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeRates }}" style="position:fixed; inset:0; z-index:120; background:rgba(15,8,26,.62); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:30px;">
+        <div onClick="{{ stop }}" style="width:400px; max-width:100%; background:#181320; border:1px solid #ffffff16; border-radius:20px; padding:22px 24px; box-shadow:0 30px 80px rgba(10,5,25,.6); color:#e8e3f0;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+            <div style="font-size:17px; font-weight:800; color:#fff;">Drop Rates</div>
+            <div onClick="{{ closeRates }}" style="width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,.08); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px;">✕</div>
+          </div>
+          <div style="font-size:12px; color:#9890a6; margin-bottom:16px;">{{ ratesTitle }}</div>
+          <div style="display:flex; flex-direction:column; gap:1px; border-radius:12px; overflow:hidden; border:1px solid #ffffff14;">
+            <sc-for list="{{ ratesRows }}" as="row" hint-placeholder-count="3">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:#ffffff08;">
+                <span style="display:flex; align-items:center; gap:9px; font-size:13px; font-weight:600; color:#e8e3f0;"><span style="width:9px; height:9px; border-radius:50%; background:{{ row.dot }};"></span>{{ row.label }}</span>
+                <span style="font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:#fff;">{{ row.pct }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="font-size:10px; color:#6f6780; margin-top:12px; line-height:1.5;">Percentages are placeholder — final rates and the pity threshold are to be defined.</div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ dailyOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:fixed; inset:0; z-index:500; background:rgba(10,6,16,.8); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px;">
+        <div onClick="{{ onFlipDaily }}" style="position:relative; width:104px; aspect-ratio:5/7; cursor:pointer; perspective:800px;">
+          <div style="position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .5s cubic-bezier(.45,.05,.35,1); transform:{{ dailyFlipTransform }};">
+            <div style="position:absolute; inset:0; border-radius:11px; backface-visibility:hidden; background:linear-gradient(135deg,#2a2136,#181320); border:2px solid rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center; box-shadow:0 10px 26px rgba(10,5,20,.5);">
+              <span style="font-size:22px; font-weight:900; color:#f5c43d; opacity:.55;">✦</span>
+            </div>
+            <div style="position:absolute; inset:0; border-radius:11px; backface-visibility:hidden; transform:rotateY(180deg); border:2.5px solid {{ dailyBorder }}; background:linear-gradient(135deg,#2a2136,#342a44); overflow:hidden;">
+              <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(45deg,#ffffff0a 0 8px,#0000 8px 16px);"></div>
+              <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.1em; color:#8a7f9a;">PHOTO</div>
+              <div style="position:absolute; left:0; right:0; bottom:0; padding:14px 5px 5px; background:linear-gradient(to top, rgba(10,6,16,.92), transparent); font-weight:600; font-size:10px; color:#fff; text-align:center;">{{ dailyName }}</div>
+              <div style="position:absolute; top:5px; right:5px; padding:1px 6px; border-radius:6px; font-size:9px; font-weight:800; color:{{ dailyRarityTextColor }}; background:{{ dailyBorder }};">{{ dailyRarity }}</div>
+            </div>
+          </div>
+        </div>
+        <div onClick="{{ onCloseDaily }}" style="padding:12px 24px; border-radius:11px; background:{{ dailyContinueBg }}; border:1px solid rgba(255,255,255,.25); color:{{ dailyContinueColor }}; font-weight:800; font-size:13px; cursor:{{ dailyContinueCursor }}; opacity:{{ dailyContinueOpacity }};">Continue</div>
+      </div>
+    </sc-if>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { openId: 'aespa', rateUp: {}, ratesId: null, hoverId: null, dailyOpen: false, dailyCard: null, dailyFlipped: false };
+  centerRef = React.createRef();
+  sideRefs = {};
+  _sr = {};
+  flip = null;
+
+  sideSetRef(id) {
+    if (!this._sr[id]) this._sr[id] = (el) => { this.sideRefs[id] = el; };
+    return this._sr[id];
+  }
+
+  sideCard(b, cId) {
+    const isComeback = b.type === 'comeback';
+    const isActive = b.id === cId;
+    return {
+      id: b.id, group: b.group, comeback: b.comeback, accentA: b.accentA, accentB: b.accentB, endsIn: b.endsIn,
+      typeLabel: isComeback ? (b.rerun ? 'Comeback · Rerun' : 'Comeback') : (b.birthday ? 'Birthday' : 'Special'),
+      typeBg: isComeback ? 'rgba(155,93,229,.92)' : 'rgba(234,163,28,.94)',
+      typeTextColor: isComeback ? '#fff' : '#3a2600',
+      opacity: isActive ? 0 : 1,
+      pe: isActive ? 'none' : 'auto',
+      cursor: isActive ? 'default' : 'pointer',
+      setRef: this.sideSetRef(b.id),
+      onClick: isActive ? (() => {}) : (() => this.pick(b.id)),
+    };
+  }
+
+  pick(id) {
+    if (id === this.state.openId) return;
+    const c = this.centerRef.current;
+    const clicked = this.sideRefs[id];
+    this.flip = {
+      oldId: this.state.openId,
+      firstCenter: c ? c.getBoundingClientRect() : null,
+      firstClicked: clicked ? clicked.getBoundingClientRect() : null,
+    };
+    this.setState({ openId: id });
+  }
+
+  componentDidUpdate() {
+    const f = this.flip;
+    if (!f) return;
+    this.flip = null;
+    const ease = 'cubic-bezier(.16,1,.3,1)';
+    const fly = (el, first) => {
+      if (!el || !first) return;
+      const l = el.getBoundingClientRect();
+      const dx = first.left - l.left, dy = first.top - l.top;
+      const sx = first.width / l.width, sy = first.height / l.height;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1 && Math.abs(sx - 1) < 0.01) return;
+      el.animate([
+        { transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`, opacity: 0 },
+        { opacity: 1, offset: 0.4 },
+        { transform: 'none', opacity: 1 },
+      ], { duration: 750, easing: 'cubic-bezier(.32,.45,.14,1)' });
+    };
+    fly(this.centerRef.current, f.firstClicked);       // new center grows from clicked slot
+    fly(this.sideRefs[f.oldId], f.firstCenter);        // old center flies back to its home slot
+  }
+
+  banners() {
+    return [
+      { id: 'aespa', group: 'aespa', comeback: 'Next Level', comeback2: true, type: 'comeback', endsIn: 'Ends in 24d 22h', accentA: '#7b4bd6', accentB: '#3a2a5c',
+        members: ['Giselle', 'Karina', 'Ningning', 'Winter'] },
+      { id: 'nj', group: 'NewJeans', comeback: 'Ditto', type: 'comeback', endsIn: 'Ends in 12d 4h', accentA: '#4f9bd8', accentB: '#26405e',
+        members: ['Minji', 'Hanni', 'Danielle', 'Haerin', 'Hyein'] },
+      { id: 'lsrfm', group: 'LE SSERAFIM', comeback: 'Perfect Night', type: 'special', endsIn: 'Ends in 5d 9h', accentA: '#d15c8a', accentB: '#5a2440',
+        members: ['Chaewon', 'Sakura', 'Yunjin', 'Kazuha', 'Eunchae'] },
+      { id: 'ive', group: 'IVE', comeback: 'I AM', type: 'comeback', endsIn: 'Ends in 9d 2h', accentA: '#d1485a', accentB: '#5a2028',
+        members: ['Yujin', 'Gaeul', 'Rei', 'Wonyoung', 'Liz', 'Leeseo'] },
+      { id: 'gidle', group: '(G)I-DLE', comeback: 'Queencard', type: 'special', endsIn: 'Ends in 18d 6h', accentA: '#b84bc4', accentB: '#4a1c52',
+        members: ['Miyeon', 'Minnie', 'Soyeon', 'Yuqi', 'Shuhua'] },
+      { id: 'itzy', group: 'ITZY', comeback: 'DALLA DALLA', type: 'comeback', endsIn: 'Ends in 3d 1h', accentA: '#e0863a', accentB: '#5e3418', rerun: true,
+        members: ['Yeji', 'Lia', 'Ryujin', 'Chaeryeong', 'Yuna'] },
+      { id: 'sana', group: 'TWICE', comeback: 'Sana Birthday', type: 'special', endsIn: 'Ends in 20h 12m', accentA: '#e6b23a', accentB: '#7a5410', birthday: true,
+        members: ['Sana'] },
+    ];
+  }
+
+  summonFor(b) {
+    const isComeback = b.type === 'comeback';
+    const rarity = isComeback ? 'SR' : 'UR';
+    return {
+      group: b.group,
+      comeback: b.comeback,
+      typeIsComeback: isComeback,
+      endsIn: b.endsIn,
+      accentA: b.accentA,
+      accentB: b.accentB,
+      cost1: 1,
+      cost10: 9,
+      members: b.members.map(n => ({ name: n, rarity })),
+    };
+  }
+
+  openBannerObj() {
+    const b = this.banners().find(x => x.id === this.state.openId);
+    return b ? this.summonFor(b) : null;
+  }
+
+  openDaily() {
+    const pools = this.banners().flatMap(b => b.members);
+    const name = pools[Math.floor(Math.random() * pools.length)];
+    const rarity = Math.random() < 0.06 ? 'UR' : (Math.random() < 0.28 ? 'SR' : 'R');
+    this.setState({ dailyOpen: true, dailyFlipped: false, dailyCard: { name, rarity } });
+  }
+
+  flipDaily() {
+    this.setState({ dailyFlipped: true });
+  }
+
+  closeDaily() {
+    this.setState({ dailyOpen: false });
+  }
+
+  renderVals() {
+    const openId = this.state.openId;
+    const banners = this.banners();
+
+    // carousel active banner + fixed left/right partition
+    const cId = openId ?? banners[0].id;
+    const n = banners.length;
+    const cBannerObj = banners.find(b => b.id === cId) ?? banners[0];
+    const splitAt = Math.ceil(n / 2);
+    const leftBanners = banners.slice(0, splitAt);
+    const rightBanners = banners.slice(splitAt);
+
+    const openBanner = this.banners().find(b => b.id === openId);
+    const ratesBanner = this.banners().find(b => b.id === this.state.ratesId);
+    const dailyRatesOpen = this.state.ratesId === 'daily';
+    let ratesRows = [];
+    let ratesTitle = '';
+    if (dailyRatesOpen) {
+      ratesTitle = 'Daily Summon';
+      ratesRows = [
+        { label: 'UR', pct: '0.5%', dot: '#c8a2ff' },
+        { label: 'SR', pct: '9.5%', dot: '#f5c43d' },
+        { label: 'R — standard', pct: '90.0%', dot: '#b3b6c4' },
+      ];
+    } else if (ratesBanner) {
+      ratesTitle = ratesBanner.group + ' · ' + ratesBanner.comeback;
+      if (ratesBanner.type === 'comeback') {
+        ratesRows = [
+          { label: 'UR — rate-up idol', pct: '2.0%', dot: '#9b5de5' },
+          { label: 'SR — featured members', pct: '18.0%', dot: '#eaa31c' },
+          { label: 'R — standard', pct: '80.0%', dot: '#b3b6c4' },
+        ];
+      } else {
+        ratesRows = [
+          { label: 'UR — rate-up idol', pct: '1.2%', dot: '#f5c43d' },
+          { label: 'UR — other members', pct: '2.8%', dot: '#eaa31c' },
+          { label: 'R — standard', pct: '96.0%', dot: '#b3b6c4' },
+        ];
+      }
+    }
+
+    return {
+      cBanner: this.summonFor(cBannerObj),
+      cMaxMembers: Math.max(...banners.map(b => b.members.length)),
+      cSelected: this.state.rateUp[cId] ?? '',
+      cOnSelect: (name) => this.setState(s => ({ rateUp: { ...s.rateUp, [cId]: name } })),
+      cOnRates: () => this.setState({ ratesId: cId }),
+      centerRef: this.centerRef,
+      cLeft: leftBanners.map(b => this.sideCard(b, cId)),
+      cRight: rightBanners.map(b => this.sideCard(b, cId)),
+
+      openDailyRates: () => this.setState({ ratesId: 'daily' }),
+      onOpenDaily: () => this.openDaily(),
+      dailyOpen: this.state.dailyOpen,
+      dailyFlipTransform: this.state.dailyFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+      dailyName: this.state.dailyCard ? this.state.dailyCard.name : '',
+      dailyRarity: this.state.dailyCard ? this.state.dailyCard.rarity : 'R',
+      dailyBorder: this.state.dailyCard ? ({ R: '#b3b6c4', SR: '#eaa31c', UR: '#9b5de5' }[this.state.dailyCard.rarity]) : '#b3b6c4',
+      dailyRarityTextColor: this.state.dailyCard ? ({ R: '#2a2138', SR: '#3a2600', UR: '#fff' }[this.state.dailyCard.rarity]) : '#2a2138',
+      onFlipDaily: () => { if (!this.state.dailyFlipped) this.flipDaily(); },
+      onCloseDaily: () => { if (this.state.dailyFlipped) this.closeDaily(); },
+      dailyContinueBg: 'rgba(255,255,255,.1)',
+      dailyContinueColor: this.state.dailyFlipped ? '#fff' : 'rgba(255,255,255,.4)',
+      dailyContinueCursor: this.state.dailyFlipped ? 'pointer' : 'not-allowed',
+      dailyContinueOpacity: this.state.dailyFlipped ? 1 : 0.5,
+      ratesOpen: dailyRatesOpen || !!ratesBanner,
+      ratesTitle,
+      ratesRows,
+      closeRates: () => this.setState({ ratesId: null }),
+      stop: (e) => { if (e && e.stopPropagation) e.stopPropagation(); },
+      onPull: () => {},
+    };
+  }
+}
+</script>
+</body>
+</html>

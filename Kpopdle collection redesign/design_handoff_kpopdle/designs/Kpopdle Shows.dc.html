@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  a { color: #7a4fd6; text-decoration: none; }
+  a:hover { color: #5a34ad; }
+  @keyframes shows-blink { 0%,100%{opacity:1;} 50%{opacity:.25;} }
+  @keyframes shows-in { from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes shows-rise { 0%{opacity:0; transform:translateY(14px) scale(.96);} 100%{opacity:1; transform:translateY(0) scale(1);} }
+  @keyframes shows-glow { 0%,100%{box-shadow:0 0 0 0 rgba(245,196,61,.0);} 50%{box-shadow:0 0 28px 2px rgba(245,196,61,.5);} }
+  @keyframes shows-conf { 0%{transform:translateY(-20px) rotate(0); opacity:0;} 8%{opacity:1;} 100%{transform:translateY(560px) rotate(680deg); opacity:0;} }
+  @keyframes shows-spin { to { transform: rotate(360deg); } }
+  #showsFeed::-webkit-scrollbar{ width:8px; }
+  #showsFeed::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.14); border-radius:8px; }
+</style>
+</helmet>
+<div style="min-height:100vh; position:relative; background:linear-gradient(165deg, oklch(0.87 0.058 300), oklch(0.85 0.058 300)); font-family:'Plus Jakarta Sans',sans-serif;">
+
+  <dc-import name="Sidebar" active="shows" hint-size="76px,100vh"></dc-import>
+
+  <main style="margin-left:76px; min-width:0; padding:40px 44px 90px;">
+    <div style="max-width:1180px; margin:0 auto;">
+
+      <!-- header + tabs -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:18px; margin-bottom:30px;">
+        <h1 style="margin:0; padding:12px 34px; font-size:30px; font-weight:700; color:#2a2138; letter-spacing:-.02em; text-align:center; background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.9); border-radius:16px; box-shadow:0 6px 20px rgba(40,20,70,.08);">Shows</h1>
+        <div style="display:flex; gap:6px; padding:5px; background:rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.85); border-radius:14px;">
+          <div onClick="{{ goLive }}" style="display:flex; align-items:center; gap:8px; padding:9px 20px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; color:{{ liveTabColor }}; background:{{ liveTabBg }}; box-shadow:{{ liveTabShadow }};">
+            <span style="width:8px; height:8px; border-radius:50%; background:#e0533d; animation:shows-blink 1.1s infinite;"></span>Live
+          </div>
+          <div onClick="{{ goArchive }}" style="padding:9px 20px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; color:{{ archTabColor }}; background:{{ archTabBg }}; box-shadow:{{ archTabShadow }};">Archive</div>
+        </div>
+      </div>
+
+      <!-- ================= LIVE ================= -->
+      <sc-if value="{{ isLive }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid; grid-template-columns:1fr 330px; gap:22px; align-items:start;">
+          <div style="min-width:0;">
+
+            <!-- PRE-SHOW -->
+            <sc-if value="{{ isPreshow }}" hint-placeholder-val="{{ false }}">
+              <div style="position:relative; overflow:hidden; border-radius:22px; padding:64px 40px 60px; text-align:center; background:radial-gradient(120% 90% at 50% -10%, rgba(155,93,229,.5), transparent 60%), radial-gradient(90% 70% at 15% 110%, rgba(245,196,61,.28), transparent 55%), #171220; border:1px solid rgba(255,255,255,.08); box-shadow:0 20px 60px rgba(20,10,40,.4);">
+                <div style="position:absolute; top:0; left:0; right:0; height:5px; background:linear-gradient(90deg,#9b5de5,#f5c43d,#e0533d,#9b5de5);"></div>
+                <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.28em; color:#c9a6ff;">TONIGHT&rsquo;S SHOW</div>
+                <div style="font-size:42px; font-weight:800; color:#fff; letter-spacing:-.02em; margin:12px 0 4px;">{{ showName }}</div>
+                <div style="font-size:14px; color:#9a8fb0; margin-bottom:34px;">Tonight &middot; 21:00 KST</div>
+                <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.2em; color:#8a7f9a; margin-bottom:8px;">DOORS OPEN IN</div>
+                <div style="font-family:'Space Mono',monospace; font-size:66px; font-weight:700; color:#f5c43d; line-height:1; letter-spacing:.02em;">{{ cdText }}</div>
+                <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:34px;">
+                  <span style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.14em; color:#8a7f9a; align-self:center;">TONIGHT&rsquo;S BOOSTS</span>
+                  <sc-for list="{{ boosts }}" as="b" hint-placeholder-count="4">
+                    <div style="padding:6px 13px; border-radius:999px; font-size:12px; font-weight:600; color:#efe6ff; background:rgba(155,93,229,.22); border:1px solid rgba(155,93,229,.4);">+{{ b }}</div>
+                  </sc-for>
+                </div>
+                <div style="margin-top:30px; display:inline-flex; align-items:center; gap:9px; padding:11px 20px; border-radius:12px; background:rgba(245,196,61,.14); border:1px solid rgba(245,196,61,.35); color:#f5c43d; font-size:13px; font-weight:700;">
+                  <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M6 10.5l3 3 5.5-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Your lineup is locked in
+                </div>
+              </div>
+            </sc-if>
+
+            <!-- BROADCAST FEED -->
+            <sc-if value="{{ isBroadcast }}" hint-placeholder-val="{{ true }}">
+              <div style="border-radius:20px; overflow:hidden; background:#171220; border:1px solid rgba(255,255,255,.08); box-shadow:0 20px 60px rgba(20,10,40,.4);">
+                <div style="display:flex; align-items:center; gap:12px; padding:16px 22px; border-bottom:1px solid rgba(255,255,255,.07); background:rgba(255,255,255,.02);">
+                  <span style="display:flex; align-items:center; gap:7px; padding:5px 11px; border-radius:7px; background:#e0533d; color:#fff; font-family:'Space Mono',monospace; font-size:10px; font-weight:700; letter-spacing:.12em;"><span style="width:7px; height:7px; border-radius:50%; background:#fff; animation:shows-blink 1.1s infinite;"></span>LIVE</span>
+                  <span style="font-size:16px; font-weight:700; color:#fff;">{{ showName }}</span>
+                  <span style="margin-left:auto; display:flex; align-items:center; gap:6px; color:#9a8fb0; font-size:13px; font-weight:600;">
+                    <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M4 16.5c.7-3 3-4.6 6-4.6s5.3 1.6 6 4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                    {{ viewersText }} watching
+                  </span>
+                </div>
+                <div id="showsFeed" style="height:560px; overflow-y:auto; padding:16px 18px; display:flex; flex-direction:column; gap:9px;">
+                  <sc-for list="{{ feed }}" as="item" hint-placeholder-count="7">
+                    <div style="display:flex; gap:11px; align-items:flex-start; padding:11px 14px; border-radius:12px; background:{{ item.bg }}; border:1px solid {{ item.border }}; animation:shows-in .32s ease both;">
+                      <span style="width:9px; height:9px; border-radius:50%; margin-top:5px; flex:none; background:{{ item.dot }};"></span>
+                      <div style="min-width:0;">
+                        <sc-if value="{{ item.hasTag }}" hint-placeholder-val="{{ false }}">
+                          <span style="display:inline-block; font-family:'Space Mono',monospace; font-size:9px; font-weight:700; letter-spacing:.12em; padding:2px 8px; border-radius:6px; margin-bottom:5px; background:{{ item.tagBg }}; color:{{ item.tagColor }};">{{ item.tag }}</span>
+                        </sc-if>
+                        <div style="font-size:14px; line-height:1.5; color:{{ item.color }}; font-weight:{{ item.weight }};">{{ item.text }}</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <!-- VOTING / WINNER-ON-STAGE -->
+            <sc-if value="{{ isVoting }}" hint-placeholder-val="{{ false }}">
+              <div style="border-radius:20px; padding:26px 26px 30px; background:radial-gradient(120% 80% at 50% -20%, rgba(155,93,229,.4), transparent 60%), #171220; border:1px solid rgba(255,255,255,.08); box-shadow:0 20px 60px rgba(20,10,40,.4);">
+                <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:6px;">
+                  <span style="width:8px; height:8px; border-radius:50%; background:#e0533d; animation:shows-blink 1.1s infinite;"></span>
+                  <span style="font-family:'Space Mono',monospace; font-size:12px; letter-spacing:.2em; color:#f5c43d;">LIVE VOTING</span>
+                </div>
+                <div style="text-align:center; font-size:15px; color:#9a8fb0; margin-bottom:26px;">{{ voteSubtitle }}</div>
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; align-items:end;">
+                  <sc-for list="{{ contenders }}" as="c" hint-placeholder-count="3">
+                    <div style="text-align:center; animation:shows-rise .5s ease both;">
+                      <div style="position:relative; margin:0 auto 14px; width:100%; max-width:150px; aspect-ratio:5/7; border-radius:14px; overflow:hidden; border:2.5px solid {{ c.ring }}; background:linear-gradient(135deg,#2a2038,#3a2c52); box-shadow:{{ c.cardShadow }};">
+                        <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(45deg,#ffffff0a 0 9px,#0000 9px 18px);"></div>
+                        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.16em; color:#b7a6d6; opacity:.6;">PHOTO</div>
+                        <div style="position:absolute; top:8px; left:8px; width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; background:rgba(18,12,26,.85); color:#fff;">{{ c.rank }}</div>
+                        <sc-if value="{{ c.isWinner }}" hint-placeholder-val="{{ false }}">
+                          <div style="position:absolute; top:-2px; right:6px; color:#f5c43d;">
+                            <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M4 8l4 3 4-6 4 6 4-3-1.6 10H5.6L4 8z"/></svg>
+                          </div>
+                        </sc-if>
+                      </div>
+                      <div style="font-size:15px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ c.handle }}</div>
+                      <div style="font-size:12px; color:#9a8fb0; margin-bottom:10px;">{{ c.song }}</div>
+                      <div style="font-family:'Space Mono',monospace; font-size:20px; font-weight:700; color:{{ c.voteColor }};">{{ c.votes }}</div>
+                      <div style="height:8px; border-radius:6px; background:rgba(255,255,255,.08); margin-top:8px; overflow:hidden;">
+                        <div style="height:100%; border-radius:6px; background:{{ c.barColor }}; width:{{ c.pctStr }}; transition:width .4s ease;"></div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <!-- WINNER RECAP -->
+            <sc-if value="{{ isWinner }}" hint-placeholder-val="{{ false }}">
+              <div style="position:relative; overflow:hidden; border-radius:20px; padding:44px 30px 36px; text-align:center; background:radial-gradient(120% 90% at 50% -10%, rgba(245,196,61,.4), transparent 60%), #171220; border:1px solid rgba(245,196,61,.25); box-shadow:0 20px 60px rgba(20,10,40,.45);">
+                <div style="position:absolute; inset:0; pointer-events:none;" data-confetti></div>
+                <div style="position:relative;">
+                  <div style="color:#f5c43d; display:flex; justify-content:center; margin-bottom:6px;">
+                    <svg width="46" height="46" viewBox="0 0 24 24" fill="currentColor"><path d="M4 8l4 3 4-6 4 6 4-3-1.6 10H5.6L4 8z"/></svg>
+                  </div>
+                  <div style="font-family:'Space Mono',monospace; font-size:12px; letter-spacing:.28em; color:#f5c43d;">WINNER OF THE NIGHT</div>
+                  <div style="font-size:38px; font-weight:800; color:#fff; margin:8px 0 2px;">{{ winner.handle }}</div>
+                  <div style="font-size:15px; color:#c9bcdf; margin-bottom:6px;">{{ winner.song }}</div>
+                  <div style="font-family:'Space Mono',monospace; font-size:14px; color:#f5c43d;">{{ winner.votes }} votes</div>
+                </div>
+                <div style="position:relative; display:flex; justify-content:center; align-items:flex-end; gap:10px; margin-top:34px;">
+                  <sc-for list="{{ podium }}" as="p" hint-placeholder-count="3">
+                    <div style="flex:1; max-width:150px;">
+                      <div style="font-family:'Space Mono',monospace; font-size:11px; color:{{ p.medalColor }}; margin-bottom:6px;">{{ p.medal }}</div>
+                      <div style="border-radius:12px; background:rgba(255,255,255,.05); border:1px solid {{ p.border }}; padding:14px 10px; height:{{ p.h }};">
+                        <div style="font-size:14px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ p.handle }}</div>
+                        <div style="font-size:11px; color:#9a8fb0; margin-top:2px;">{{ p.song }}</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+          </div>
+
+          <!-- RIGHT RAIL: your card (always visible) -->
+          <div style="position:sticky; top:24px; background:rgba(255,255,255,.62); border:1px solid rgba(255,255,255,.9); border-radius:20px; padding:22px; box-shadow:0 8px 28px rgba(40,20,70,.1);">
+            <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.18em; color:#8a7ea0;">{{ myTitle }}</div>
+            <div style="display:flex; align-items:center; gap:11px; margin:12px 0 16px;">
+              <div style="width:44px; height:44px; flex:none; border-radius:50%; background:linear-gradient(135deg,#f5c43d,#eaa31c); display:flex; align-items:center; justify-content:center; color:#1b1622; font-weight:800; font-size:17px;">{{ myInitial }}</div>
+              <div style="min-width:0;">
+                <div style="font-size:16px; font-weight:700; color:#2a2138; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ myHandle }}</div>
+                <div style="font-size:12px; color:#7a6e8c;">{{ mySong }}</div>
+              </div>
+            </div>
+            <sc-if value="{{ myHasRank }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:16px 0 4px; border-top:1px solid rgba(0,0,0,.06); border-bottom:1px solid rgba(0,0,0,.06); margin-bottom:14px;">
+                <div style="font-size:40px; font-weight:800; color:#2a2138; line-height:1;">{{ myRank }}</div>
+                <div style="font-size:12px; color:#7a6e8c; margin-top:4px;">{{ myRankSub }}</div>
+              </div>
+            </sc-if>
+            <div style="display:flex; align-items:center; gap:8px; padding:10px 13px; border-radius:11px; background:{{ myStatusBg }}; color:{{ myStatusColor }}; font-size:12px; font-weight:700;">
+              <span style="width:8px; height:8px; border-radius:50%; background:currentColor; opacity:.9;"></span>{{ myStatus }}
+            </div>
+            <div style="display:flex; gap:6px; margin-top:16px;">
+              <sc-for list="{{ myMini }}" as="m" hint-placeholder-count="5">
+                <div style="flex:1; aspect-ratio:5/7; border-radius:7px; overflow:hidden; border:1.5px solid {{ m.border }}; background:linear-gradient(135deg,#e9def6,#dccdf1);">
+                  <div style="width:100%; height:100%; background-image:repeating-linear-gradient(45deg,#00000008 0 6px,#0000 6px 12px);"></div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="font-size:11px; color:#8a7ea0; line-height:1.5; margin-top:12px;">{{ myNote }}</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ================= ARCHIVE ================= -->
+      <sc-if value="{{ isArchiveList }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:11px; max-width:920px; margin:0 auto;">
+          <div style="font-size:14px; color:#5a4d72; font-weight:600; padding:0 4px 2px;">Past shows &middot; tap any night to see the full results</div>
+          <sc-for list="{{ archive }}" as="show" hint-placeholder-count="7">
+            <div onClick="{{ show.onClick }}" style="display:flex; align-items:center; gap:20px; padding:16px 20px; border-radius:16px; background:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.9); box-shadow:0 4px 16px rgba(40,20,70,.06); cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;" style-hover="transform:translateY(-2px); box-shadow:0 10px 26px rgba(40,20,70,.14);">
+              <div style="flex:none; width:88px;">
+                <div style="font-family:'Space Mono',monospace; font-size:11px; color:#8a7ea0;">{{ show.date }}</div>
+                <div style="font-size:14px; font-weight:700; color:#2a2138; margin-top:2px;">{{ show.name }}</div>
+              </div>
+              <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:5px;">
+                <sc-for list="{{ show.top3 }}" as="t" hint-placeholder-count="3">
+                  <div style="display:flex; align-items:center; gap:8px; font-size:13px;">
+                    <span style="width:18px; height:18px; flex:none; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:10px; background:{{ t.medalBg }}; color:{{ t.medalColor }};">{{ t.rank }}</span>
+                    <span style="font-weight:700; color:#2a2138;">{{ t.handle }}</span>
+                    <span style="color:#8a7ea0;">{{ t.song }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="flex:none; text-align:right;">
+                <div style="font-size:12px; color:#8a7ea0;">{{ show.participants }} lineups</div>
+                <div style="margin-top:6px; display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:999px; background:{{ show.youBg }}; color:{{ show.youColor }}; font-size:12px; font-weight:700;">You &middot; {{ show.youRank }}</div>
+              </div>
+              <span style="flex:none; color:#b3a9c6;">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3.5 10.5 8 6 12.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isArchiveDetail }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:920px; margin:0 auto;">
+          <div style="display:flex; align-items:center; gap:14px; margin-bottom:22px;">
+            <div onClick="{{ backToList }}" title="Back to archive" style="width:42px; height:42px; flex:none; display:flex; align-items:center; justify-content:center; border-radius:12px; background:rgba(255,255,255,.65); border:1px solid rgba(255,255,255,.9); color:#2a2138; cursor:pointer;" style-hover="background:rgba(255,255,255,.95);">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M12 4 6 10l6 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.14em; color:#8a7ea0;">{{ detail.date }}</div>
+              <div style="font-size:22px; font-weight:800; color:#2a2138;">{{ detail.name }}</div>
+            </div>
+            <div style="margin-left:auto; font-size:12px; color:#7a6e8c;">{{ detail.participants }} lineups competed</div>
+          </div>
+
+          <!-- podium -->
+          <div style="display:flex; justify-content:center; align-items:flex-end; gap:14px; margin-bottom:26px;">
+            <sc-for list="{{ detail.podium }}" as="p" hint-placeholder-count="3">
+              <div style="flex:1; max-width:210px; text-align:center;">
+                <div style="position:relative; margin:0 auto 12px; width:100%; max-width:130px; aspect-ratio:5/7; border-radius:14px; overflow:hidden; border:2.5px solid {{ p.border }}; background:linear-gradient(135deg,#e9def6,#dccdf1); box-shadow:{{ p.shadow }};">
+                  <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(45deg,#00000008 0 9px,#0000 9px 18px);"></div>
+                  <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.16em; color:#7a6a93; opacity:.55;">PHOTO</div>
+                  <div style="position:absolute; top:8px; left:8px; width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; background:{{ p.medalBg }}; color:{{ p.medalColor }};">{{ p.rank }}</div>
+                </div>
+                <div style="font-size:15px; font-weight:700; color:#2a2138; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ p.handle }}</div>
+                <div style="font-size:12px; color:#7a6e8c;">{{ p.song }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <!-- top 10 -->
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.9); border-radius:18px; padding:10px; box-shadow:0 6px 20px rgba(40,20,70,.07);">
+            <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.16em; color:#8a7ea0; padding:10px 12px 6px;">FULL RANKING &middot; TOP 10</div>
+            <sc-for list="{{ detail.top10 }}" as="r" hint-placeholder-count="10">
+              <div style="display:flex; align-items:center; gap:14px; padding:11px 14px; border-radius:11px; background:{{ r.bg }};">
+                <span style="flex:none; width:26px; text-align:center; font-family:'Space Mono',monospace; font-size:14px; font-weight:700; color:{{ r.rankColor }};">{{ r.rank }}</span>
+                <span style="flex:1; font-size:14px; font-weight:700; color:#2a2138; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ r.handle }}</span>
+                <span style="flex:none; font-size:13px; color:#7a6e8c;">{{ r.song }}</span>
+              </div>
+            </sc-for>
+            <div style="height:1px; background:rgba(0,0,0,.06); margin:8px 12px;"></div>
+            <div style="display:flex; align-items:center; gap:14px; padding:13px 14px; border-radius:11px; background:rgba(245,196,61,.2); border:1px solid rgba(245,196,61,.5);">
+              <span style="flex:none; width:26px; text-align:center; font-family:'Space Mono',monospace; font-size:14px; font-weight:700; color:#8a6410;">{{ detail.youRank }}</span>
+              <span style="flex:1; font-size:14px; font-weight:800; color:#2a2138;">{{ myHandle }}</span>
+              <span style="flex:none; font-size:12px; font-weight:700; color:#8a6410; background:rgba(245,196,61,.35); padding:3px 10px; border-radius:999px;">YOU</span>
+              <span style="flex:none; font-size:13px; color:#7a6e8c;">{{ detail.youSong }}</span>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <!-- preview / director control -->
+  <div style="position:fixed; right:20px; bottom:20px; z-index:60; display:flex; align-items:center; gap:8px; padding:9px 12px; background:rgba(23,18,32,.94); border:1px solid rgba(255,255,255,.12); border-radius:14px; box-shadow:0 10px 30px rgba(20,10,40,.4);">
+    <span style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.14em; color:#8a7f9a;">PREVIEW</span>
+    <sc-for list="{{ director }}" as="d" hint-placeholder-count="4">
+      <div onClick="{{ d.onClick }}" style="padding:7px 12px; border-radius:9px; font-size:12px; font-weight:700; cursor:pointer; color:{{ d.color }}; background:{{ d.bg }};">{{ d.label }}</div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:880},&quot;startPhase&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;preshow&quot;,&quot;broadcast&quot;,&quot;voting&quot;,&quot;winner&quot;],&quot;default&quot;:&quot;broadcast&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Live show&quot;,&quot;label&quot;:&quot;Start phase&quot;},&quot;autoAdvance&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Live show&quot;,&quot;label&quot;:&quot;Auto-advance phases&quot;},&quot;feedSpeed&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1300,&quot;min&quot;:400,&quot;max&quot;:2500,&quot;step&quot;:100,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Live show&quot;,&quot;label&quot;:&quot;Feed speed&quot;},&quot;showName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;M COUNTDOWN&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;viewers&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:48213,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.PLAYER = 'GeosatWasOnce';
+    this.PLAYER_SONG = 'Dance the Night Away';
+    this.timers = [];
+    this._cd = 15;
+    this._n = 0;
+    this._youShown = false;
+    const start = props.startPhase ?? 'broadcast';
+    this.state = { tab: 'live', livePhase: start, feed: [], votes: null, winnerIdx: null, archiveView: 'list', selShow: 0 };
+  }
+
+  componentDidMount() { this.enterPhase(this.state.livePhase); }
+  componentWillUnmount() { this.clearAll(); }
+  componentDidUpdate() {
+    if (this.state.tab === 'live' && this.state.livePhase === 'broadcast') {
+      const el = document.getElementById('showsFeed');
+      if (el) el.scrollTop = el.scrollHeight;
+    }
+    this.paintConfetti();
+  }
+
+  clearAll() { this.timers.forEach(t => clearInterval(t)); this.timers = []; }
+
+  setPhase(p) {
+    this.clearAll();
+    this.setState({ tab: 'live', livePhase: p }, () => this.enterPhase(p));
+  }
+
+  enterPhase(p) {
+    const speed = this.props.feedSpeed ?? 1300;
+    const auto = this.props.autoAdvance ?? true;
+    const T = this.timing();
+    if (p === 'preshow') {
+      this._cd = T.countdownSeconds;
+      this.setState({});
+      this.timers.push(setInterval(() => {
+        this._cd -= 1;
+        this.setState({});
+        if (this._cd <= 0) { this.clearAll(); if (auto) this.setPhase('broadcast'); }
+      }, 1000));
+    } else if (p === 'broadcast') {
+      this._n = 0; this._youShown = false;
+      this.setState({ feed: this.seedFeed() });
+      this.timers.push(setInterval(() => this.pushFeed(), speed));
+      if (auto) this.timers.push(setTimeout(() => this.setPhase('voting'), T.broadcastMs));
+    } else if (p === 'voting') {
+      this.setState({ votes: this.initVotes(), winnerIdx: null });
+      this.timers.push(setInterval(() => this.nudgeVotes(), T.voteNudgeMs));
+      this.timers.push(setTimeout(() => this.lockWinner(), T.voteDurationMs));
+    } else if (p === 'winner') {
+      this.setState(s => ({ votes: s.votes || this.initVotes(), winnerIdx: s.winnerIdx == null ? this.winIdxOf(s.votes || this.initVotes()) : s.winnerIdx }));
+    }
+  }
+
+  winIdxOf(v) { return v.indexOf(Math.max.apply(null, v)); }
+  initVotes() { return [38240, 41590, 36870]; }
+  nudgeVotes() {
+    this.setState(s => {
+      if (!s.votes) return {};
+      const v = s.votes.map(x => Math.max(1000, x + Math.round((Math.random() - 0.42) * 1400)));
+      return { votes: v };
+    });
+  }
+  lockWinner() {
+    this.clearAll();
+    this.setState(s => ({ winnerIdx: this.winIdxOf(s.votes || this.initVotes()) }));
+    this.timers.push(setTimeout(() => this.setPhase('winner'), this.timing().winnerRevealMs));
+  }
+
+  // =====================================================================
+  //  EDIT HERE — everything in content() and timing() is safe to tweak.
+  //  Add/remove list items freely. In any *line* template, {h} = a random
+  //  lineup handle and {s} = the song they performed.
+  // =====================================================================
+  content() {
+    return {
+      // Random players + the song they perform. [handle, song, group]
+      performers: [
+        ['aespaHive', 'Whiplash', 'aespa'], ['njBunnies', 'Ditto', 'NewJeans'], ['onceForever', 'Dance the Night Away', 'TWICE'],
+        ['neverland_idle', 'Queencard', '(G)I-DLE'], ['fearnot_ssrfm', 'Easy', 'LE SSERAFIM'], ['midzy4life', 'UNFORGIVEN', 'ITZY'],
+        ['moaFlag', 'Crush', 'TXT'], ['buddy_blink', 'Pink Venom', 'BLACKPINK'], ['wizoneStill', 'FIESTA', 'IZ*ONE'],
+        ['stayTiny', 'Teddy Bear', 'STAYC'], ['fromis_bloom', 'Supersonic', 'fromis_9'], ['illit_glow', 'Magnetic', 'ILLIT'],
+        ['kep1er_wing', 'Bubble Gum', 'Kep1er'], ['redvelvetPhoto', 'Feel My Rhythm', 'Red Velvet'],
+      ],
+      // Performance announcements ({h} performs {s}).
+      perfLines: [
+        '{h} just performed {s} \u2014 and the crowd goes wild!',
+        '{h} takes the stage with {s}!',
+        '{h} brought the house down with {s}.',
+        'The lights hit {h} for {s} \u2014 screams everywhere.',
+        '{h} is owning the stage with {s} right now.',
+      ],
+      // Flagged "Top 3 to watch" lines.
+      top3Lines: [
+        '{h} delivers {s} \u2014 an early favorite for the Top 3!',
+        'The crowd erupts for {h}\u2019s {s} \u2014 Top 3 material for sure.',
+      ],
+      // Your own performance lines. {you} = your handle, {s} = your song.
+      youLines: [
+        '{you} just performed {s} \u2014 the crowd goes WILD for you!',
+      ],
+      // Handles shown next to audience comments.
+      spectators: ['@luvstage', '@biasWrecked', '@encore_99', '@frontRow', '@fanchant', '@stanacct', '@dalcomm', '@lightstickON'],
+      // Random audience chatter.
+      comments: [
+        'okay but the vocals on that last stage were insane',
+        'not me watching this live at 3am again',
+        'the choreo tonight is unreal',
+        'who is that lineup?? instant fave',
+        'stream over sleep, always',
+        'the production this week is so clean',
+        'i was NOT ready for that key change',
+        'crowd is feral tonight lol',
+        'solid stage, transitions were crisp',
+        'the lightstick ocean looks unreal from here',
+        'we are so back',
+        'that ending pose. iconic.',
+      ],
+    };
+  }
+
+  // Pacing (milliseconds unless noted). Feed line spacing is the "Feed speed"
+  // tweak; auto-advance can be turned off in Tweaks.
+  timing() {
+    return {
+      countdownSeconds: 15,   // pre-show countdown length
+      broadcastMs: 22000,     // how long the feed runs before voting
+      voteNudgeMs: 450,       // how often vote tallies tick
+      voteDurationMs: 9000,   // voting length before the winner locks
+      winnerRevealMs: 2600,   // crown hold before the recap screen
+    };
+  }
+
+  rp(a) { return a[Math.floor(Math.random() * a.length)]; }
+  fill(tpl, p) { return tpl.replace('{h}', p[0]).replace('{s}', p[1]); }
+  performers() { return this.content().performers; }
+  makePerf() {
+    const p = this.rp(this.content().performers);
+    return { kind: 'perf', text: this.fill(this.rp(this.content().perfLines), p) };
+  }
+  makeTop3() {
+    const p = this.rp(this.content().performers);
+    return { kind: 'top3', text: this.fill(this.rp(this.content().top3Lines), p) };
+  }
+  makeComment() {
+    return { kind: 'comment', text: this.rp(this.content().spectators) + '  ' + this.rp(this.content().comments) };
+  }
+  makeYou() {
+    const tpl = this.rp(this.content().youLines);
+    return { kind: 'you', text: tpl.replace('{you}', this.PLAYER).replace('{s}', this.PLAYER_SONG) };
+  }
+  seedFeed() { return [this.makePerf(), this.makeComment(), this.makePerf()]; }
+  pushFeed() {
+    this._n += 1;
+    let item;
+    if (!this._youShown && this._n >= 4) { this._youShown = true; item = this.makeYou(); }
+    else { const r = Math.random(); item = r < 0.28 ? this.makeComment() : (r < 0.42 ? this.makeTop3() : this.makePerf()); }
+    this.setState(s => {
+      let feed = s.feed.concat([item]);
+      if (feed.length > 60) feed = feed.slice(-60);
+      return { feed };
+    });
+  }
+
+  itemStyle(kind) {
+    if (kind === 'you') return { bg: 'rgba(245,196,61,.16)', border: 'rgba(245,196,61,.55)', dot: '#f5c43d', color: '#fff', weight: 700, hasTag: true, tag: 'YOU', tagBg: '#f5c43d', tagColor: '#1b1622' };
+    if (kind === 'top3') return { bg: 'rgba(155,93,229,.15)', border: 'rgba(155,93,229,.4)', dot: '#c9a6ff', color: '#efe8fb', weight: 600, hasTag: true, tag: 'TOP 3 TO WATCH', tagBg: 'rgba(155,93,229,.4)', tagColor: '#efe0ff' };
+    if (kind === 'comment') return { bg: 'transparent', border: 'transparent', dot: '#4a4356', color: '#8a7f9a', weight: 400, hasTag: false, tag: '', tagBg: '', tagColor: '' };
+    return { bg: 'rgba(255,255,255,.04)', border: 'rgba(255,255,255,.07)', dot: '#9b5de5', color: '#d9d2e6', weight: 500, hasTag: false, tag: '', tagBg: '', tagColor: '' };
+  }
+
+  contenders() {
+    return [
+      { handle: 'njBunnies', song: 'Ditto' },
+      { handle: 'aespaHive', song: 'Whiplash' },
+      { handle: 'neverland_idle', song: 'Queencard' },
+    ];
+  }
+
+  paintConfetti() {
+    if (this.state.livePhase !== 'winner') return;
+    const host = document.querySelector('[data-confetti]');
+    if (!host || host.getAttribute('data-done') === '1') return;
+    host.setAttribute('data-done', '1');
+    const cols = ['#f5c43d', '#9b5de5', '#e0533d', '#fff', '#eaa31c'];
+    let html = '';
+    for (let i = 0; i < 40; i++) {
+      const left = Math.random() * 100;
+      const delay = Math.random() * 2.5;
+      const dur = 2.6 + Math.random() * 1.8;
+      const c = cols[i % cols.length];
+      const w = 6 + Math.random() * 5;
+      html += '<span style="position:absolute; top:-20px; left:' + left + '%; width:' + w + 'px; height:' + (w * 1.6) + 'px; background:' + c + '; border-radius:2px; opacity:0; animation:shows-conf ' + dur + 's linear ' + delay + 's infinite;"></span>';
+    }
+    host.innerHTML = html;
+  }
+
+  archiveData() {
+    const P = this.performers();
+    const shows = ['M COUNTDOWN', 'Music Bank', 'Show! Music Core', 'Inkigayo', 'The Show', 'Show Champion'];
+    const out = [];
+    for (let i = 0; i < 8; i++) {
+      const d = new Date(2026, 6, 16 - i);
+      const top3 = [0, 1, 2].map(k => { const p = P[(i * 3 + k) % P.length]; return { handle: p[0], song: p[1] }; });
+      out.push({
+        id: i,
+        date: (d.getMonth() + 1) + '/' + d.getDate(),
+        name: shows[i % shows.length],
+        top3,
+        participants: (2400 - i * 37).toLocaleString(),
+        youRank: '#' + (7 + i * 3),
+        youRankNum: 7 + i * 3,
+      });
+    }
+    return out;
+  }
+
+  fmtCd() {
+    const s = Math.max(0, this._cd);
+    return '00:' + String(s).padStart(2, '0');
+  }
+
+  renderVals() {
+    const tab = this.state.tab, phase = this.state.livePhase;
+    const isLive = tab === 'live';
+    const boosts = ['JYP Idols', 'Maknaes', 'Rappers', 'Group Synergy'];
+
+    // director
+    const dphases = [['preshow', 'Pre'], ['broadcast', 'Live'], ['voting', 'Vote'], ['winner', 'Winner']];
+    const director = dphases.map(([p, label]) => ({
+      label,
+      onClick: () => this.setPhase(p),
+      bg: isLive && phase === p ? '#f5c43d' : 'rgba(255,255,255,.08)',
+      color: isLive && phase === p ? '#1b1622' : '#cfc6dd',
+    }));
+
+    // voting
+    const votes = this.state.votes || this.initVotes();
+    const maxV = Math.max.apply(null, votes);
+    const cont = this.contenders().map((c, i) => {
+      const win = this.state.winnerIdx === i;
+      return {
+        handle: c.handle, song: c.song, rank: i + 1,
+        votes: votes[i].toLocaleString(),
+        pctStr: (votes[i] / maxV * 100).toFixed(1) + '%',
+        isWinner: win,
+        ring: win ? '#f5c43d' : 'rgba(255,255,255,.12)',
+        cardShadow: win ? '0 0 26px rgba(245,196,61,.55)' : 'none',
+        voteColor: win ? '#f5c43d' : '#fff',
+        barColor: win ? '#f5c43d' : '#9b5de5',
+      };
+    });
+    const winIdx = this.state.winnerIdx == null ? this.winIdxOf(votes) : this.state.winnerIdx;
+    const winC = this.contenders()[winIdx];
+    const winner = { handle: winC.handle, song: winC.song, votes: votes[winIdx].toLocaleString() };
+    const medalC = ['#f5c43d', '#c4c8d4', '#d69a5c'];
+    const medalBgs = ['rgba(245,196,61,.9)', 'rgba(196,200,212,.9)', 'rgba(214,154,92,.85)'];
+    const order = [1, 0, 2]; // 2nd, 1st, 3rd for stage
+    const podium = order.map(rk => {
+      const c = this.contenders()[rk];
+      return {
+        handle: c.handle, song: c.song,
+        medal: rk === 0 ? '1st' : rk === 1 ? '2nd' : '3rd',
+        medalColor: medalC[rk],
+        border: 'rgba(255,255,255,.12)',
+        h: rk === 0 ? '92px' : '74px',
+      };
+    });
+
+    // my card content
+    const rarities = ['SR', 'SR', 'R', 'R', 'R'];
+    const rc = { R: '#b3b6c4', SR: '#eaa31c', UR: '#9b5de5' };
+    const myMini = rarities.map(r => ({ border: rc[r] }));
+    let myTitle = 'YOUR LINEUP', myStatus = 'PERFORMING TONIGHT', myStatusBg = 'rgba(155,93,229,.16)', myStatusColor = '#7a4fd6';
+    let myHasRank = false, myRank = '', myRankSub = '', myNote = 'Your lineup is locked for tonight\u2019s show.';
+    if (phase === 'preshow') { myTitle = 'YOUR LINEUP'; myStatus = 'PERFORMING TONIGHT'; myNote = 'Boosts are set from tonight\u2019s programme. Doors open soon.'; }
+    else if (phase === 'broadcast') {
+      myTitle = 'YOUR LINEUP';
+      if (this._youShown) { myStatus = 'YOU\u2019RE ON STAGE'; myStatusBg = 'rgba(245,196,61,.2)'; myStatusColor = '#8a6410'; myNote = 'Your performance just aired \u2014 watch for the vote.'; }
+      else { myStatus = 'UP NEXT'; myNote = 'Stay tuned \u2014 your lineup takes the stage shortly.'; }
+    }
+    else if (phase === 'voting') { myTitle = 'YOUR LINEUP'; myStatus = 'AWAITING RESULTS'; myStatusBg = 'rgba(224,83,61,.14)'; myStatusColor = '#c0402c'; myNote = 'Final ranking drops the moment voting closes.'; }
+    else if (phase === 'winner') { myTitle = 'YOUR RESULT'; myHasRank = true; myRank = '#7'; myRankSub = 'of 2,481 lineups tonight'; myStatus = 'RESULTS FINAL'; myStatusBg = 'rgba(155,93,229,.16)'; myStatusColor = '#7a4fd6'; myNote = 'Just outside the Top 5 \u2014 tune your lineup for tomorrow\u2019s boosts.'; }
+
+    // archive
+    const arch = this.archiveData();
+    const archive = arch.map(sh => ({
+      date: sh.date, name: sh.name, participants: sh.participants, youRank: sh.youRank,
+      onClick: () => this.setState({ tab: 'archive', archiveView: 'detail', selShow: sh.id }),
+      youBg: sh.youRankNum <= 3 ? 'rgba(245,196,61,.25)' : 'rgba(155,93,229,.12)',
+      youColor: sh.youRankNum <= 3 ? '#8a6410' : '#7a4fd6',
+      top3: sh.top3.map((t, k) => ({ handle: t.handle, song: t.song, rank: k + 1, medalBg: medalBgs[k], medalColor: k === 0 ? '#5a4410' : '#3a3340' })),
+    }));
+
+    const sel = arch[this.state.selShow] || arch[0];
+    const P = this.performers();
+    const detailPodium = [1, 0, 2].map(rk => {
+      const t = sel.top3[rk];
+      return { handle: t.handle, song: t.song, rank: rk + 1, medalBg: medalBgs[rk], medalColor: rk === 0 ? '#5a4410' : '#3a3340', border: rk === 0 ? '#eaa31c' : '#b3b6c4', shadow: rk === 0 ? '0 8px 24px rgba(234,163,28,.35)' : '0 3px 10px rgba(25,10,50,.12)' };
+    });
+    const top10 = [];
+    for (let i = 0; i < 10; i++) {
+      const p = P[(this.state.selShow * 2 + i) % P.length];
+      top10.push({
+        rank: i + 1, handle: i < 3 ? sel.top3[i].handle : p[0], song: i < 3 ? sel.top3[i].song : p[1],
+        bg: i % 2 === 0 ? 'rgba(255,255,255,.4)' : 'transparent',
+        rankColor: i === 0 ? '#eaa31c' : i < 3 ? '#9b5de5' : '#8a7ea0',
+      });
+    }
+
+    return {
+      goLive: () => { this.clearAll(); this.setState({ tab: 'live' }, () => this.enterPhase(this.state.livePhase)); },
+      goArchive: () => { this.clearAll(); this.setState({ tab: 'archive', archiveView: 'list' }); },
+      isLive,
+      isArchiveList: tab === 'archive' && this.state.archiveView === 'list',
+      isArchiveDetail: tab === 'archive' && this.state.archiveView === 'detail',
+      liveTabBg: isLive ? '#1b1622' : 'transparent', liveTabColor: isLive ? '#fff' : '#5a4d72', liveTabShadow: isLive ? '0 4px 12px rgba(27,22,34,.3)' : 'none',
+      archTabBg: !isLive ? '#1b1622' : 'transparent', archTabColor: !isLive ? '#fff' : '#5a4d72', archTabShadow: !isLive ? '0 4px 12px rgba(27,22,34,.3)' : 'none',
+
+      isPreshow: isLive && phase === 'preshow',
+      isBroadcast: isLive && phase === 'broadcast',
+      isVoting: isLive && phase === 'voting',
+      isWinner: isLive && phase === 'winner',
+
+      showName: this.props.showName ?? 'M COUNTDOWN',
+      viewersText: (this.props.viewers ?? 48213).toLocaleString(),
+      cdText: this.fmtCd(),
+      boosts,
+
+      feed: this.state.feed.map(it => Object.assign({ text: it.text }, this.itemStyle(it.kind))),
+
+      voteSubtitle: this.state.winnerIdx == null ? 'The Top 3 of the night \u2014 votes are live' : 'And the winner is\u2026',
+      contenders: cont,
+      winner, podium,
+
+      myTitle, myHandle: this.PLAYER, mySong: this.PLAYER_SONG, myInitial: this.PLAYER.charAt(0).toUpperCase(),
+      myStatus, myStatusBg, myStatusColor, myHasRank, myRank, myRankSub, myNote, myMini,
+
+      archive,
+      backToList: () => this.setState({ archiveView: 'list' }),
+      detail: { date: sel.date, name: sel.name, participants: sel.participants, podium: detailPodium, top10, youRank: sel.youRank, youSong: this.PLAYER_SONG },
+
+      director,
+    };
+  }
+}
+</script>
+</body>
+</html>
