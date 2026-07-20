@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-20
 
-**Status**: Implemented — pending final validation pass
+**Status**: Done — quickstart validation pass complete (2026-07-20). Scenarios A–G pass with real data; deferred items (banner key-art assets, UR-Nayeon art, bespoke mobile drawer) are content/later-pass, not blocking bugs.
 
 **Input**: Design handoff bundle `Kpopdle collection redesign/design_handoff_kpopdle/`
 (HANDOFF.md + `designs/*.dc.html` interaction prototypes). This feature re-skins the

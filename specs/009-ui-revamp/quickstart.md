@@ -78,7 +78,9 @@ already heavily iterated.
 
 ## Sign-off
 
-- [ ] Scenarios A–G pass with real data; no console/build errors.
-- [ ] Deferred items (key art, UR-Nayeon art, mobile drawer) confirmed as content/later-pass,
+- [x] Scenarios A–G pass with real data; no console/build errors.
+- [x] Deferred items (key art, UR-Nayeon art, mobile drawer) confirmed as content/later-pass,
       not blocking bugs.
-- [ ] Update `spec.md` **Status** and ROADMAP Feature 009 to **Done**.
+- [x] Update `spec.md` **Status** and ROADMAP Feature 009 to **Done**. (2026-07-20; one fix
+      applied during the pass — Kpopdle guess-grid photo cell widened from 84px to 116px to
+      match the field columns.)

@@ -78,7 +78,7 @@ function Kpopdle({ idolData, answer, mode, setMode }) {
     );
   }
 
-  const gridStyle = { gridTemplateColumns: `84px repeat(${headers.length}, 116px)` };
+  const gridStyle = { gridTemplateColumns: `116px repeat(${headers.length}, 116px)` };
 
   return (
     <div className={styles.page}>
