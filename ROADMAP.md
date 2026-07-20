@@ -1,6 +1,6 @@
 # Kpopdle Card Game — Feature Roadmap
 
-**Last updated**: 2026-06-26
+**Last updated**: 2026-07-20
 
 ---
 
@@ -36,20 +36,22 @@ Operator seed script assigning multiplier templates (role / company / same-group
 
 ---
 
-## 🔲 Planned
+---
 
 ### Feature 005 — Banner & Gacha UX Polish *(P2)*
+**Spec**: `specs/005-banner-gacha-ux-polish/`
 
-Completes the gacha spec (FR-036–039) and UX details deferred from Feature 001.
-
-**Scope**:
-- Banner-specific free pull grants: `banner_free_pulls` table, "Claim X Free Pulls" button shown before paid options
-- Soloist banner UX: skip rate-up selector when banner has a single member
-- Banner discovery: end-date countdown + description subtitle on Banners page
-- Show result page: "this lineup will auto-enter today's show" status card for players with a saved valid lineup
-- Daily banner card pool: define which cards the always-on daily banner displays
+Atomic free-pull lock (`FOR UPDATE`) prevents double-spend under concurrency; free-pull UI exclusivity (paid buttons hidden while free pulls remain); banner subtitle field (DB + API + UI); live 60s countdown for time-limited banners; auto-entry status card on show result page when player has a valid lineup; daily banner draws from its own configured `banner_cards` pool with graceful empty-pool error.
 
 ---
+
+### Feature 009 — UI Revamp & Animations *(P2 — pre-launch)*
+
+Full re-skin of every card-game page plus the two game entry pages to the design handoff, on a shared token system (`card-game/tokens.css`): new collapsible `Sidebar`; Collection (client-side filter/sort/search); Lineup (View + bottom-dock Edit with `LineupCard` states); Banners (side-stack carousel + `SummonPanel` + cinematic `SummonSequence` — album/vinyl/pack-opening, card fly-out, rarity glows with UR pulse); Shows (Live/Archive with a cosmetic count-up score reveal); Kpopdle + Guess the Song (shared dark guess input, audio player, dark `StatsModal` on real stats, avg-guesses metric). Real card art wired into member/reveal cards; new `GET /pity` endpoint + `artPath` on pull results; banner key-art convention + fallback. Responsive pass across all pages. **Deferred**: banner group key-art assets (convention ready), UR-Nayeon art, a bespoke mobile drawer.
+
+---
+
+## 🔲 Planned
 
 ### Feature 006 — Cosmetic System *(P2)*
 
@@ -61,18 +63,6 @@ Completes the duplicate/overflow progression loop (FR-009 stub).
 - Convert overflow duplicate → cosmetic item (replaces the current stub)
 - Equip a cosmetic on a specific card
 - Display equipped cosmetic in `CollectionPage` and `CardTile`
-
----
-
-### Feature 009 — UI Revamp & Animations *(P2 — pre-launch)*
-
-Full visual redesign of the web interface, responsive layout, and pull animations.
-
-**Scope**:
-- Visual redesign: new color palette, typography, component styling across all pages
-- Responsive layout: mobile-first breakpoints for all major pages (lineup, collection, banners, leaderboard)
-- Pull animations: animated gacha pull sequence for daily pulls and banner pulls (card reveal, rarity flash, etc.)
-- General motion polish: page transitions, loading states, micro-interactions
 
 ---
 
@@ -120,10 +110,10 @@ Replace direct database inserts with a web interface for content management.
 | # | Feature | Priority | Pre-launch? |
 |---|---------|----------|-------------|
 | 005 | Banner & gacha UX polish | P2 | Yes |
-| 006 | Cosmetic system | P2 | Yes |
 | 009 | UI revamp & animations | P2 | Yes |
 | 010 | AWS infrastructure & deployment | P2 | Yes |
+| 006 | Cosmetic system | P2 | Deferred |
 | 007 | Boy Group launch | P3 | No (v2) |
 | 008 | Operator admin UI | P3 | No (v2) |
 
-Features 005, 006, 009, and 010 are required before launch. 007 and 008 are v2.
+Features 005, 009, and 010 are required before launch. 006 deferred post-launch. 007 and 008 are v2.

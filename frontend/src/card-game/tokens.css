@@ -1,0 +1,38 @@
+/* Kpopdle card-game design tokens — shared across the redesigned pages.
+   Introduced with Feature 009 (UI Revamp). Values come straight from the
+   design handoff (design_handoff_kpopdle/HANDOFF.md → "Design tokens"). */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  /* Surfaces & background */
+  --cg-bg: linear-gradient(165deg, oklch(0.87 0.058 300), oklch(0.85 0.058 300));
+  --cg-plum: #1b1622;          /* sidebar */
+  --cg-surface: rgba(255, 255, 255, 0.55);
+  --cg-surface-brd: rgba(255, 255, 255, 0.85);
+  --cg-surface-shadow: 0 6px 20px rgba(40, 20, 70, 0.08);
+
+  /* Accent */
+  --cg-gold: #f5c43d;
+  --cg-gold-deep: #eaa31c;
+
+  /* Ink */
+  --cg-ink: #2a2138;
+  --cg-ink-2: #473d59;
+  --cg-ink-3: #6a5f7d;
+
+  /* Rarity → border color (canonical: SR gold, UR purple) */
+  --cg-rarity-rare: #b3b6c4;         /* silver */
+  --cg-rarity-super-rare: #eaa31c;   /* gold   */
+  --cg-rarity-ultra-rare: #9b5de5;   /* purple */
+
+  /* Radii */
+  --cg-radius-pill: 999px;
+  --cg-radius-card: 13px;
+  --cg-radius-panel: 16px;
+  --cg-radius-control: 12px;
+
+  /* Type */
+  --cg-font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --cg-font-mono: 'Space Mono', ui-monospace, monospace;
+}

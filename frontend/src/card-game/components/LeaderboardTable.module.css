@@ -1,54 +1,32 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.88rem;
+  font-family: var(--cg-font-ui);
+  color: var(--cg-ink);
 }
-
 .th {
   text-align: left;
   padding: 10px 12px;
-  color: #888;
-  border-bottom: 1px solid #333;
-  font-weight: 600;
-  font-size: 0.78rem;
+  font-family: var(--cg-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--cg-ink-3);
+  border-bottom: 1px solid rgba(40, 20, 70, 0.12);
 }
-
-.td {
-  padding: 9px 12px;
-  border-bottom: 1px solid #1f1f1f;
-  color: #ddd;
-}
-
-.row:hover .td { background: #1a1a2e; }
-
-.myRow .td { background: #1a1500; }
-.myRow:hover .td { background: #221c00; }
-
-.meLabel { font-weight: 700; color: #f8c300; }
-
+.row { border-bottom: 1px solid rgba(40, 20, 70, 0.06); }
+.myRow { background: rgba(245, 196, 61, 0.16); }
+.td { padding: 11px 12px; font-size: 14px; }
+.score { font-family: var(--cg-font-mono); font-weight: 700; }
+.meLabel { font-weight: 800; }
 .youBadge {
-  display: inline-block;
-  margin-left: 6px;
-  font-size: 0.65rem;
-  padding: 1px 5px;
-  border-radius: 4px;
-  background: #f8c300;
-  color: #000;
+  margin-left: 8px;
+  font-size: 11px;
   font-weight: 700;
-  vertical-align: middle;
+  color: #8a6410;
+  background: rgba(245, 196, 61, 0.35);
+  padding: 2px 8px;
+  border-radius: var(--cg-radius-pill);
 }
-
-.score { font-weight: 700; color: #fff; }
-
-.reward {
-  font-weight: 700;
-  font-size: 0.8rem;
-}
-
-.status {
-  color: #888;
-  font-size: 0.9rem;
-  padding: 12px 0;
-}
+.reward { font-weight: 800; }
+.status { color: var(--cg-ink-3); margin: 24px 0; text-align: center; }

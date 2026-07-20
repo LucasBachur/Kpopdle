@@ -6,102 +6,17 @@
 
 
 .app-container {
-  display: flex;
   min-height: 100vh;
-  height:auto;
+  height: auto;
+  /* Soft lilac app background (design handoff → App background). Sits behind the
+     collapsed 76px sidebar rail and every page's <main>. */
+  background: var(--cg-bg);
 }
 
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 220px;
-  height: 100%;
-  background-color: #1a1a1a;
-  color: white;
-  padding: 2rem 1rem;
-  display: flex;
-  flex-direction: column;
-  z-index:1000;
-  transition: width 0.3s ease;
-  overflow: hidden;
-}
-
-.sidebar h2 {
-  margin-bottom: 1.5rem;
-}
-
-.sidebar a {
-  color: white;
-  text-decoration: none;
-  padding: 0.7rem 1rem;
-  margin-bottom: 0.5rem;
-  display: block;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-
-.sidebar a:hover {
-  background-color: #333;
-}
-
-.sidebar.closed {
-  width: 40px;
-  padding: 2rem 0rem;
-  align-items: center;
-}
-
-.sidebar-content {
-  width: 220px;
-  white-space: nowrap;
-  opacity: 1;
-}
-
-.toggle-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.2rem;
-  cursor: pointer;
-  margin-bottom: 1rem;
-  position:relative;
-}
-
+/* Offset content by the collapsed sidebar rail width (76px). The sidebar is
+   fixed-position and expands over the content on hover, so the layout does not
+   reflow when it opens. */
 .main-content {
-  flex-grow: 1;
-}
-
-.account-section {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #333;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.account-user {
-  font-size: 0.85rem;
-  color: #ccc;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 0 0.25rem;
-}
-
-.logout-btn {
-  background: none;
-  border: 1px solid #444;
-  color: #aaa;
-  font-size: 0.82rem;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.15s, color 0.15s;
-}
-
-.logout-btn:hover {
-  background: #2a2a2a;
-  color: #fff;
+  margin-left: 76px;
+  min-height: 100vh;
 }

@@ -11,10 +11,13 @@ const RARITY_LABEL = {
 };
 
 const RARITY_COLOR = {
-  ultra_rare: '#f59e0b',
-  super_rare: '#a855f7',
-  rare: '#888',
+  ultra_rare: 'var(--cg-rarity-ultra-rare)',
+  super_rare: 'var(--cg-rarity-super-rare)',
+  rare: 'var(--cg-rarity-rare)',
 };
+
+const weekdayShowName = (date) =>
+  date ? `${new Date(`${date}T12:00:00`).toLocaleDateString('en-US', { weekday: 'long' })} Show` : 'Show';
 
 export default function ShowResultPage() {
   const { showId } = useParams();
@@ -41,8 +44,11 @@ export default function ShowResultPage() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <Link to="/card-game/leaderboard" className={styles.back}>← Leaderboard</Link>
-        <h1 className={styles.title}>Show Results — {show.date}</h1>
+        <Link to="/card-game/leaderboard" className={styles.back}>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M12 4 6 10l6 6" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          Shows
+        </Link>
+        <h1 className={styles.title}>{weekdayShowName(show.date)}<span className={styles.titleDate}> · {show.date}</span></h1>
         <span className={`${styles.badge} ${isPending ? styles.pendingBadge : styles.resolvedBadge}`}>
           {isPending ? 'In Progress' : 'Final'}
         </span>
@@ -50,7 +56,8 @@ export default function ShowResultPage() {
 
       {autoEntryStatus?.isRegistered && (
         <div className={styles.autoEntryCard}>
-          Your lineup is registered for today's show
+          <span className={styles.autoDot} />
+          Your lineup is registered for this show
         </div>
       )}
 
@@ -58,7 +65,7 @@ export default function ShowResultPage() {
         <div className={styles.myCard}>
           <div className={styles.myRank}>#{myEntry.rank}</div>
           <div className={styles.myDetails}>
-            <p className={styles.myLabel}>Your Result</p>
+            <p className={styles.myLabel}>YOUR RESULT</p>
             <p className={styles.myScore}>{myEntry.score?.toLocaleString()} pts</p>
             {myEntry.rewardRarity && (
               <p className={styles.myReward} style={{ color: RARITY_COLOR[myEntry.rewardRarity] }}>
@@ -75,7 +82,9 @@ export default function ShowResultPage() {
         </div>
       )}
 
-      <LeaderboardTable entries={leaderboard} pending={isPending} />
+      <div className={styles.tablePanel}>
+        <LeaderboardTable entries={leaderboard} pending={isPending} />
+      </div>
     </div>
   );
 }

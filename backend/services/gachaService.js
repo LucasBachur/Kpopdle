@@ -76,6 +76,7 @@ async function claimDailyPull(userId, genderCategory) {
         idolName: def?.idolName ?? 'Unknown',
         group: def?.group ?? '',
         rarity: def?.rarity ?? 'rare',
+        artPath: def?.artPath ?? null,
         isRateUp: false,
         ...result,
       },
@@ -249,6 +250,7 @@ async function pull(userId, bannerId, count, rateUpIdolId, genderCategory) {
         idolName: def?.idolName ?? 'Unknown',
         group: def?.group ?? '',
         rarity,
+        artPath: def?.artPath ?? null,
         isRateUp: rateUpCard?.cardDefId === cardDefId,
         ...result,
       });

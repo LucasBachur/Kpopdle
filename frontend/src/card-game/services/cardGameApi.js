@@ -139,6 +139,10 @@ export function getBanners() {
   return apiFetch('/api/card-game/banners');
 }
 
+export function getPity() {
+  return apiFetch('/api/card-game/pity');
+}
+
 export function pullBanner(bannerId, rateUpIdolId, count = 1) {
   return apiFetch(`/api/card-game/banners/${bannerId}/pull`, {
     method: 'POST',

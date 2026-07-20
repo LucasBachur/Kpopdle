@@ -1,15 +1,10 @@
 import styles from './LeaderboardTable.module.css';
 
-const RARITY_LABEL = {
-  ultra_rare: 'UR',
-  super_rare: 'SR',
-  rare: 'R',
-};
-
+const RARITY_LABEL = { ultra_rare: 'UR', super_rare: 'SR', rare: 'R' };
 const RARITY_COLOR = {
-  ultra_rare: '#f59e0b',
-  super_rare: '#a855f7',
-  rare: '#888',
+  ultra_rare: 'var(--cg-rarity-ultra-rare)',
+  super_rare: 'var(--cg-rarity-super-rare)',
+  rare: 'var(--cg-rarity-rare)',
 };
 
 export default function LeaderboardTable({ entries, pending }) {
@@ -33,10 +28,7 @@ export default function LeaderboardTable({ entries, pending }) {
       </thead>
       <tbody>
         {entries.map((entry, i) => (
-          <tr
-            key={i}
-            className={`${styles.row} ${entry.isMe ? styles.myRow : ''}`}
-          >
+          <tr key={i} className={`${styles.row} ${entry.isMe ? styles.myRow : ''}`}>
             <td className={styles.td}>{entry.rank ?? '—'}</td>
             <td className={styles.td}>
               <span className={entry.isMe ? styles.meLabel : ''}>{entry.username}</span>
@@ -46,10 +38,7 @@ export default function LeaderboardTable({ entries, pending }) {
             <td className={`${styles.td} ${styles.score}`}>{entry.score?.toLocaleString()}</td>
             <td className={styles.td}>
               {entry.rewardRarity && (
-                <span
-                  className={styles.reward}
-                  style={{ color: RARITY_COLOR[entry.rewardRarity] }}
-                >
+                <span className={styles.reward} style={{ color: RARITY_COLOR[entry.rewardRarity] }}>
                   {RARITY_LABEL[entry.rewardRarity]}
                 </span>
               )}

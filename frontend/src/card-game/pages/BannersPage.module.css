@@ -1,56 +1,251 @@
 .page {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 24px 16px;
-  color: #eee;
+  font-family: var(--cg-font-ui);
+  color: var(--cg-ink);
+  padding: 34px 44px 80px;
+  min-width: 0;
 }
 
-.topBar {
+.hint { color: var(--cg-ink-3); margin: 40px 0; text-align: center; }
+.err { color: #c0392b; margin: 24px 0; text-align: center; }
+
+/* ── header ── */
+.header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 28px;
+  gap: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.title {
+  margin: 0;
+  padding: 11px 26px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--cg-ink);
+  letter-spacing: -0.02em;
+  background: var(--cg-surface);
+  border: 1px solid var(--cg-surface-brd);
+  border-radius: 14px;
+  box-shadow: var(--cg-surface-shadow);
 }
 
-.title {
-  font-size: 1.6rem;
-  margin: 0;
+.dailyBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px 9px 16px;
+  border-radius: 12px;
+  background: var(--cg-plum);
+  color: #fff;
+  flex: 1;
+  max-width: 480px;
+}
+.dailyLabel { font-size: 14px; font-weight: 700; color: #fff; white-space: nowrap; }
+.dailyCd {
+  font-family: var(--cg-font-mono);
+  font-size: 11px;
+  color: #6f6780;
+  white-space: nowrap;
+  margin-left: auto;
+}
+.dailyRates {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  box-sizing: border-box;
+  padding: 0;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff12;
+  border: 1px solid #ffffff2a;
+  color: #fff;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+}
+.dailyFree {
+  flex: none;
+  padding: 9px 18px;
+  border: none;
+  border-radius: 10px;
+  background: var(--cg-gold);
+  color: var(--cg-plum);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dailyFree:disabled {
+  background: rgba(255, 255, 255, 0.12);
+  color: #8a7ea0;
+  cursor: not-allowed;
 }
 
 .currency {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #f8c300;
-  background: #1a1500;
-  padding: 6px 16px;
-  border-radius: 8px;
-  border: 1px solid #f8c30044;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 16px 9px 13px;
+  border-radius: 12px;
+  background: var(--cg-plum);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+/* ── carousel ── */
+.carousel {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 22px;
+}
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  flex: none;
+  padding-top: 6px;
+}
+.center {
+  position: relative;
+  z-index: 30;
+  flex: none;
+  width: 860px;
+  max-width: 100%;
+  background: #181320;
+  border: 1px solid #ffffff14;
+  border-radius: 26px;
+  padding: 26px;
+  box-shadow: 0 30px 72px rgba(10, 5, 25, 0.6);
 }
 
-.section {
-  margin-bottom: 36px;
+/* ── side tile ── */
+.tile {
+  position: relative;
+  width: 206px;
+  border-radius: 15px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--cg-plum);
+  box-shadow: 0 8px 22px rgba(30, 15, 55, 0.18);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
 }
-
-.sectionTitle {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #666;
+.tile:hover { transform: translateY(-2px); }
+.tileActive {
+  cursor: default;
+  box-shadow: 0 0 0 2px var(--cg-gold), 0 8px 22px rgba(30, 15, 55, 0.28);
+}
+.tileArt {
+  position: relative;
+  height: 116px;
+}
+.tileScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(20, 13, 30, 0.95), rgba(20, 13, 30, 0.05) 65%);
+}
+.tileType {
+  position: absolute;
+  top: 10px;
+  left: 11px;
+  padding: 3px 9px;
+  border-radius: var(--cg-radius-pill);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin: 0 0 14px;
+}
+.tileFooter { position: absolute; left: 12px; right: 12px; bottom: 9px; }
+.tileGroup {
+  font-family: var(--cg-font-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--cg-gold);
+}
+.tileTitle { font-size: 16px; font-weight: 800; color: #fff; line-height: 1.1; }
+.tileEnds {
+  display: flex;
+  justify-content: flex-end;
+  padding: 9px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #f7b955;
 }
 
-.hint {
-  color: #666;
-  font-size: 0.95rem;
+/* ── rates popup ── */
+.ratesOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(15, 8, 26, 0.62);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
 }
+.ratesModal {
+  width: 400px;
+  max-width: 100%;
+  background: #181320;
+  border: 1px solid #ffffff16;
+  border-radius: 20px;
+  padding: 22px 24px;
+  box-shadow: 0 30px 80px rgba(10, 5, 25, 0.6);
+  color: #e8e3f0;
+}
+.ratesTop { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.ratesHeading { font-size: 17px; font-weight: 800; color: #fff; }
+.ratesClose {
+  width: 28px;
+  height: 28px;
+  box-sizing: border-box;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e8e3f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+}
+.ratesSubtitle { font-size: 12px; color: #9890a6; margin-bottom: 16px; }
+.ratesRows {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #ffffff14;
+}
+.ratesRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: #ffffff08;
+}
+.ratesLabel { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; color: #e8e3f0; }
+.ratesDot { width: 9px; height: 9px; border-radius: 50%; }
+.ratesPct { font-family: var(--cg-font-mono); font-size: 13px; font-weight: 700; color: #fff; }
+.ratesNote { font-size: 10px; color: #6f6780; margin-top: 12px; line-height: 1.5; }
 
-.err {
-  color: #f87171;
+/* ── responsive: drop side stacks when the row can't fit ── */
+@media (max-width: 1320px) {
+  .side { display: none; }
+}
+@media (max-width: 760px) {
+  .page { padding: 20px 14px 60px; }
+  .header { gap: 12px; }
+  .dailyBar { max-width: none; flex: 1 1 100%; order: 3; }
+  .title { flex: 1; font-size: 22px; padding: 10px 18px; }
+  .center { padding: 18px; border-radius: 20px; }
 }

@@ -20,6 +20,8 @@ const {
   getGgOnlyMode,
   getBannerWithMembers,
   getLineupForAutoEntry,
+  getGachaConfig,
+  getPityCounter,
 } = require('../db');
 const { addCardToCollection, RARITY_CEILING } = require('../services/collectionService');
 const { claimDailyPull, pull: gachaPull } = require('../services/gachaService');
@@ -363,6 +365,28 @@ router.get('/banners', async (req, res) => {
     return res.json({ banners });
   } catch (err) {
     console.error('GET /banners:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Player's pity progress (shared across all banners of a gender category).
+// Thresholds come from gacha_config (sr_pity_threshold / ur_pity_threshold).
+router.get('/pity', async (req, res) => {
+  try {
+    const genderCategory = 'gg';
+    const config = await getGachaConfig();
+    const srThreshold = Math.round(config.sr_pity_threshold ?? 50);
+    const urThreshold = Math.round(config.ur_pity_threshold ?? 100);
+    const [sr, ur] = await Promise.all([
+      getPityCounter(req.user.userId, genderCategory, 'super_rare'),
+      getPityCounter(req.user.userId, genderCategory, 'ultra_rare'),
+    ]);
+    return res.json({
+      sr: { count: sr, threshold: srThreshold },
+      ur: { count: ur, threshold: urThreshold },
+    });
+  } catch (err) {
+    console.error('GET /pity:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 });

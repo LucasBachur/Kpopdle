@@ -1,0 +1,224 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  background: var(--cg-plum);
+  color: #b9b1c6;
+  font-family: var(--cg-font-ui);
+  width: 76px;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  transition: width 0.22s ease, box-shadow 0.22s ease;
+}
+
+.sidebar.open {
+  width: 250px;
+  box-shadow: 8px 0 40px rgba(20, 10, 40, 0.35);
+}
+
+/* ── Header (brand + chevron) ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.sidebar.open .header {
+  justify-content: space-between;
+}
+
+.brand {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding-left: 8px;
+}
+.sidebar.open .brand {
+  display: flex;
+}
+.brandText {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.chevron {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff0d;
+  border: 1px solid #ffffff1a;
+  color: #c8c0d6;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+.chevron:hover {
+  background: #ffffff1f;
+  color: #fff;
+}
+.chevronIcon {
+  display: flex;
+  transform: rotate(180deg);
+  transition: transform 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sidebar.open .chevronIcon {
+  transform: rotate(0deg);
+}
+
+/* ── Section headers ── */
+.sectionLabel {
+  font-family: var(--cg-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: #6f6780;
+  padding: 6px 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.sectionLabelSpaced {
+  padding-top: 16px;
+}
+.sidebar.open .sectionLabel {
+  opacity: 1;
+}
+
+/* ── Nav items ── */
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 14px;
+  position: relative;
+  color: #9890a6;
+  font-weight: 500;
+  background: transparent;
+}
+.navItem.active {
+  color: #fff;
+  font-weight: 600;
+  background: rgba(245, 196, 61, 0.15);
+}
+/* Hover on a non-active item: a white box mirroring the active treatment.
+   Also overrides the global `a:hover` (index.css) that would otherwise tint links blue. */
+.navItem:not(.active):hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+}
+.navItem:not(.active):hover .accentBar {
+  background: rgba(255, 255, 255, 0.45);
+}
+.accentBar {
+  position: absolute;
+  left: 0;
+  top: 9px;
+  bottom: 9px;
+  width: 3px;
+  border-radius: 3px;
+  background: transparent;
+}
+.navItem.active .accentBar {
+  background: var(--cg-gold);
+}
+.navIcon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.navLabel {
+  overflow: hidden;
+  width: 0;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.sidebar.open .navLabel {
+  width: auto;
+  opacity: 1;
+}
+
+/* ── Footer (account) ── */
+.spacer {
+  flex: 1;
+}
+.divider {
+  height: 1px;
+  background: #ffffff14;
+  margin: 14px 8px;
+}
+.account {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 6px 10px;
+}
+.avatar {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cg-gold), var(--cg-gold-deep));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cg-plum);
+  font-weight: 700;
+  font-size: 13px;
+}
+.accountName {
+  display: none;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e8e3f0;
+  white-space: nowrap;
+}
+.sidebar.open .accountName {
+  display: block;
+}
+
+.logout {
+  margin-top: 8px;
+  padding: 9px;
+  text-align: center;
+  border: 1px solid #ffffff1f;
+  border-radius: 9px;
+  background: transparent;
+  color: #b9b1c6;
+  font-family: var(--cg-font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.logout:hover {
+  background: #ffffff14;
+  color: #fff;
+}

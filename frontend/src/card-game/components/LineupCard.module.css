@@ -1,0 +1,147 @@
+/* ── Dashed slot states (empty / active) ── */
+.slot {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 7;
+  border: 2px dashed rgba(70, 50, 90, 0.32);
+  border-radius: var(--cg-radius-card);
+  background: rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: var(--cg-font-ui);
+}
+.slotActive {
+  border-color: #e0a51f;
+  background: rgba(245, 196, 61, 0.14);
+}
+.slotRank {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--cg-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: #8a7ea0;
+}
+.slotLabel {
+  font-weight: 600;
+  font-size: 13px;
+  color: #8a7ea0;
+}
+.slotActive .slotLabel {
+  color: #b9820f;
+}
+
+/* ── Card states (filled / picker / pickerDim) ── */
+.card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 7;
+  border-radius: var(--cg-radius-card);
+  overflow: hidden;
+  border: 2.5px solid var(--cg-rarity-rare);
+  background: linear-gradient(135deg, #e9def6, #dccdf1);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(25, 10, 50, 0.10);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.card:not(.dim):hover {
+  transform: scale(1.05);
+  z-index: 20;
+  box-shadow: 0 14px 30px rgba(25, 10, 50, 0.28);
+}
+.dim { cursor: default; }
+
+.rare { border-color: var(--cg-rarity-rare); }
+.superRare { border-color: var(--cg-rarity-super-rare); }
+.ultraRare { border-color: var(--cg-rarity-ultra-rare); }
+
+.art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--cg-font-ui);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #7a6a93;
+  background-image: repeating-linear-gradient(45deg, #00000008 0 9px, #0000 9px 18px);
+}
+
+.rank {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 2px 7px;
+  border-radius: 7px;
+  background: rgba(18, 12, 26, 0.82);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--cg-font-mono);
+}
+
+.scrim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20px 8px 7px 38px;
+  background: linear-gradient(to top, rgba(20, 14, 30, 0.86), transparent);
+  opacity: 0;
+  transition: opacity 0.16s ease;
+  font-weight: 600;
+  font-size: 12px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card:hover .scrim { opacity: 1; }
+
+.stat {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(18, 12, 26, 0.85);
+  color: var(--cg-gold);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.dimOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(232, 224, 242, 0.68);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.dimBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #5f5470;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 3px 9px;
+  border-radius: var(--cg-radius-pill);
+  letter-spacing: 0.02em;
+}

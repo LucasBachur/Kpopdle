@@ -1,0 +1,54 @@
+.container { position: relative; width: 440px; max-width: 100%; min-width: 0; flex-shrink: 1; }
+
+.input {
+  width: 100%;
+  height: 56px;
+  box-sizing: border-box;
+  padding: 0 20px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  outline: none;
+  background: var(--cg-plum);
+  color: #fff;
+  font-family: var(--cg-font-ui);
+  font-size: 16px;
+  font-weight: 500;
+  box-shadow: 0 8px 22px rgba(27, 22, 34, 0.28);
+}
+.input::placeholder { color: #7b7188; opacity: 1; }
+.input:focus {
+  border-color: var(--cg-gold);
+  box-shadow: 0 0 0 3px rgba(245, 196, 61, 0.28), 0 8px 22px rgba(27, 22, 34, 0.28);
+}
+.input:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.dropdown {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  max-height: 288px;
+  overflow-y: auto;
+  padding: 7px;
+  background: var(--cg-plum);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 15px;
+  box-shadow: 0 24px 54px rgba(20, 10, 40, 0.5);
+  animation: fade 0.14s ease both;
+}
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.row:hover, .active { background: rgba(245, 196, 61, 0.14); }
+
+/* shared suggestion-content helpers (used via :global in game modules is avoided;
+   games render their own inner markup and rely on these class names passed through) */

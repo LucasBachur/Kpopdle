@@ -1,13 +1,13 @@
 import './App.css'
 import { fetchDataBackend } from '../api.js'
 import { todayArg } from './utils.js'
-import ModeSelector from './components/ModeSelector'
 import Kpopdle from './components/Kpopdle'
 import SongGuess from './components/SongGuess.jsx'
 import LoadingScreen from './components/LoadingScreen';
-import { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom'
-import { getAccessToken, getStoredUsername, logout as apiLogout } from './card-game/services/cardGameApi';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom'
+import { getAccessToken } from './card-game/services/cardGameApi';
+import Sidebar from './card-game/components/Sidebar';
 import LoginPage from './card-game/pages/LoginPage';
 import WelcomePage from './card-game/pages/WelcomePage';
 import CollectionPage from './card-game/pages/CollectionPage';
@@ -35,62 +35,6 @@ function RequireAuth() {
   const token = getAccessToken();
   if (!token) return <Navigate to="/card-game/login" replace />;
   return <Outlet />;
-}
-
-function Sidebar() {
-  const [open, setOpen] = useState(false);
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
-  const isHoverDevice = useRef(window.matchMedia('(hover: hover) and (pointer: fine)').matches).current;
-
-  // Re-derived on every render; useLocation() re-renders Sidebar on each navigation,
-  // so this stays in sync after login and logout.
-  const isAuthed = !!getAccessToken();
-  const username = getStoredUsername();
-
-  function handleLogout() {
-    apiLogout();
-    navigate('/card-game/login');
-  }
-
-  return (
-    <div
-      className={`sidebar ${open ? "open" : "closed"}`}
-      onMouseEnter={isHoverDevice ? () => setOpen(true) : undefined}
-      onMouseLeave={isHoverDevice ? () => setOpen(false) : undefined}
-    >
-      <button
-        className="toggle-btn"
-        onClick={isHoverDevice ? undefined : () => setOpen(!open)}
-      >
-        {open ? "❮" : "❯"}
-      </button>
-      {open && (
-        <div className="sidebar-content">
-          <h2>Games</h2>
-          <Link to="/kpopdle" className={pathname === '/kpopdle' ? 'active' : ''}>Kpopdle</Link>
-          <Link to="/songguess" className={pathname === '/songguess' ? 'active' : ''}>Guess the Song</Link>
-          <h2>Card Game</h2>
-          {isAuthed ? (
-            <>
-              <Link to="/card-game/collection" className={pathname.startsWith('/card-game/collection') ? 'active' : ''}>Collection</Link>
-              <Link to="/card-game/lineup" className={pathname.startsWith('/card-game/lineup') ? 'active' : ''}>Lineup</Link>
-              <Link to="/card-game/banners" className={pathname.startsWith('/card-game/banners') ? 'active' : ''}>Banners</Link>
-              <Link to="/card-game/leaderboard" className={pathname.startsWith('/card-game/leaderboard') ? 'active' : ''}>Leaderboard</Link>
-            </>
-          ) : (
-            <Link to="/card-game/login" className={pathname.startsWith('/card-game/login') ? 'active' : ''}>Sign In</Link>
-          )}
-        </div>
-      )}
-      {open && isAuthed && (
-        <div className="account-section">
-          <span className="account-user">● {username}</span>
-          <button className="logout-btn" onClick={handleLogout}>Log out</button>
-        </div>
-      )}
-    </div>
-  );
 }
 
 function findLatestAnswer(entries, mode, data) {
@@ -149,14 +93,11 @@ function KpopldeApp({ mode, setMode }) {
   const todaysSongAnswerData = findLatestAnswer(songAnswers, mode, songData);
 
   return (
-    <>
-      <ModeSelector setMode={setMode} currentMode={mode} />
-      <Routes>
-        <Route path="/" element={<Navigate to="/kpopdle" replace />} />
-        <Route path="/kpopdle" element={<Kpopdle idolData={idolData} answer={todaysAnswerData} mode={mode} />} />
-        <Route path="/songguess" element={<SongGuess songData={songData} answer={todaysSongAnswerData} mode={mode} />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/" element={<Navigate to="/kpopdle" replace />} />
+      <Route path="/kpopdle" element={<Kpopdle idolData={idolData} answer={todaysAnswerData} mode={mode} setMode={setMode} />} />
+      <Route path="/songguess" element={<SongGuess songData={songData} answer={todaysSongAnswerData} mode={mode} setMode={setMode} />} />
+    </Routes>
   );
 }
 

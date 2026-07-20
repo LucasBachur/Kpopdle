@@ -6,6 +6,7 @@ export function useStats(keyPrefix, mode) {
     currentStreak: 0,
     maxStreak: 0,
     lastPlayedDate: null,
+    totalGuesses: 0,
     guessDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, "5+": 0 }
   };
 
@@ -36,7 +37,9 @@ export function useStats(keyPrefix, mode) {
       const key = attempts <= 4 ? attempts : "5+";
       guessDistribution = { ...guessDistribution, [key]: (guessDistribution[key] || 0) + 1 };
 
-      const newStats = { gamesPlayed, currentStreak, maxStreak, lastPlayedDate: today, guessDistribution };
+      const totalGuesses = (prev.totalGuesses || 0) + attempts;
+
+      const newStats = { gamesPlayed, currentStreak, maxStreak, lastPlayedDate: today, totalGuesses, guessDistribution };
       localStorage.setItem(storageKey, JSON.stringify(newStats));
       return newStats;
     });
